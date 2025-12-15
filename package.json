@@ -62,7 +62,7 @@
     "react-native-worklets": "0.5.1",
     "zod": "^3.25.76",
     "zustand": "^5.0.8",
-    "\@ascencio-tax/shared": "github:ayunierto/ascencio-tax-shared#main"
+    "@ascencio-tax/shared": "github:ayunierto/ascencio-tax-shared#main"
   },
   "devDependencies": {
     "@types/luxon": "^3.7.1",
