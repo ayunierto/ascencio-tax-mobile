@@ -21,7 +21,7 @@ const ExpenseCard = ({ expense }: ExpenseCardProps) => {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/accounting/receipts/expense/${expense.id}`)}
+      onPress={() => router.push(`/(app)/(tabs)/expenses/${expense.id}`)}
       style={{ marginBottom: 10 }}
     >
       <Card>
@@ -37,7 +37,7 @@ const ExpenseCard = ({ expense }: ExpenseCardProps) => {
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Date</Text>
             <Text style={styles.metricValue}>{`${dateToLocaleDateTimeString(
-              expense.date
+              expense.date,
             )}`}</Text>
           </View>
           <View style={styles.metricItem}>

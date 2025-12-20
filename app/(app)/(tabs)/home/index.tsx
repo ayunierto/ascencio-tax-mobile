@@ -1,27 +1,26 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { FlatList, Image, RefreshControl, TextInput, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { FlatList, Image, RefreshControl, TextInput, View } from 'react-native';
 
-import { ServiceCard } from "@/components/home/ServiceCard";
-import { ServiceListSkeleton } from "@/components/home/ServiceCardSkeleton";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { EmptyContent } from "@/core/components";
-import { useServices } from "@/core/services/hooks/useServices";
-import { Service } from "@/core/services/interfaces";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
+import { ServiceCard } from '@/components/home/ServiceCard';
+import { ServiceListSkeleton } from '@/components/home/ServiceCardSkeleton';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { EmptyContent } from '@/core/components';
+import { useServices } from '@/core/services/hooks/useServices';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import { Service } from '@ascencio/shared/interfaces';
 
 const ServicesScreen = () => {
   const { authStatus, user } = useAuthStore();
   const { updateState } = useBookingStore();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const {
-    data: servicesData,
+    data: servicesResponse,
     isPending,
     isError,
     error,
@@ -34,16 +33,16 @@ const ServicesScreen = () => {
   };
 
   // Filter services based on search query
-  const filteredServices = servicesData?.services.filter((service) =>
-    service.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredServices = servicesResponse?.items.filter((service) =>
+    service.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
   };
 
   if (isError)
@@ -56,7 +55,7 @@ const ServicesScreen = () => {
 
   if (isPending) return <ServiceListSkeleton />;
 
-  if (!servicesData || servicesData.services.length === 0) {
+  if (!servicesResponse || servicesResponse.items.length === 0) {
     return (
       <EmptyContent
         title="No services available."
@@ -79,32 +78,32 @@ const ServicesScreen = () => {
         )}
         ListHeaderComponent={
           <>
-            {/* Logo - Scrolleable */}
+            {/* Logo - Scrollable */}
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginBottom: 20,
                 marginTop: 10,
               }}
             >
               <Image
-                source={require("@/assets/images/logo.png")}
+                source={require('@/assets/images/logo.png')}
                 style={{
-                  width: "70%",
+                  width: '70%',
                   maxWidth: 250,
-                  resizeMode: "contain",
+                  resizeMode: 'contain',
                   height: 120,
                 }}
               />
             </View>
 
             {/* Greeting Header */}
-            {authStatus === "authenticated" && user && (
+            {authStatus === 'authenticated' && user && (
               <View style={{ marginBottom: 20 }}>
-                <ThemedText style={{ fontSize: 24, fontWeight: "bold" }}>
+                <ThemedText style={{ fontSize: 24, fontWeight: 'bold' }}>
                   {getGreeting()}
-                  {user.firstName ? `, ${user.firstName}!` : "!"}
+                  {user.firstName ? `, ${user.firstName}!` : '!'}
                 </ThemedText>
                 <ThemedText
                   style={{ fontSize: 14, color: theme.mutedForeground }}
@@ -117,8 +116,8 @@ const ServicesScreen = () => {
             {/* Search Bar */}
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 backgroundColor: theme.card,
                 borderRadius: theme.radius,
                 borderWidth: 1,
@@ -150,7 +149,7 @@ const ServicesScreen = () => {
                   name="close-circle"
                   size={20}
                   color={theme.mutedForeground}
-                  onPress={() => setSearchQuery("")}
+                  onPress={() => setSearchQuery('')}
                 />
               )}
             </View>
@@ -163,8 +162,8 @@ const ServicesScreen = () => {
                 marginBottom: 12,
               }}
             >
-              {filteredServices?.length || 0}{" "}
-              {filteredServices?.length === 1 ? "service" : "services"}{" "}
+              {filteredServices?.length || 0}{' '}
+              {filteredServices?.length === 1 ? 'service' : 'services'}{' '}
               available
             </ThemedText>
           </>

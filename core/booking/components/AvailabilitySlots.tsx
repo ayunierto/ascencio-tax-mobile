@@ -42,7 +42,7 @@ const AvailabilitySlots = ({
     isError,
     error: availabilityError,
   } = useQuery<AvailableSlot[], AxiosError<ServerException>>({
-    queryKey: ['availability'],
+    queryKey: ['availability', serviceId, staffId ?? 'all', date, userTimeZone],
     queryFn: async () => {
       return await getAvailabilityAction({
         serviceId,
@@ -51,10 +51,13 @@ const AvailabilitySlots = ({
         timeZone: userTimeZone,
       });
     },
+    enabled: Boolean(serviceId && date), // permitir consulta solo por servicio+fecha
+    staleTime: 0, // Siempre considerar datos obsoletos (no cache)
+    gcTime: 0, // No mantener en memoria después de desmontar
   });
 
   useEffect(() => {
-    if (!serviceId || !date) return; // If no service or date is selected, do not fetch availability
+    if (!serviceId || !date) return; // staff opcional
     setSelectedSlot(undefined); // Reset selected slot when service or date changes
     form.resetField('time'); // Reset time when service or date changes
     // Refetch availability when serviceId, staffId, or date changes
@@ -73,8 +76,10 @@ const AvailabilitySlots = ({
     };
 
     data.forEach((slot) => {
-      const hour = DateTime.fromISO(slot.startTimeUTC).setZone(userTimeZone).hour;
-      
+      const hour = DateTime.fromISO(slot.startTimeUTC).setZone(
+        userTimeZone,
+      ).hour;
+
       if (hour < 12) {
         groups.morning.push(slot);
       } else if (hour < 18) {
@@ -111,14 +116,27 @@ const AvailabilitySlots = ({
     );
   }
 
-  const renderSlotGroup = (slots: AvailableSlot[], title: string, icon: string) => {
+  const renderSlotGroup = (
+    slots: AvailableSlot[],
+    title: string,
+    icon: string,
+  ) => {
     if (slots.length === 0) return null;
 
     return (
       <View style={{ marginBottom: 20, width: '100%' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 12,
+          }}
+        >
           <ButtonIcon name={icon as any} />
-          <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>{title}</ThemedText>
+          <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
+            {title}
+          </ThemedText>
           <ThemedText style={{ fontSize: 14, color: theme.mutedForeground }}>
             ({slots.length} {slots.length === 1 ? 'slot' : 'slots'})
           </ThemedText>
@@ -150,7 +168,7 @@ const AvailabilitySlots = ({
                 {convertUtcDateToLocalTime(
                   slot.startTimeUTC,
                   userTimeZone,
-                  '12-hour'
+                  '12-hour',
                 )}
               </ButtonText>
             </Button>
@@ -163,7 +181,11 @@ const AvailabilitySlots = ({
   return (
     <View style={{ width: '100%' }}>
       {renderSlotGroup(groupedSlots.morning, 'Morning', 'sunny-outline')}
-      {renderSlotGroup(groupedSlots.afternoon, 'Afternoon', 'partly-sunny-outline')}
+      {renderSlotGroup(
+        groupedSlots.afternoon,
+        'Afternoon',
+        'partly-sunny-outline',
+      )}
       {renderSlotGroup(groupedSlots.evening, 'Evening', 'moon-outline')}
     </View>
   );

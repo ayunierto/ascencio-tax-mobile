@@ -1,17 +1,17 @@
-import { router } from "expo-router";
-import { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/themed-text";
-import { Card } from "@/components/ui";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { useServices } from "@/core/services/hooks/useServices";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { router } from 'expo-router';
+import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/themed-text';
+import { Card } from '@/components/ui';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { useServices } from '@/core/services/hooks/useServices';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import { Ionicons } from '@expo/vector-icons';
+import { ScrollView, TouchableOpacity } from 'react-native';
 
 export default function SelectServiceScreen() {
-  const { data: serviceData, isLoading } = useServices();
+  const { data: servicesResponse, isLoading } = useServices();
   const { updateState, resetBooking } = useBookingStore();
 
   // Reset booking state when entering
@@ -21,7 +21,7 @@ export default function SelectServiceScreen() {
 
   const handleSelectService = (service: any) => {
     updateState({ service });
-    router.push("/(app)/(tabs)/appointments/new/availability");
+    router.push('/(app)/(tabs)/appointments/new/availability');
   };
 
   if (isLoading) {
@@ -32,7 +32,7 @@ export default function SelectServiceScreen() {
     );
   }
 
-  if (!serviceData || serviceData.services.length === 0) {
+  if (!servicesResponse || servicesResponse.items.length === 0) {
     return (
       <View style={styles.centered}>
         <ThemedText>No services available</ThemedText>
@@ -45,12 +45,12 @@ export default function SelectServiceScreen() {
       <View style={styles.header}>
         <ThemedText style={styles.title}>Select a Service</ThemedText>
         <ThemedText style={styles.subtitle}>
-          Choose the service you'd like to book
+          {"Choose the service you'd like to book"}
         </ThemedText>
       </View>
 
       <View style={styles.servicesList}>
-        {serviceData.services.map((service) => (
+        {servicesResponse.items.map((service) => (
           <TouchableOpacity
             key={service.id}
             onPress={() => handleSelectService(service)}
@@ -93,15 +93,15 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   subtitle: {
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   serviceContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     gap: 16,
   },
@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: `${theme.primary}15`,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   serviceInfo: {
     flex: 1,
@@ -134,16 +134,16 @@ const styles = StyleSheet.create({
   },
   serviceName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   serviceDetails: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 16,
     marginTop: 8,
   },
   detailItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
   },
   detailText: {

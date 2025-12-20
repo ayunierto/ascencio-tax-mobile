@@ -1,4 +1,4 @@
-import { StaffMember } from "@ascencio-tax/shared";
+import { type StaffMember } from '@ascencio/shared/interfaces';
 
 export interface AvailableSlot {
   /** Start time of the slot in ISO 8601 (UTC) format. Example: '2025-10-20T14:30:00.000Z' */

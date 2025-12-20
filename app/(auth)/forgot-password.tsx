@@ -43,7 +43,7 @@ const ForgotPassword = () => {
             text1: "Email sent",
             text2: data.message,
           });
-          router.replace("/auth/reset-password");
+          router.replace("/reset-password");
         },
         onError: (error) => {
           Toast.show({

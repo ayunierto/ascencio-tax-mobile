@@ -1,26 +1,26 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Redirect, router } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { TextInput, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Redirect, router } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { TextInput, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import { Button, ButtonText } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { AuthFormContainer } from "@/core/auth/components/AuthFormContainer";
-import { ErrorBox } from "@/core/auth/components/ErrorBox";
-import Header from "@/core/auth/components/Header";
+import { Button, ButtonText } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { AuthFormContainer } from '@/core/auth/components/AuthFormContainer';
+import { ErrorBox } from '@/core/auth/components/ErrorBox';
+import Header from '@/core/auth/components/Header';
 import {
   useResendResetPasswordMutation,
   useResetPasswordMutation,
   useTimer,
-} from "@/core/auth/hooks";
+} from '@/core/auth/hooks';
 import {
   ResetPasswordRequest,
   resetPasswordSchema,
-} from "@/core/auth/schemas/reset-password.schema";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { authStyles } from "@/core/auth/styles/authStyles";
+} from '@/core/auth/schemas/reset-password.schema';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { authStyles } from '@/core/auth/styles/authStyles';
 
 const VerifyCode = () => {
   const { tempEmail } = useAuthStore();
@@ -38,73 +38,72 @@ const VerifyCode = () => {
   });
 
   useEffect(() => {
-    setValue("email", tempEmail || "");
-    startTimer(); // Inicia el timer solo una vez al montar
+    setValue('email', tempEmail || '');
+    startTimer();
     return () => {
       resetTimer();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resetTimer, setValue, startTimer, tempEmail]);
 
   const { mutate: verifyEmail, isPending } = useResetPasswordMutation();
   const { mutate: resendResetPasswordCode, isPending: isResending } =
     useResendResetPasswordMutation();
-
-  if (!tempEmail) {
-    return <Redirect href={"/login"} />;
-  }
 
   const handleEmailVerification = useCallback(
     (data: ResetPasswordRequest) => {
       verifyEmail(data, {
         onSuccess: (data) => {
           Toast.show({
-            type: "success",
-            text1: "Password Reset Successfully",
+            type: 'success',
+            text1: 'Password Reset Successfully',
             text2: data.message,
           });
-          router.replace("/login");
+          router.replace('/login');
         },
         onError: (error) => {
           Toast.show({
-            type: "error",
-            text1: "Password Reset Error",
+            type: 'error',
+            text1: 'Password Reset Error',
             text2: error.response?.data.message || error.message,
           });
         },
       });
     },
-    [verifyEmail, resetTimer, startTimer]
+    [verifyEmail],
   );
 
   const handleResendPasswordCode = useCallback(() => {
     if (isRunning) return;
-    resendResetPasswordCode(tempEmail || "", {
+    resendResetPasswordCode(tempEmail || '', {
       onSuccess: () => {
         resetTimer();
         startTimer();
         Toast.show({
-          type: "success",
-          text1: "Code resent",
-          text2: "A new code has been sent to your email.",
+          type: 'success',
+          text1: 'Code resent',
+          text2: 'A new code has been sent to your email.',
         });
       },
     });
   }, [isRunning, resendResetPasswordCode, tempEmail, resetTimer, startTimer]);
 
   const submitButtonText = useMemo(
-    () => (isPending ? "Verifying..." : "Verify"),
-    [isPending]
+    () => (isPending ? 'Verifying...' : 'Verify'),
+    [isPending],
   );
+
+  if (!tempEmail) {
+    return <Redirect href={'/login'} />;
+  }
 
   // ...existing code...
 
   return (
     <AuthFormContainer>
       <Header
-        title={"Change your password"}
+        title={'Change your password'}
         subtitle={
-          "Please check your email for a message with your code. Your code is 6 numbers long."
+          'Please check your email for a message with your code. Your code is 6 numbers long.'
         }
       />
 
@@ -130,7 +129,7 @@ const VerifyCode = () => {
               onSubmitEditing={() => newPasswordRef.current?.focus()}
               blurOnSubmit={false}
               error={!!errors.code}
-              errorMessage={errors.code?.message || ""}
+              errorMessage={errors.code?.message || ''}
             />
           )}
         />
@@ -151,7 +150,7 @@ const VerifyCode = () => {
               returnKeyType="done"
               onSubmitEditing={handleSubmit(handleEmailVerification)}
               error={!!errors.newPassword}
-              errorMessage={errors.newPassword?.message || ""}
+              errorMessage={errors.newPassword?.message || ''}
               secureTextEntry
             />
           )}
@@ -174,7 +173,7 @@ const VerifyCode = () => {
         >
           <ButtonText>
             {timeRemaining === 0
-              ? "Resend code"
+              ? 'Resend code'
               : `Resend in ${timeRemaining}s`}
           </ButtonText>
         </Button>

@@ -51,7 +51,7 @@ const SignUp = () => {
       return await signUp(data);
     },
     onSuccess: () => {
-      router.push("/auth/verify-email");
+      router.push("/verify-email");
       Toast.show({
         type: "success",
         text1: "Sign up successful",

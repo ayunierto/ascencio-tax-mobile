@@ -1,16 +1,16 @@
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React from "react";
-import { Linking, ScrollView, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React from 'react';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card/Card";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import ListItem from "@/core/settings/components/ListItem";
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card/Card';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import ListItem from '@/core/settings/components/ListItem';
 
 export default function ProfileIndexScreen() {
   const { logout, user } = useAuthStore();
@@ -18,11 +18,16 @@ export default function ProfileIndexScreen() {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/");
+    router.replace('/');
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <View
+      style={[
+        styles.container,
+        { paddingBottom: insets.bottom, paddingTop: insets.top },
+      ]}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -56,14 +61,14 @@ export default function ProfileIndexScreen() {
               <ListItem
                 icon="person-outline"
                 label="My account"
-                onPress={() => router.push("/(app)/(tabs)/profile/account")}
+                onPress={() => router.push('/(app)/(tabs)/profile/account')}
               />
               <View style={styles.divider} />
               <ListItem
                 icon="diamond-outline"
                 label="Subscriptions"
                 onPress={() =>
-                  router.push("/(app)/(tabs)/profile/subscriptions")
+                  router.push('/(app)/(tabs)/profile/subscriptions')
                 }
               />
             </CardContent>
@@ -80,7 +85,7 @@ export default function ProfileIndexScreen() {
                 label="Terms of use"
                 external
                 onPress={() =>
-                  Linking.openURL("https://www.ascenciotax.com/termsofuse")
+                  Linking.openURL('https://www.ascenciotax.com/termsofuse')
                 }
               />
               <View style={styles.divider} />
@@ -89,7 +94,7 @@ export default function ProfileIndexScreen() {
                 label="Privacy policy"
                 external
                 onPress={() =>
-                  Linking.openURL("https://www.ascenciotax.com/privacy")
+                  Linking.openURL('https://www.ascenciotax.com/privacy')
                 }
               />
             </CardContent>
@@ -126,17 +131,17 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   profileCard: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   avatarContainer: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: theme.primary + "15",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: theme.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   profileInfo: {
     flex: 1,
@@ -144,7 +149,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.foreground,
   },
   userEmail: {
@@ -156,9 +161,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.mutedForeground,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
     paddingHorizontal: 4,
   },
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   appInfo: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 20,
   },
   appInfoText: {

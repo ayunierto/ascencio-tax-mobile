@@ -1,28 +1,28 @@
-import React from "react";
+import React from 'react';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DateTime } from "luxon";
-import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DateTime } from 'luxon';
+import { Controller, useForm } from 'react-hook-form';
+import { StyleSheet, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 
-import { Alert } from "@/components/ui/Alert";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
+import { Alert } from '@/components/ui/Alert';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@/components/ui/Select";
-import { theme } from "@/components/ui/theme";
-import { Service, StaffMember } from "@ascencio-tax/shared";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import { CalendarDay } from "../interfaces/calendar-day.interface";
+} from '@/components/ui/Select';
+import { theme } from '@/components/ui/theme';
+import type { Service, StaffMember } from '@ascencio/shared/interfaces';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import { CalendarDay } from '../interfaces/calendar-day.interface';
 import {
   AvailabilityRequest,
   availabilitySchema,
-} from "../schemas/availability.schema";
-import AvailabilitySlots from "./AvailabilitySlots";
+} from '../schemas/availability.schema';
+import AvailabilitySlots from './AvailabilitySlots';
 
 interface AvailabilityFormProps {
   services: Service[];
@@ -52,7 +52,7 @@ const AvailabilityForm = ({
   const handleFormSubmit = (values: AvailabilityRequest) => {
     // Ensure all data is in the store before submitting
     const selectedStaffMember = serviceStaff.find(
-      (s) => s.id === values.staffId
+      (s) => s.id === values.staffId,
     );
     const selectedServiceData = services.find((s) => s.id === values.serviceId);
 
@@ -71,7 +71,7 @@ const AvailabilityForm = ({
     <View style={{ gap: 10 }}>
       <Controller
         control={form.control}
-        name={"serviceId"}
+        name={'serviceId'}
         render={({ field: { onChange, value } }) => (
           <Select
             placeholder={value}
@@ -81,7 +81,7 @@ const AvailabilityForm = ({
             errorMessage={form.formState.errors.serviceId?.message}
           >
             <SelectTrigger
-              placeholder={"Select a service"}
+              placeholder={'Select a service'}
               labelText="Service"
             />
             <SelectContent>
@@ -95,7 +95,7 @@ const AvailabilityForm = ({
 
       <Controller
         control={form.control}
-        name={"staffId"}
+        name={'staffId'}
         render={({ field: { onChange, value } }) => (
           <Select
             value={value}
@@ -103,7 +103,7 @@ const AvailabilityForm = ({
             error={!!form.formState.errors.staffId}
             errorMessage={form.formState.errors.staffId?.message}
           >
-            <SelectTrigger placeholder={"Select Staff"} labelText="Staff" />
+            <SelectTrigger placeholder={'Select Staff'} labelText="Staff" />
             <SelectContent>
               {serviceStaff.map(({ id, firstName, lastName }) => (
                 <SelectItem
@@ -120,10 +120,10 @@ const AvailabilityForm = ({
       <View style={styles.calendarContainer}>
         <Controller
           control={form.control}
-          name={"date"}
+          name={'date'}
           render={({ field: { value, onChange } }) => (
             <Calendar
-              minDate={DateTime.now().toFormat("yyyy-MM-dd")}
+              minDate={DateTime.now().toFormat('yyyy-MM-dd')}
               theme={{
                 selectedDayBackgroundColor: theme.primary,
               }}
@@ -139,12 +139,12 @@ const AvailabilityForm = ({
                 onChange(userDate);
               }}
               markedDates={{
-                [DateTime.fromISO(value)
+                [DateTime.fromISO(value ?? DateTime.now().toISO())
                   .setZone(userTimeZone)
-                  .toFormat("yyyy-MM-dd")]: {
+                  .toFormat('yyyy-MM-dd')]: {
                   selected: true,
                   disableTouchEvent: true,
-                  selectedColor: "orange",
+                  selectedColor: 'orange',
                 },
               }}
             />
@@ -154,22 +154,28 @@ const AvailabilityForm = ({
 
       <Controller
         control={form.control}
-        name={"time"}
+        name={'time'}
         render={({ field: { onChange } }) => (
           <AvailabilitySlots
             form={form}
             userTimeZone={userTimeZone}
             onChange={(slot) => {
               onChange(slot.startTimeUTC);
-              // Update the booking store with selected slot details
+
+              const staffId = form.watch('staffId');
+              const matchedStaff = slot.availableStaff.find(
+                (s) => s.id === staffId,
+              );
+              const randomStaff =
+                slot.availableStaff[
+                  Math.floor(Math.random() * slot.availableStaff.length)
+                ];
+
               updateState({
                 start: slot.startTimeUTC,
                 end: slot.endTimeUTC,
                 timeZone: userTimeZone,
-                staff:
-                  slot.availableStaff[
-                    Math.floor(Math.random() * slot.availableStaff.length)
-                  ], // Select a random staff from the available ones
+                staffMember: matchedStaff ?? randomStaff,
               });
             }}
           />
@@ -178,19 +184,19 @@ const AvailabilityForm = ({
 
       {/* Handle error messages */}
       {form.formState.errors.date && (
-        <Alert style={{ width: "100%" }} variant="error">
+        <Alert style={{ width: '100%' }} variant="error">
           {form.formState.errors.date.message}
         </Alert>
       )}
 
       {form.formState.errors.time && (
-        <Alert style={{ width: "100%" }} variant="error">
+        <Alert style={{ width: '100%' }} variant="error">
           {form.formState.errors.time.message}
         </Alert>
       )}
 
       {form.formState.errors.timeZone && (
-        <Alert style={{ width: "100%" }} variant="error">
+        <Alert style={{ width: '100%' }} variant="error">
           {form.formState.errors.timeZone.message}
         </Alert>
       )}
@@ -207,7 +213,7 @@ export default AvailabilityForm;
 
 const styles = StyleSheet.create({
   calendarContainer: {
-    overflow: "hidden",
+    overflow: 'hidden',
     borderRadius: theme.radius,
   },
   slot: {

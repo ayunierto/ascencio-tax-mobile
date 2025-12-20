@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   ViewProps,
   StyleProp,
   ViewStyle,
   StyleSheet,
-} from "react-native";
+} from 'react-native';
 
 interface SimpleCardContentProps extends ViewProps {
   style?: StyleProp<ViewStyle>;
@@ -15,7 +15,7 @@ export const CardContent = ({
   style,
   children,
   ...props
-}: SimpleCardContentProps): JSX.Element => {
+}: SimpleCardContentProps) => {
   return (
     <View style={[styles.cardContent, style]} {...props}>
       {children}

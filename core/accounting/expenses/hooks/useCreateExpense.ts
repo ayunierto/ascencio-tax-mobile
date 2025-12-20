@@ -16,9 +16,15 @@ import { useCreateExpenseMutation } from './useCreateExpenseMutation';
 export const useCreateExpense = () => {
   const params = useLocalSearchParams();
 
-  const [categoryOptions, setCategoryOptions] = useState<[]>([]);
-  const [subcategoryOptions, setSubcategoryOptions] = useState<[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState();
+  const [categoryOptions, setCategoryOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [subcategoryOptions, setSubcategoryOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<
+    { label: string; value: string } | undefined
+  >(undefined);
 
   const { selectedImage, removeImage } = useCameraStore();
 
@@ -77,7 +83,7 @@ export const useCreateExpense = () => {
 
     if (subcategories && !('error' in subcategories)) {
       const subcat = subcategories.filter(
-        (subcategory: Subcategory) => subcategory.category.id === categoryId
+        (subcategory: Subcategory) => subcategory.category.id === categoryId,
       );
       const options = subcat.map((subcategory: Subcategory) => ({
         label: subcategory.name,

@@ -19,7 +19,7 @@ export const useSignUpMutation = () => {
       return await signUp(data);
     },
     onSuccess: () => {
-      router.push('/auth/verify-email');
+      router.push('/(auth)/verify-email');
       Toast.show({
         type: 'success',
         text1: 'Sign up successful',

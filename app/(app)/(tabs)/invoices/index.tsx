@@ -1,13 +1,13 @@
-import { router } from "expo-router";
-import React from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/themed-text";
-import { Card } from "@/components/ui";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { EmptyContent } from "@/core/components";
+import { router } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/themed-text';
+import { Card } from '@/components/ui';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { EmptyContent } from '@/core/components';
 
 export default function InvoicesIndexScreen() {
   // Mock data - replace with actual data fetching
@@ -20,7 +20,7 @@ export default function InvoicesIndexScreen() {
         <ThemedText style={styles.title}>My Invoices</ThemedText>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => router.push("/(app)/(tabs)/invoices/new")}
+          onPress={() => router.push('/(app)/(tabs)/invoices/new')}
         >
           <Ionicons name="add-circle-outline" size={28} color={theme.primary} />
         </TouchableOpacity>
@@ -42,7 +42,7 @@ export default function InvoicesIndexScreen() {
               key={invoice.id}
               onPress={() =>
                 router.push({
-                  pathname: "/(app)/(tabs)/invoices/[id]",
+                  pathname: '/(app)/(tabs)/invoices/[id]',
                   params: { id: invoice.id },
                 })
               }
@@ -67,8 +67,8 @@ export default function InvoicesIndexScreen() {
                     <View
                       style={[
                         styles.statusBadge,
-                        invoice.status === "paid" && styles.statusPaid,
-                        invoice.status === "pending" && styles.statusPending,
+                        invoice.status === 'paid' && styles.statusPaid,
+                        invoice.status === 'pending' && styles.statusPending,
                       ]}
                     >
                       <ThemedText style={styles.statusText}>
@@ -92,16 +92,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   addButton: {
     padding: 8,
@@ -117,9 +117,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   invoiceContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   invoiceInfo: {
     flex: 1,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   invoiceNumber: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   invoiceClient: {
     fontSize: 14,
@@ -138,12 +138,12 @@ const styles = StyleSheet.create({
     color: theme.mutedForeground,
   },
   invoiceRight: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
     gap: 8,
   },
   invoiceAmount: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.primary,
   },
   statusBadge: {
@@ -153,14 +153,14 @@ const styles = StyleSheet.create({
     backgroundColor: theme.muted,
   },
   statusPaid: {
-    backgroundColor: "#22c55e20",
+    backgroundColor: '#22c55e20',
   },
   statusPending: {
-    backgroundColor: "#f59e0b20",
+    backgroundColor: '#f59e0b20',
   },
   statusText: {
     fontSize: 12,
-    fontWeight: "600",
-    textTransform: "capitalize",
+    fontWeight: '600',
+    textTransform: 'capitalize',
   },
 });

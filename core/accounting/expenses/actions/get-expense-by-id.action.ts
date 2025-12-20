@@ -3,13 +3,15 @@ import { DateTime } from 'luxon';
 import { ExpenseResponse } from '../interfaces';
 
 export const getExpenseByIdAction = async (
-  id: string
+  id: string,
 ): Promise<ExpenseResponse> => {
   if (id === 'new') {
     return {
       id: 'new',
       merchant: '',
       date: DateTime.utc().toISO(),
+      createdAt: DateTime.utc().toISO(),
+      updatedAt: DateTime.utc().toISO(),
       total: 0,
       tax: 0,
       imageUrl: undefined,

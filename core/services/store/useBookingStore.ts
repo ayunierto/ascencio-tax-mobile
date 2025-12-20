@@ -1,5 +1,5 @@
-import { Service, StaffMember } from "@ascencio-tax/shared";
-import { create } from "zustand";
+import type { Service, StaffMember } from '@ascencio/shared/interfaces';
+import { create } from 'zustand';
 
 export interface BookingState {
   // Data

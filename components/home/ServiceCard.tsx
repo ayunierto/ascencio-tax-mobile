@@ -1,12 +1,12 @@
-import { Service } from "@/core/services/interfaces/service.interface";
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { Image, TouchableOpacity, View } from "react-native";
-import { Button, ButtonText } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { CardContent } from "../ui/Card/CardContent";
-import { theme } from "../ui/theme";
-import { ThemedText } from "../ui/ThemedText";
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { Button, ButtonText } from '../ui/Button';
+import { Card } from '../ui/Card';
+import { CardContent } from '../ui/Card/CardContent';
+import { theme } from '../ui/theme';
+import { ThemedText } from '../ui/ThemedText';
+import { Service } from '@ascencio/shared/interfaces';
 
 interface ServiceCardProps {
   service: Service;
@@ -24,9 +24,9 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
         <CardContent>
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               gap: 12,
-              alignItems: "flex-start",
+              alignItems: 'flex-start',
             }}
           >
             {/* Service Image */}
@@ -44,15 +44,15 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
             <View style={{ flex: 1, gap: 6 }}>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
                 }}
               >
                 <ThemedText
                   style={{
                     fontSize: 17,
-                    fontWeight: "600",
+                    fontWeight: '600',
                     flex: 1,
                     marginRight: 8,
                   }}
@@ -65,7 +65,7 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
                 {!service.isActive && (
                   <View
                     style={{
-                      backgroundColor: theme.destructive + "20",
+                      backgroundColor: theme.destructive + '20',
                       paddingHorizontal: 8,
                       paddingVertical: 2,
                       borderRadius: 4,
@@ -75,7 +75,7 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
                       style={{
                         fontSize: 10,
                         color: theme.destructive,
-                        fontWeight: "600",
+                        fontWeight: '600',
                       }}
                     >
                       Unavailable
@@ -87,18 +87,18 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
               {/* Meta Info */}
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: 'row',
                   gap: 16,
-                  alignItems: "center",
+                  alignItems: 'center',
                   marginTop: 4,
                 }}
               >
                 {/* Duration */}
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: 'row',
                     gap: 4,
-                    alignItems: "center",
+                    alignItems: 'center',
                   }}
                 >
                   <Ionicons
@@ -116,9 +116,9 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
                 {/* Online/In-person */}
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: 'row',
                     gap: 4,
-                    alignItems: "center",
+                    alignItems: 'center',
                   }}
                 >
                   <Ionicons
@@ -130,8 +130,8 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
                     }
                     name={
                       service.isAvailableOnline
-                        ? "videocam"
-                        : "location-outline"
+                        ? 'videocam'
+                        : 'location-outline'
                     }
                   />
                   <ThemedText
@@ -142,7 +142,7 @@ export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
                         : theme.mutedForeground,
                     }}
                   >
-                    {service.isAvailableOnline ? "Online" : "In-person"}
+                    {service.isAvailableOnline ? 'Online' : 'In-person'}
                   </ThemedText>
                 </View>
               </View>

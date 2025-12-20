@@ -1,6 +1,5 @@
-import { User } from "@/core/auth/interfaces";
-import { Service } from "@/core/services/interfaces";
-import { StaffMember } from "@ascencio-tax/shared";
+import { User } from '@/core/auth/interfaces';
+import type { StaffMember, Service } from '@ascencio/shared/interfaces';
 
 export interface Appointment {
   id: string;

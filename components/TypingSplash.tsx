@@ -41,7 +41,7 @@ const TypingSplash: React.FC<TypingSplashProps> = ({
 
     let currentText = '';
     let index = 0;
-    let typingTimer: NodeJS.Timeout;
+    let typingTimer: ReturnType<typeof setTimeout>;
 
     // Function to add one character
     const type = () => {
@@ -73,7 +73,7 @@ const TypingSplash: React.FC<TypingSplashProps> = ({
 
   useEffect(() => {
     // Cursor blinking logic
-    let cursorTimer: NodeJS.Timeout;
+    let cursorTimer: ReturnType<typeof setInterval>;
 
     if (!isTypingComplete) {
       // Blink cursor only while typing

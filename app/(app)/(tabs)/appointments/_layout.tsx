@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
-import { theme } from "@/components/ui/theme";
+import { Stack } from 'expo-router';
+import { theme } from '@/components/ui/theme';
 
 export default function AppointmentsLayout() {
   return (
@@ -8,7 +8,7 @@ export default function AppointmentsLayout() {
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitleAlign: "center",
+        headerTitleAlign: 'center',
         headerTintColor: theme.foreground,
         headerShadowVisible: false,
       }}
@@ -16,25 +16,19 @@ export default function AppointmentsLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "My Appointments",
+          title: 'My Appointments',
         }}
       />
       <Stack.Screen
         name="past"
         options={{
-          title: "Past Appointments",
+          title: 'Past Appointments',
         }}
       />
       <Stack.Screen
         name="new"
         options={{
           headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="[id]"
-        options={{
-          title: "Appointment Details",
         }}
       />
     </Stack>

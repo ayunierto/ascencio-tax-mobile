@@ -3,13 +3,13 @@ import { AxiosError } from 'axios';
 
 import { ServerException } from '@/core/interfaces/server-exception.response';
 import { getServicesAction } from '../actions/get-services.action';
-import { ServicesResponse } from '../interfaces';
+import type { Service, PaginatedResponse } from '@ascencio/shared';
 
 export const useServices = (limit: number = 100, offset = 0) => {
   return useQuery<
-    ServicesResponse,
+    PaginatedResponse<Service>,
     AxiosError<ServerException>,
-    ServicesResponse
+    PaginatedResponse<Service>
   >({
     queryKey: ['services', { offset, limit }],
     queryFn: () =>

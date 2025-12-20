@@ -1,23 +1,23 @@
-import { Redirect, router } from "expo-router";
-import { ScrollView, View, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/themed-text";
-import { BookingProgressStepper } from "@/components/booking/BookingProgressStepper";
-import { theme } from "@/components/ui/theme";
-import AvailabilityForm from "@/core/booking/components/AvailabilityForm";
-import { EmptyContent } from "@/core/components";
-import { useServices } from "@/core/services/hooks/useServices";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import Toast from "react-native-toast-message";
+import { Redirect, router } from 'expo-router';
+import { ScrollView, View, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/themed-text';
+import { BookingProgressStepper } from '@/components/booking/BookingProgressStepper';
+import { theme } from '@/components/ui/theme';
+import AvailabilityForm from '@/core/booking/components/AvailabilityForm';
+import { EmptyContent } from '@/core/components';
+import { useServices } from '@/core/services/hooks/useServices';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import Toast from 'react-native-toast-message';
 
 export default function SelectAvailabilityScreen() {
-  const { data: serviceData } = useServices();
+  const { data: servicesResponse } = useServices();
   const { service } = useBookingStore();
 
   if (!service) {
-    return <Redirect href={"/(app)/(tabs)/home"} />;
+    return <Redirect href={'/(app)/(tabs)/home'} />;
   }
 
-  if (!serviceData) {
+  if (!servicesResponse) {
     return (
       <EmptyContent
         title="Services not found"
@@ -38,11 +38,11 @@ export default function SelectAvailabilityScreen() {
 
   const handleBooking = (): void => {
     Toast.show({
-      type: "success",
-      text1: "Selection saved",
-      text2: "Please add any additional details",
+      type: 'success',
+      text1: 'Selection saved',
+      text2: 'Please add any additional details',
     });
-    router.push("/(app)/(tabs)/appointments/new/details");
+    router.push('/(app)/(tabs)/appointments/new/details');
   };
 
   return (
@@ -59,7 +59,7 @@ export default function SelectAvailabilityScreen() {
         </View>
 
         <AvailabilityForm
-          services={serviceData?.services}
+          services={servicesResponse?.items || []}
           selectedService={service}
           serviceStaff={service.staffMembers}
           onSubmit={handleBooking}
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   subtitle: {
     fontSize: 14,

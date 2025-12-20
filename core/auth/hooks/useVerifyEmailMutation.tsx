@@ -20,7 +20,7 @@ export const useVerifyEmailMutation = () => {
       return response;
     },
     onSuccess: () => {
-      router.replace('/auth/sign-in');
+      router.replace('/login');
       Toast.show({
         type: 'success',
         text1: 'Verification successful',

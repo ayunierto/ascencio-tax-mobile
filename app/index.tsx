@@ -1,14 +1,14 @@
-import { router } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { useEffect } from "react";
-import { theme } from "@/components/ui/theme";
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet } from 'react-native';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { useEffect } from 'react';
+import { theme } from '@/components/ui/theme';
 import {
   HeroSection,
   FeaturesSection,
   QuickLinksSection,
   FooterSection,
-} from "@/components/landing";
+} from '@/components/landing';
 
 export default function LandingPage() {
   const { authStatus, checkAuthStatus } = useAuthStore();
@@ -18,8 +18,8 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    if (authStatus === "authenticated") {
-      router.replace("/(app)/(tabs)/home");
+    if (authStatus === 'authenticated') {
+      router.replace('/(app)/(tabs)/home');
     }
   }, [authStatus]);
 

@@ -9,7 +9,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useSignInMutation } from "./useSignInMutation";
 
 export const useSignIn = () => {
-  const { user } = useAuthStore();
+  const { tempEmail } = useAuthStore();
   const {
     control,
     handleSubmit,
@@ -18,7 +18,7 @@ export const useSignIn = () => {
   } = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: user?.email || "",
+      email: tempEmail || "",
       password: "",
     },
   });
@@ -40,7 +40,7 @@ export const useSignIn = () => {
         // redirect to the verification page
         if (error.response?.data.error === "Email Not Verified") {
           resendCode(variables.email);
-          router.replace("/auth/verify-email");
+          router.replace("/verify-email");
           Toast.show({
             type: "info",
             text1: "Email not verified",

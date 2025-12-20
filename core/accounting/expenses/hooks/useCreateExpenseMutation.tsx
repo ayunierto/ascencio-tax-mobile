@@ -6,19 +6,11 @@ import { createUpdateExpense } from '../actions';
 
 export const useCreateExpenseMutation = () => {
   const queryClient = useQueryClient();
-  const { clearImages } = useCameraStore();
+  const { removeImage } = useCameraStore();
 
   return useMutation({
     mutationFn: createUpdateExpense,
     onSuccess: async (data) => {
-      if ('error' in data) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: data.message,
-        });
-        return;
-      }
       await queryClient.invalidateQueries({
         queryKey: ['expenses', 'infinite'],
       });
@@ -36,14 +28,14 @@ export const useCreateExpenseMutation = () => {
         text1: `Receipt ${data.merchant} saved.`,
         text2: 'Receipt was saved correctly',
       });
-      clearImages();
-      router.replace('/accounting/receipts/expense');
+      removeImage();
+      router.replace('/(app)/(tabs)/expenses');
     },
     onError() {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Error saving receipt',
+        text2: 'Error saving receipt. Please try again later.',
       });
     },
   });

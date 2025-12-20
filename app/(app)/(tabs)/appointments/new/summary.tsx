@@ -1,24 +1,24 @@
-import { BookingProgressStepper } from "@/components/booking/BookingProgressStepper";
-import { BookingSuccessModal } from "@/components/booking/BookingSuccessModal";
-import { Card } from "@/components/ui";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/themed-text";
-import { bookAppointment } from "@/core/appointments/actions";
-import { Appointment } from "@/core/appointments/interfaces";
-import { AppointmentRequest } from "@/core/appointments/interfaces/appointment-request.interface";
-import { EmptyContent } from "@/core/components";
-import { ServerException } from "@/core/interfaces/server-exception.response";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { router } from "expo-router";
-import { DateTime } from "luxon";
-import React, { useState } from "react";
-import { ScrollView, TouchableOpacity, View, StyleSheet } from "react-native";
-import Toast from "react-native-toast-message";
+import { BookingProgressStepper } from '@/components/booking/BookingProgressStepper';
+import { BookingSuccessModal } from '@/components/booking/BookingSuccessModal';
+import { Card } from '@/components/ui';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/themed-text';
+import { bookAppointment } from '@/core/appointments/actions';
+import { Appointment } from '@/core/appointments/interfaces';
+import { AppointmentRequest } from '@/core/appointments/interfaces/appointment-request.interface';
+import { EmptyContent } from '@/core/components';
+import { ServerException } from '@/core/interfaces/server-exception.response';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { router } from 'expo-router';
+import { DateTime } from 'luxon';
+import React, { useState } from 'react';
+import { ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function BookingSummaryScreen() {
   const { service, staffMember, start, end, timeZone, comments, resetBooking } =
@@ -35,13 +35,13 @@ export default function BookingSummaryScreen() {
   >({
     mutationFn: bookAppointment,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["pendingAppts"] });
+      await queryClient.invalidateQueries({ queryKey: ['pendingAppts'] });
     },
     onError: async () => {
       Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Something went wrong. Please try again later.",
+        type: 'error',
+        text1: 'Error',
+        text2: 'Something went wrong. Please try again later.',
       });
     },
   });
@@ -63,7 +63,7 @@ export default function BookingSummaryScreen() {
         start,
         end,
         timeZone,
-        comments: comments || "",
+        comments: comments || '',
       },
       {
         onSuccess(appointment) {
@@ -72,20 +72,20 @@ export default function BookingSummaryScreen() {
         },
         onError(error) {
           Toast.show({
-            type: "error",
-            text1: "Error",
+            type: 'error',
+            text1: 'Error',
             text2: error.response?.data.message || error.message,
           });
         },
-      }
+      },
     );
   };
 
   const handleEdit = (section: string) => {
-    if (section === "service" || section === "staff" || section === "time") {
-      router.push("/(app)/(tabs)/appointments/new/availability");
-    } else if (section === "details") {
-      router.push("/(app)/(tabs)/appointments/new/details");
+    if (section === 'service' || section === 'staff' || section === 'time') {
+      router.push('/(app)/(tabs)/appointments/new/availability');
+    } else if (section === 'details') {
+      router.push('/(app)/(tabs)/appointments/new/details');
     }
   };
 
@@ -96,13 +96,15 @@ export default function BookingSummaryScreen() {
   const handleModalClose = () => {
     setShowSuccessModal(false);
     resetBooking();
-    router.push("/(app)/(tabs)/appointments");
+    router.push('/(app)/(tabs)/appointments');
   };
 
-  const duration = DateTime.fromISO(end).diff(
-    DateTime.fromISO(start),
-    "minutes"
-  ).minutes;
+  const startDateTime = DateTime.fromISO(start, { zone: 'utc' }).setZone(
+    timeZone,
+  );
+  const endDateTime = DateTime.fromISO(end, { zone: 'utc' }).setZone(timeZone);
+
+  const duration = endDateTime.diff(startDateTime, 'minutes').minutes;
 
   return (
     <>
@@ -151,7 +153,7 @@ export default function BookingSummaryScreen() {
                     </ThemedText>
                   </View>
                 </View>
-                <TouchableOpacity onPress={() => handleEdit("service")}>
+                <TouchableOpacity onPress={() => handleEdit('service')}>
                   <Ionicons
                     name="pencil-outline"
                     size={20}
@@ -181,7 +183,7 @@ export default function BookingSummaryScreen() {
                     {staffMember.firstName} {staffMember.lastName}
                   </ThemedText>
                 </View>
-                <TouchableOpacity onPress={() => handleEdit("staff")}>
+                <TouchableOpacity onPress={() => handleEdit('staff')}>
                   <Ionicons
                     name="pencil-outline"
                     size={20}
@@ -208,17 +210,17 @@ export default function BookingSummaryScreen() {
                     </ThemedText>
                   </View>
                   <ThemedText style={styles.cardTitle}>
-                    {DateTime.fromISO(start).toFormat("MMMM dd, yyyy")}
+                    {startDateTime.toFormat('MMMM dd, yyyy')}
                   </ThemedText>
                   <ThemedText style={styles.cardDescription}>
-                    {DateTime.fromISO(start).toFormat("h:mm a")} -{" "}
-                    {DateTime.fromISO(end).toFormat("h:mm a")}
+                    {startDateTime.toFormat('h:mm a')} -{' '}
+                    {endDateTime.toFormat('h:mm a')}
                   </ThemedText>
                   <ThemedText style={styles.detailText}>
                     Time zone: {timeZone}
                   </ThemedText>
                 </View>
-                <TouchableOpacity onPress={() => handleEdit("time")}>
+                <TouchableOpacity onPress={() => handleEdit('time')}>
                   <Ionicons
                     name="pencil-outline"
                     size={20}
@@ -247,7 +249,7 @@ export default function BookingSummaryScreen() {
                       {comments}
                     </ThemedText>
                   </View>
-                  <TouchableOpacity onPress={() => handleEdit("details")}>
+                  <TouchableOpacity onPress={() => handleEdit('details')}>
                     <Ionicons
                       name="pencil-outline"
                       size={20}
@@ -315,7 +317,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 14,
@@ -326,27 +328,27 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   cardInfo: {
     flex: 1,
     gap: 8,
   },
   cardLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   cardLabel: {
     fontSize: 12,
     color: theme.mutedForeground,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   cardDescription: {
     fontSize: 13,
@@ -354,8 +356,8 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     marginTop: 4,
   },
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     color: theme.mutedForeground,
   },
   actions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 20,
   },

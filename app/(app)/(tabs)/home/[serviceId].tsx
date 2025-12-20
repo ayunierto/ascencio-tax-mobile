@@ -1,44 +1,44 @@
-import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
-import { View, StyleSheet, ScrollView, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { ThemedText } from "@/components/themed-text";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { Card } from "@/components/ui";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { useServices } from "@/core/services/hooks/useServices";
-import { EmptyContent } from "@/core/components";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import Toast from "react-native-toast-message";
-import { StaffMember } from "@ascencio-tax/shared";
-import Loader from "@/components/Loader";
+import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ThemedText } from '@/components/themed-text';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Card } from '@/components/ui';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { useServices } from '@/core/services/hooks/useServices';
+import { EmptyContent } from '@/core/components';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import Toast from 'react-native-toast-message';
+import { StaffMember } from '@ascencio/shared/interfaces';
+import Loader from '@/components/Loader';
 
 export default function ServiceDetailScreen() {
   const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
-  const { data: servicesData, isPending } = useServices();
+  const { data: servicesResponse, isPending } = useServices();
   const { updateState } = useBookingStore();
   const { authStatus } = useAuthStore();
 
-  const service = servicesData?.services.find((s) => s.id === serviceId);
+  const service = servicesResponse?.items.find((s) => s.id === serviceId);
 
   const handleBookNow = () => {
     if (!service) return;
 
     updateState({ service });
 
-    if (authStatus !== "authenticated") {
-      router.push("/login");
+    if (authStatus !== 'authenticated') {
+      router.push('/login');
       Toast.show({
-        type: "info",
-        text1: "Please, sign in",
-        text2: "You must be authenticated to book a service.",
+        type: 'info',
+        text1: 'Please, sign in',
+        text2: 'You must be authenticated to book a service.',
       });
       return;
     }
 
-    router.push("/(app)/(tabs)/appointments/new/availability");
+    router.push('/(app)/(tabs)/appointments/new/availability');
   };
 
   if (isPending) {
@@ -132,7 +132,7 @@ export default function ServiceDetailScreen() {
                           ]}
                         />
                         <ThemedText style={styles.staffStatusText}>
-                          {staffMember.isActive ? "Available" : "Unavailable"}
+                          {staffMember.isActive ? 'Available' : 'Unavailable'}
                         </ThemedText>
                       </View>
                     </View>
@@ -187,8 +187,8 @@ export default function ServiceDetailScreen() {
                   </ThemedText>
                   <ThemedText style={styles.availabilityStatus}>
                     {service.isAvailableOnline
-                      ? "Available remotely"
-                      : "Not available online"}
+                      ? 'Available remotely'
+                      : 'Not available online'}
                   </ThemedText>
                 </View>
               </View>
@@ -226,8 +226,8 @@ export default function ServiceDetailScreen() {
                   </ThemedText>
                   <ThemedText style={styles.availabilityStatus}>
                     {!service.isAvailableOnline
-                      ? "Visit our office"
-                      : "Also available in-person"}
+                      ? 'Visit our office'
+                      : 'Also available in-person'}
                   </ThemedText>
                 </View>
               </View>
@@ -245,7 +245,7 @@ export default function ServiceDetailScreen() {
         >
           <ButtonIcon name="calendar-outline" />
           <ButtonText size="lg">
-            {service.isActive ? "Book Now" : "Currently Unavailable"}
+            {service.isActive ? 'Book Now' : 'Currently Unavailable'}
           </ButtonText>
         </Button>
       </View>
@@ -263,25 +263,25 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageContainer: {
-    position: "relative",
-    width: "100%",
+    position: 'relative',
+    width: '100%',
     height: 250,
     backgroundColor: theme.muted,
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   inactiveBadge: {
-    position: "absolute",
+    position: 'absolute',
     top: 16,
     right: 16,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     backgroundColor: theme.destructive,
     paddingHorizontal: 12,
@@ -289,9 +289,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   inactiveBadgeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   header: {
     padding: 16,
@@ -299,13 +299,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   categoryBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     paddingHorizontal: 12,
     paddingVertical: 6,
     backgroundColor: `${theme.primary}15`,
@@ -313,11 +313,11 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.primary,
   },
   quickInfo: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -326,8 +326,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoCardContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     padding: 12,
   },
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   section: {
     marginHorizontal: 16,
@@ -351,14 +351,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   description: {
     fontSize: 14,
@@ -369,8 +369,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   staffItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   staffAvatar: {
@@ -378,20 +378,20 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     backgroundColor: `${theme.primary}15`,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   staffInfo: {
     flex: 1,
   },
   staffName: {
     fontSize: 15,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 4,
   },
   staffStatus: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   statusDot: {
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.mutedForeground,
   },
   statusDotActive: {
-    backgroundColor: "#22c55e",
+    backgroundColor: '#22c55e',
   },
   staffStatusText: {
     fontSize: 12,
@@ -411,14 +411,14 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   availabilityItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     padding: 12,
     backgroundColor: `${theme.mutedForeground}30`,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: 'transparent',
   },
   availabilityItemActive: {
     backgroundColor: `${theme.primary}40`,
@@ -431,14 +431,14 @@ const styles = StyleSheet.create({
     backgroundColor: theme.mutedForeground,
   },
   availabilityDotActive: {
-    backgroundColor: "#22c55e",
+    backgroundColor: '#22c55e',
   },
   availabilityText: {
     flex: 1,
   },
   availabilityLabel: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.mutedForeground,
     marginBottom: 2,
   },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     color: theme.mutedForeground,
   },
   bottomBar: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
@@ -460,6 +460,6 @@ const styles = StyleSheet.create({
     borderTopColor: theme.border,
   },
   bookButton: {
-    width: "100%",
+    width: '100%',
   },
 });

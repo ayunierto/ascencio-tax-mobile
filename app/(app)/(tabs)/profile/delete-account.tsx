@@ -35,28 +35,31 @@ const DeleteAccountModal = () => {
   const { mutate: deleteAccount, isPending } = useDeleteAccountMutation();
 
   const handleAccountDeletion = async ({ password }: DeleteAccountRequest) => {
-    deleteAccount({ password }, {
-      onSuccess: () => {
-            Toast.show({
-              text1: 'Account deleted successfully',
-              text2: 'We hope to see you again soon.',
-            });
-            router.replace('/auth/sign-in');
-          },
-          onError: (error) => {
-            Toast.show({
-              type: 'error',
-              text1: 'Account Deletion Failed',
-              text2:
-                error.message ||
-                'An error occurred while deleting the account. Please try again later.',
-            });
-          },
-    });
+    deleteAccount(
+      { password },
+      {
+        onSuccess: () => {
+          Toast.show({
+            text1: 'Account deleted successfully',
+            text2: 'We hope to see you again soon.',
+          });
+          router.replace('/(auth)/login');
+        },
+        onError: (error) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Account Deletion Failed',
+            text2:
+              error.message ||
+              'An error occurred while deleting the account. Please try again later.',
+          });
+        },
+      },
+    );
   };
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
@@ -66,16 +69,22 @@ const DeleteAccountModal = () => {
           <Ionicons name="warning" size={48} color={theme.destructive} />
         </View>
         <ThemedText style={styles.title}>Delete Account</ThemedText>
-        <ThemedText style={styles.subtitle}>This action cannot be undone</ThemedText>
+        <ThemedText style={styles.subtitle}>
+          This action cannot be undone
+        </ThemedText>
       </View>
 
       <Card>
         <CardContent style={styles.cardContent}>
           <View style={styles.warningBanner}>
-            <Ionicons name="alert-circle-outline" size={20} color={theme.destructive} />
+            <Ionicons
+              name="alert-circle-outline"
+              size={20}
+              color={theme.destructive}
+            />
             <ThemedText style={styles.warningText}>
-              Deleting your account will permanently erase all your data and access to
-              associated services.
+              Deleting your account will permanently erase all your data and
+              access to associated services.
             </ThemedText>
           </View>
 
@@ -113,8 +122,7 @@ const DeleteAccountModal = () => {
           >
             <ButtonIcon name="trash-outline" />
             <ButtonText>
-
-            {isPending ? 'Deleting Account...' : 'Delete My Account'}
+              {isPending ? 'Deleting Account...' : 'Delete My Account'}
             </ButtonText>
           </Button>
         </CardContent>
