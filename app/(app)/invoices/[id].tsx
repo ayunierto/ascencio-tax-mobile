@@ -1,8 +1,8 @@
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { theme } from "@/components/ui/theme";
-import { EmptyContent } from "@/core/components";
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { theme } from '@/components/ui/theme';
+import { EmptyContent } from '@/core/components';
 
 export default function InvoiceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

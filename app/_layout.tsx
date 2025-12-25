@@ -49,7 +49,6 @@ export default function RootLayout() {
           <StatusBar style="light" />
 
           <Toast />
-          <StatusBar style="auto" />
         </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

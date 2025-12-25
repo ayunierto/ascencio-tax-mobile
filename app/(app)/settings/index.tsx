@@ -59,23 +59,14 @@ export default function ProfileIndexScreen() {
           <Card>
             <CardContent style={styles.cardContent}>
               <ListItem
-                icon="person-outline"
-                label="My account"
-                onPress={() => router.push('/(app)/(tabs)/profile/account')}
-              />
-              <View style={styles.divider} />
-              <ListItem
                 icon="diamond-outline"
                 label="Subscriptions"
-                onPress={() =>
-                  router.push('/(app)/(tabs)/profile/subscriptions')
-                }
+                onPress={() => router.push('/(app)/settings/subscriptions')}
               />
             </CardContent>
           </Card>
         </View>
 
-        {/* Legal Section */}
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Legal</ThemedText>
           <Card>
@@ -121,7 +112,6 @@ export default function ProfileIndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
   },
   scrollView: {
     flex: 1,
@@ -179,6 +169,7 @@ const styles = StyleSheet.create({
   appInfo: {
     alignItems: 'center',
     paddingVertical: 20,
+    marginTop: 'auto',
   },
   appInfoText: {
     fontSize: 12,

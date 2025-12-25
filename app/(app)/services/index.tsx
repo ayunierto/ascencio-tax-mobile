@@ -11,12 +11,10 @@ import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { EmptyContent } from '@/core/components';
 import { useServices } from '@/core/services/hooks/useServices';
-import { useBookingStore } from '@/core/services/store/useBookingStore';
 import { Service } from '@ascencio/shared/interfaces';
 
 const ServicesScreen = () => {
   const { authStatus, user } = useAuthStore();
-  const { updateState } = useBookingStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const {
@@ -29,7 +27,10 @@ const ServicesScreen = () => {
   } = useServices();
 
   const selectService = (service: Service): void => {
-    router.push(`/(app)/(tabs)/home/${service.id}`);
+    router.push({
+      pathname: `/services/[id]`,
+      params: { id: service.name },
+    });
   };
 
   // Filter services based on search query

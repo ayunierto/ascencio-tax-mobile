@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
-import { theme } from "@/components/ui/theme";
+import { Stack } from 'expo-router';
+import { theme } from '@/components/ui/theme';
 
 export default function InvoicesLayout() {
   return (
@@ -7,7 +7,7 @@ export default function InvoicesLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
-        headerTitleAlign: "center",
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen
@@ -19,13 +19,20 @@ export default function InvoicesLayout() {
       <Stack.Screen
         name="new"
         options={{
-          title: "New Invoice",
+          title: 'New Invoice',
         }}
       />
       <Stack.Screen
         name="[id]"
         options={{
-          title: "Invoice Details",
+          title: 'Invoice Details',
+        }}
+      />
+
+      <Stack.Screen
+        name="companies"
+        options={{
+          title: 'Companies',
         }}
       />
     </Stack>

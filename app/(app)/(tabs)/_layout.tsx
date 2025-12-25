@@ -1,19 +1,19 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
-import React from "react";
+import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { Tabs } from 'expo-router';
+import React from 'react';
 
-import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { useCheckAppVersion } from "@/core/hooks/useCheckAppVersion";
+import Loader from '@/components/Loader';
+import { theme } from '@/components/ui/theme';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { useCheckAppVersion } from '@/core/hooks/useCheckAppVersion';
 
 export default function TabLayout() {
-  const { checkAuthStatus, authStatus } = useAuthStore();
+  const { checkAuthStatus } = useAuthStore();
   const { checking } = useCheckAppVersion();
 
   const { isLoading } = useQuery({
-    queryKey: ["auth"],
+    queryKey: ['auth'],
     queryFn: checkAuthStatus,
     retry: false,
     refetchInterval: 1000 * 60 * 5, // 5 minutes
@@ -34,19 +34,19 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.background,
           paddingTop: 4,
-          height: 65,
+          height: 70,
         },
-        animation: "fade",
+        animation: 'shift',
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "Services",
+          title: 'Services',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? "home" : "home-outline"}
+              name={focused ? 'home' : 'home-outline'}
               color={color}
             />
           ),
@@ -56,11 +56,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="appointments"
         options={{
-          title: "Appointments",
+          title: 'Appointments',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? "calendar" : "calendar-outline"}
+              name={focused ? 'calendar' : 'calendar-outline'}
               color={color}
             />
           ),
@@ -70,11 +70,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="expenses"
         options={{
-          title: "Expenses",
+          title: 'Expenses',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? "receipt" : "receipt-outline"}
+              name={focused ? 'receipt' : 'receipt-outline'}
               color={color}
             />
           ),
@@ -84,11 +84,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="invoices"
         options={{
-          title: "Invoices",
+          title: 'Invoices',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? "document-text" : "document-text-outline"}
+              name={focused ? 'document-text' : 'document-text-outline'}
               color={color}
             />
           ),
@@ -98,11 +98,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: 'More',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? "person" : "person-outline"}
+              name={focused ? 'ellipsis-vertical' : 'ellipsis-vertical-outline'}
               color={color}
             />
           ),

@@ -38,7 +38,7 @@ export default function ServiceDetailScreen() {
       return;
     }
 
-    router.push('/(app)/(tabs)/appointments/new/availability');
+    router.push('/appointments/new/availability');
   };
 
   if (isPending) {

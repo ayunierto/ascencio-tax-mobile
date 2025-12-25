@@ -1,7 +1,7 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { theme } from "@/components/ui/theme";
-import { EmptyContent } from "@/core/components";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { theme } from '@/components/ui/theme';
+import { EmptyContent } from '@/core/components';
 
 export default function NewInvoiceScreen() {
   return (
