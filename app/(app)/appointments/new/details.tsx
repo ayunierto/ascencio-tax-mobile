@@ -1,7 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,21 +9,21 @@ import {
   TextInput,
   View,
   StyleSheet,
-} from "react-native";
-import { z } from "zod";
+} from 'react-native';
+import { z } from 'zod';
 
-import { BookingProgressStepper } from "@/components/booking/BookingProgressStepper";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/themed-text";
-import { EmptyContent } from "@/core/components";
-import { useBookingStore } from "@/core/services/store/useBookingStore";
-import Toast from "react-native-toast-message";
+import { BookingProgressStepper } from '@/components/booking/BookingProgressStepper';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/themed-text';
+import { EmptyContent } from '@/core/components';
+import { useBookingStore } from '@/core/services/store/useBookingStore';
+import Toast from 'react-native-toast-message';
 
 const detailsSchema = z.object({
   comments: z
     .string()
-    .max(500, "Comments must be less than 500 characters")
+    .max(500, 'Comments must be less than 500 characters')
     .optional(),
 });
 
@@ -36,11 +36,11 @@ export default function BookingDetailsScreen() {
   const { control, handleSubmit, watch } = useForm<DetailsFormData>({
     resolver: zodResolver(detailsSchema),
     defaultValues: {
-      comments: comments || "",
+      comments: comments || '',
     },
   });
 
-  const commentValue = watch("comments");
+  const commentValue = watch('comments');
 
   if (!service || !staffMember || !start || !end) {
     return (
@@ -55,11 +55,11 @@ export default function BookingDetailsScreen() {
   const onSubmit = (data: DetailsFormData) => {
     updateState({ comments: data.comments });
     Toast.show({
-      type: "success",
-      text1: "Details saved",
-      text2: "Please review your appointment",
+      type: 'success',
+      text1: 'Details saved',
+      text2: 'Please review your appointment',
     });
-    router.push("/(app)/(tabs)/appointments/new/summary");
+    router.push('/(app)/appointments/new/summary');
   };
 
   const handleBack = () => {
@@ -68,7 +68,7 @@ export default function BookingDetailsScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <ScrollView>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 14,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   textArea: {
     borderWidth: 1,
@@ -168,15 +168,15 @@ const styles = StyleSheet.create({
     color: theme.foreground,
     backgroundColor: theme.card,
     minHeight: 120,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   charCount: {
     fontSize: 12,
     color: theme.mutedForeground,
-    textAlign: "right",
+    textAlign: 'right',
   },
   actions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 20,
   },

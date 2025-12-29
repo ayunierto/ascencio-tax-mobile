@@ -3,16 +3,18 @@ import { View, Image, StyleSheet } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import { theme } from '@/components/ui/theme';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { useTranslation } from 'react-i18next';
 
 export function HeroSection() {
   const { authStatus } = useAuthStore();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.heroSection}>
       <View style={styles.signInButtonContainer}>
         {authStatus !== 'authenticated' && (
           <Button onPress={() => router.push('/login')} variant="outline">
-            <ButtonText>Sign In</ButtonText>
+            <ButtonText>{t('signIn')}</ButtonText>
             <ButtonIcon name="log-in-outline" />
           </Button>
         )}
@@ -28,12 +30,12 @@ export function HeroSection() {
       <View style={styles.ctaContainer}>
         {authStatus === 'authenticated' ? (
           <Button onPress={() => router.push('/(app)/(dashboard)')}>
-            <ButtonText>Go to Dashboard</ButtonText>
+            <ButtonText>{t('goToDashboard')}</ButtonText>
             <ButtonIcon name="arrow-forward-outline" />
           </Button>
         ) : (
           <Button onPress={() => router.push('/register')}>
-            <ButtonText size="lg">Start Free Trial</ButtonText>
+            <ButtonText size="lg">{t('startFreeTrial')}</ButtonText>
             <ButtonIcon name="arrow-forward-outline" />
           </Button>
         )}

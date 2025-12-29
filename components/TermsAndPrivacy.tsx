@@ -2,25 +2,28 @@ import React from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import { ThemedText } from './ui/ThemedText';
 import { theme } from './ui/theme';
+import { useTranslation } from 'react-i18next';
 
 const TermsAndPrivacy = () => {
+  const { t } = useTranslation();
+
   return (
     <ThemedText>
-      By clicking you accept the{' '}
+      {t('bySigningUpYouAgreeToOur')}{' '}
       <ThemedText
         style={styles.link}
         onPress={() =>
           Linking.openURL('https://www.ascenciotax.com/termsofuse')
         }
       >
-        Terms of service
+        {t('termsOfService')}
       </ThemedText>{' '}
-      and{' '}
+      {t('and')}{' '}
       <ThemedText
         style={styles.link}
         onPress={() => Linking.openURL('https://www.ascenciotax.com/privacy')}
       >
-        Privacy Policy
+        {t('privacyPolicy')}
       </ThemedText>
     </ThemedText>
   );

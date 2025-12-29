@@ -2,12 +2,14 @@ import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { theme } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function AppLayout() {
   const { user, authStatus } = useAuthStore();
+  const {t} = useTranslation();
 
   // Show loading while checking auth
   if (authStatus === 'loading') {
@@ -35,8 +37,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="(dashboard)/index"
         options={{
-          drawerLabel: 'Dashboard',
-          title: 'Dashboard',
+          drawerLabel: t('dashboard'),
+          title: t('dashboard'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'grid' : 'grid-outline'}
@@ -44,14 +46,15 @@ export default function AppLayout() {
               color={color}
             />
           ),
+          
         }}
       />
 
       <Drawer.Screen
         name="companies"
         options={{
-          drawerLabel: 'Companies',
-          title: 'Companies',
+          drawerLabel: t('companies'),
+          title: t('companies'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'business' : 'business-outline'}
@@ -65,8 +68,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="expenses"
         options={{
-          drawerLabel: 'Expenses',
-          title: 'Expenses',
+          drawerLabel: t('expenses'),
+          title: t('expenses'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'cash' : 'cash-outline'}
@@ -80,8 +83,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="invoices"
         options={{
-          drawerLabel: 'Invoices',
-          title: 'Invoices',
+          drawerLabel: t('invoices'),
+          title: t('invoices'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'document' : 'document-outline'}
@@ -95,8 +98,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="appointments"
         options={{
-          drawerLabel: 'Appointments',
-          title: 'Appointments',
+          drawerLabel: t('appointments'),
+          title: t('appointments'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
@@ -110,8 +113,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="services"
         options={{
-          drawerLabel: 'Services',
-          title: 'Services',
+          drawerLabel: t('services'),
+          title: t('services'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'briefcase' : 'briefcase-outline'}
@@ -125,8 +128,8 @@ export default function AppLayout() {
       <Drawer.Screen
         name="settings"
         options={{
-          drawerLabel: 'Settings',
-          title: 'Settings',
+          drawerLabel: t('settings'),
+          title: t('settings'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'settings' : 'settings-outline'}

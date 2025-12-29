@@ -7,6 +7,9 @@ import Toast from 'react-native-toast-message';
 import { CustomTheme } from '@/theme/CustomTheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Toaster } from 'sonner-native';
+
+import '../i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +52,7 @@ export default function RootLayout() {
           <StatusBar style="light" />
 
           <Toast />
+          <Toaster />
         </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

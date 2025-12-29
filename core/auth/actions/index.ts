@@ -1,6 +1,7 @@
 export * from './check-auth.action';
 export * from './delete-account.action';
 export * from './forgot-password.action';
+export * from './resend-code.action';
 export * from './reset-password.action';
 export * from './sign-in.action';
 export * from './sign-up.action';

@@ -19,11 +19,11 @@ export default function LandingPage() {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  useEffect(() => {
-    if (authStatus === 'authenticated') {
-      // router.replace('/(app)/(tabs)/home');
-    }
-  }, [authStatus]);
+  // useEffect(() => {
+  //   if (authStatus === 'authenticated') {
+  //     router.replace('/(app)/(tabs)/home');
+  //   }
+  // }, [authStatus]);
 
   return (
     <View

@@ -1,31 +1,33 @@
-import { View, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/themed-text";
-import FeatureCard from "@/components/features/home/FeatureCard";
-
-const FEATURES = [
-  {
-    icon: "calendar-outline" as const,
-    title: "Easy Appointments",
-    description: "Book and manage your appointments with ease",
-  },
-  {
-    icon: "receipt-outline" as const,
-    title: "Track Expenses",
-    description: "Keep track of all your business expenses",
-  },
-  {
-    icon: "document-text-outline" as const,
-    title: "Manage Invoices",
-    description: "Create and manage invoices on the go",
-  },
-  {
-    icon: "shield-checkmark-outline" as const,
-    title: "Secure & Private",
-    description: "Your data is encrypted and secure",
-  },
-];
+import { View, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/themed-text';
+import FeatureCard from '@/components/features/home/FeatureCard';
+import { useTranslation } from 'react-i18next';
 
 export function FeaturesSection() {
+  const { t } = useTranslation();
+  const FEATURES = [
+    {
+      icon: 'calendar-outline' as const,
+      title: t('easyAppointment'),
+      description: t('easyAppointmentDescription'),
+    },
+    {
+      icon: 'receipt-outline' as const,
+      title: t('trackExpenses'),
+      description: t('trackExpensesDescription'),
+    },
+    {
+      icon: 'document-text-outline' as const,
+      title: t('ManageInvoices'),
+      description: t('ManageInvoicesDescription'),
+    },
+    {
+      icon: 'shield-checkmark-outline' as const,
+      title: t('secureAndPrivate'),
+      description: t('secureAndPrivateDescription'),
+    },
+  ];
+
   return (
     <View style={styles.featuresSection}>
       <ThemedText style={styles.sectionTitle}>Why Choose Us?</ThemedText>
@@ -51,9 +53,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 32,
-    textAlign: "center",
+    textAlign: 'center',
   },
   featuresList: {
     gap: 16,

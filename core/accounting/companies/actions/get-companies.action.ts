@@ -1,7 +1,7 @@
 import { api } from '@/core/api/api';
-import { Company } from '@ascencio/shared/interfaces';
+import { Company, PaginatedResponse, } from '@ascencio/shared/interfaces';
 
-export const getCompaniesAction = async (): Promise<Company[]> => {
-  const { data } = await api.get<Company[]>('/companies');
+export const getCompaniesAction = async (): Promise<PaginatedResponse<Company>> => {
+  const { data } = await api.get<PaginatedResponse<Company>>('/companies');
   return data;
 };

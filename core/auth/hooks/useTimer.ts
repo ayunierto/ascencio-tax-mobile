@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * useTimer Hook
@@ -16,12 +16,12 @@ import { useEffect, useRef, useState } from 'react';
  */
 export const useTimer = (
   initialTime: number = 30, // Default initial time is 30 seconds
-  onTimerEnd: () => void = () => {}
+  onTimerEnd: () => void = () => {},
 ) => {
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(
-    undefined
+    undefined,
   );
 
   useEffect(() => {
@@ -46,21 +46,22 @@ export const useTimer = (
     };
   }, [isRunning, onTimerEnd]);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     setIsRunning(true);
-  };
+  }, []);
 
-  const pauseTimer = () => {
+  const pauseTimer = useCallback(() => {
     setIsRunning(false);
     if (timerRef.current) {
       clearInterval(timerRef.current);
+      timerRef.current = undefined;
     }
-  };
+  }, []);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     pauseTimer();
     setTimeRemaining(initialTime);
-  };
+  }, [initialTime, pauseTimer]);
 
   return { timeRemaining, isRunning, startTimer, pauseTimer, resetTimer };
 };

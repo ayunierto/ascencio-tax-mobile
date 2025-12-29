@@ -1,10 +1,11 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card/Card';
 import { CardContent } from '@/components/ui/Card/CardContent';
@@ -12,14 +13,9 @@ import { Input } from '@/components/ui/Input';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useDeleteAccountMutation } from '@/core/auth/hooks';
-import {
-  DeleteAccountRequest,
-  deleteAccountSchema,
-} from '@/core/auth/schemas/delete-account.schema';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import ErrorMessage from '@/core/components/ErrorMessage';
-import { router } from 'expo-router';
-import Toast from 'react-native-toast-message';
+import { DeleteAccountRequest, deleteAccountSchema } from '@ascencio/shared';
+import { toast } from 'sonner-native';
 
 const DeleteAccountModal = () => {
   const { user } = useAuthStore();
@@ -39,20 +35,14 @@ const DeleteAccountModal = () => {
       { password },
       {
         onSuccess: () => {
-          Toast.show({
-            text1: 'Account deleted successfully',
-            text2: 'We hope to see you again soon.',
-          });
+          toast.success('Your account has been successfully deleted.');
           router.replace('/(auth)/login');
         },
         onError: (error) => {
-          Toast.show({
-            type: 'error',
-            text1: 'Account Deletion Failed',
-            text2:
-              error.message ||
+          toast.error(
+            error.message ||
               'An error occurred while deleting the account. Please try again later.',
-          });
+          );
         },
       },
     );

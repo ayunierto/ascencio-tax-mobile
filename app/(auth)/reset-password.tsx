@@ -3,7 +3,6 @@ import { Redirect, router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput, View } from 'react-native';
-import Toast from 'react-native-toast-message';
 
 import { Button, ButtonText } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -15,12 +14,10 @@ import {
   useResetPasswordMutation,
   useTimer,
 } from '@/core/auth/hooks';
-import {
-  ResetPasswordRequest,
-  resetPasswordSchema,
-} from '@/core/auth/schemas/reset-password.schema';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { authStyles } from '@/core/auth/styles/authStyles';
+import { ResetPasswordRequest, resetPasswordSchema } from '@ascencio/shared';
+import { toast } from 'sonner-native';
 
 const VerifyCode = () => {
   const { tempEmail } = useAuthStore();
@@ -53,18 +50,14 @@ const VerifyCode = () => {
     (data: ResetPasswordRequest) => {
       verifyEmail(data, {
         onSuccess: (data) => {
-          Toast.show({
-            type: 'success',
-            text1: 'Password Reset Successfully',
-            text2: data.message,
+          toast.success('Password Reset Successfully', {
+            description: data.message,
           });
           router.replace('/login');
         },
         onError: (error) => {
-          Toast.show({
-            type: 'error',
-            text1: 'Password Reset Error',
-            text2: error.response?.data.message || error.message,
+          toast.error('Password Reset Error', {
+            description: error.response?.data.message || error.message,
           });
         },
       });
@@ -78,10 +71,8 @@ const VerifyCode = () => {
       onSuccess: () => {
         resetTimer();
         startTimer();
-        Toast.show({
-          type: 'success',
-          text1: 'Code resent',
-          text2: 'A new code has been sent to your email.',
+        toast.success('Code resent', {
+          description: 'A new code has been sent to your email.',
         });
       },
     });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import {
   View,
   FlatList,
@@ -6,8 +6,11 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -17,10 +20,14 @@ import {
   useDeleteCompany,
 } from '@/core/accounting/companies/hooks/useCompanies';
 import { Company } from '@ascencio/shared/interfaces';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { t } from 'i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const CompaniesList = () => {
+const CompaniesScreen = () => {
+  const navigation: any = useNavigation();
   const {
-    data: companies = [],
+    data: companies,
     isPending,
     isError,
     error,
@@ -28,6 +35,38 @@ const CompaniesList = () => {
     isRefetching,
   } = useCompanies();
   const { mutate: deleteCompany, isPending: isDeleting } = useDeleteCompany();
+
+  // Add an Add button to the parent drawer/header
+  useLayoutEffect(() => {
+    const parentNav = navigation.getParent ? navigation.getParent() : null;
+    const targetNav = parentNav ?? navigation;
+
+    const headerButton = () => (
+      <Button
+        variant="ghost"
+        onPress={() => router.push('/(app)/companies/new')}
+        style={{
+          marginRight: 12,
+          borderRadius: 8,
+          padding: 8,
+          opacity: isDeleting ? 0.6 : 1,
+        }}
+        disabled={isDeleting}
+      >
+        <Ionicons name="add-circle-outline" size={28} color="white" />
+      </Button>
+    );
+
+    targetNav.setOptions({ headerRight: headerButton });
+
+    return () => {
+      try {
+        targetNav.setOptions({ headerRight: undefined });
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, [navigation, isDeleting]);
 
   const handleDelete = (company: Company) => {
     Alert.alert('deleteTitle', 'deleteConfirm', [
@@ -54,7 +93,7 @@ const CompaniesList = () => {
         borderLeftWidth: 4,
         borderLeftColor: theme.primary,
       }}
-      onPress={() => router.push(`/(app)/(tabs)/invoices`)}
+      onPress={() => router.push(`/(app)/companies`)}
       disabled={isDeleting}
     >
       <View style={{ flex: 1 }}>
@@ -103,56 +142,71 @@ const CompaniesList = () => {
     );
   }
 
-  if (!companies || companies.length === 0) {
+  console.log(companies?.items);
+
+  if (!companies || companies.items.length === 0) {
     return (
       <EmptyContent
-        title="empty"
-        subtitle="emptySubtitle"
-        // onRetry={() => router.push('')}
+        title={t('noCompaniesTitle')}
+        subtitle={t('noCompaniesSubtitle')}
+        action={
+          <Button onPress={() => router.push('/(app)/companies/new')}>
+            <ButtonIcon name="add-circle-outline" />
+            <ButtonText>{t('createCompany')}</ButtonText>
+          </Button>
+        }
       />
     );
   }
 
+  const inset = useSafeAreaInsets();
+
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={companies}
-        renderItem={renderCompanyCard}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={() => refetch()}
-            tintColor={theme.primary}
-          />
-        }
-        ListHeaderComponent={
-          <View
-            style={{
-              paddingHorizontal: 16,
-              paddingTop: 16,
-              paddingBottom: 8,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <ThemedText>myCompanies</ThemedText>
-            <TouchableOpacity
-              // onPress={() => router.push('/companies')}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={inset.bottom}
+      style={{ flex: 1 }}
+    >
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={companies.items}
+          renderItem={renderCompanyCard}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => refetch()}
+              tintColor={theme.primary}
+            />
+          }
+          ListHeaderComponent={
+            <View
               style={{
-                backgroundColor: theme.primary,
-                borderRadius: 8,
-                padding: 8,
+                paddingHorizontal: 16,
+                paddingTop: 16,
+                paddingBottom: 8,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              <Ionicons name="add" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        }
-      />
-    </View>
+              <ThemedText>myCompanies</ThemedText>
+              <TouchableOpacity
+                // onPress={() => router.push('/companies')}
+                style={{
+                  backgroundColor: theme.primary,
+                  borderRadius: 8,
+                  padding: 8,
+                }}
+              >
+                <Ionicons name="add" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+          }
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
-export default CompaniesList;
+export default CompaniesScreen;

@@ -9,7 +9,11 @@ interface EmptyContentProps {
   icon?: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
+  /**
+   * @deprecated Use onRetry instead, user action for custom actions
+   */
   onRetry?: () => void;
+  action?: React.ReactNode;
 }
 
 export const EmptyContent = ({
@@ -17,6 +21,7 @@ export const EmptyContent = ({
   subtitle = '',
   icon,
   onRetry,
+  action,
 }: EmptyContentProps) => {
   return (
     <View
@@ -43,6 +48,10 @@ export const EmptyContent = ({
           <ButtonText>Try again</ButtonText>
         </Button>
       )}
+
+      {
+        action && (action)
+      }
     </View>
   );
 };

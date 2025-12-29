@@ -1,27 +1,32 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Redirect } from "expo-router";
-import React, { useCallback, useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { View } from 'react-native';
+import { Redirect, router } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button, ButtonText } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { AuthFormContainer } from "@/core/auth/components/AuthFormContainer";
-import { ErrorBox } from "@/core/auth/components/ErrorBox";
-import Header from "@/core/auth/components/Header";
-import { useResendEmailCodeMutation } from "@/core/auth/hooks/useResendEmailCodeMutation";
-import { useTimer } from "@/core/auth/hooks/useTimer";
-import { useVerifyEmailMutation } from "@/core/auth/hooks/useVerifyEmailMutation";
+import { Button, ButtonText } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { AuthFormContainer } from '@/core/auth/components/AuthFormContainer';
+import { ErrorBox } from '@/core/auth/components/ErrorBox';
+import Header from '@/core/auth/components/Header';
+import { useResendEmailCodeMutation } from '@/core/auth/hooks/useResendEmailCodeMutation';
+import { useTimer } from '@/core/auth/hooks/useTimer';
+import { useVerifyEmailMutation } from '@/core/auth/hooks/useVerifyEmailMutation';
+import { toast } from 'sonner-native';
+
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { authStyles } from '@/core/auth/styles/authStyles';
 import {
-  VerifyCodeRequest,
-  verifyCodeSchema,
-} from "@/core/auth/schemas/verify-email-code.schema";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { authStyles } from "@/core/auth/styles/authStyles";
+  VerifyEmailCodeRequest,
+  verifyEmailCodeSchema,
+} from '@ascencio/shared';
+import { getErrorMessage } from '@/utils/getErrorMessage';
+import { useTranslation } from 'react-i18next';
 
 const VerifyEmail = () => {
   const { tempEmail } = useAuthStore();
   const { timeRemaining, isRunning, startTimer, resetTimer } = useTimer(30);
+  const { t } = useTranslation();
 
   useEffect(() => {
     startTimer();
@@ -36,36 +41,49 @@ const VerifyEmail = () => {
     handleSubmit,
     formState: { errors },
     resetField,
-  } = useForm<VerifyCodeRequest>({
-    resolver: zodResolver(verifyCodeSchema),
+    setError,
+  } = useForm<VerifyEmailCodeRequest>({
+    resolver: zodResolver(verifyEmailCodeSchema),
     defaultValues: {
       email: tempEmail,
-      code: "",
+      code: '',
     },
   });
 
   const { mutateAsync: verifyEmail, isPending } = useVerifyEmailMutation();
 
   const handleEmailVerification = useCallback(
-    async (data: VerifyCodeRequest) => {
+    async (data: VerifyEmailCodeRequest) => {
       await verifyEmail(data, {
         onSuccess: () => {
           resetTimer();
+          router.replace('/(app)/(dashboard)');
+          toast.success(t('verifySuccess'));
         },
-        onError: () => {
+        onError: (error) => {
+          console.warn({ error });
+          toast.error(
+            t(error.response?.data.message || error.message || 'unknownError'),
+          );
+          setError('code', {
+            type: 'manual',
+            message: t(
+              error.response?.data.message || error.message || 'unknownError',
+            ),
+          });
           resetTimer();
           startTimer();
-          resetField("code");
+          resetField('code');
         },
       });
     },
-    [verifyEmail, resetTimer, startTimer, resetField]
+    [verifyEmail, resetTimer, startTimer, resetField],
   );
 
   const { mutate: resendEmailCode, isPending: isLoadingResend } =
     useResendEmailCodeMutation();
 
-  const handleResendVerificationCode = useCallback(() => {
+  const onResendVerificationCode = useCallback(() => {
     if (tempEmail) {
       if (isRunning) return;
       resendEmailCode(tempEmail);
@@ -75,28 +93,21 @@ const VerifyEmail = () => {
     }
   }, [tempEmail, isRunning, resendEmailCode, resetTimer, startTimer]);
 
-  const submitButtonText = useMemo(
-    () => (isPending ? "Verifying..." : "Verify"),
-    [isPending]
-  );
-
   const resendButtonText = useMemo(
-    () => (timeRemaining === 0 ? "Resend code" : `Resend in ${timeRemaining}s`),
-    [timeRemaining]
+    () =>
+      timeRemaining === 0
+        ? t('resendCode')
+        : t('resendIn', { seconds: timeRemaining }),
+    [timeRemaining],
   );
 
   if (!tempEmail) {
-    return <Redirect href={"/(app)/(tabs)/home"} />;
+    return <Redirect href={'/'} />;
   }
 
   return (
-    <AuthFormContainer maxWidth={320}>
-      <Header
-        title={"Verify email"}
-        subtitle={
-          "Please check your email for a message with your code. Your code is 6 numbers long."
-        }
-      />
+    <AuthFormContainer>
+      <Header title={t('otpScreenTitle')} subtitle={t('otpScreenSubtitle')} />
 
       <View style={authStyles.fieldsContainer}>
         <ErrorBox message={errors.root?.message || errors.email?.message} />
@@ -106,7 +117,7 @@ const VerifyEmail = () => {
           name="code"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Code"
+              label={t('verificationCode')}
               value={value}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -118,7 +129,7 @@ const VerifyEmail = () => {
               returnKeyType="done"
               onSubmitEditing={handleSubmit(handleEmailVerification)}
               error={!!errors.code}
-              errorMessage={errors.code?.message}
+              errorMessage={getErrorMessage(errors.code)}
             />
           )}
         />
@@ -130,12 +141,12 @@ const VerifyEmail = () => {
           onPress={handleSubmit(handleEmailVerification)}
           isLoading={isPending}
         >
-          <ButtonText>{submitButtonText}</ButtonText>
+          <ButtonText>{isPending ? t('verifying') : t('verify')}</ButtonText>
         </Button>
 
         <Button
           disabled={isLoadingResend || isRunning}
-          onPress={handleResendVerificationCode}
+          onPress={onResendVerificationCode}
           variant="outline"
         >
           <ButtonText>{resendButtonText}</ButtonText>

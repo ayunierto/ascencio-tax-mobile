@@ -10,21 +10,27 @@ import {
   signUpAction,
   verifyCodeAction,
 } from '../actions';
-import { AuthResponse } from '../interfaces/auth.response';
-import { DeleteAccountResponse } from '../interfaces/delete-account.response';
-import { ForgotPasswordResponse } from '../interfaces/forgot-password.response';
-import { ResetPasswordResponse } from '../interfaces/reset-password.response';
-import { SignUpResponse } from '../interfaces/sign-up.response';
-import { User } from '../interfaces/user.interface';
-import { VerifyCodeResponse } from '../interfaces/verify-code.response';
-import { DeleteAccountRequest } from '../schemas/delete-account.schema';
-import { ForgotPasswordRequest } from '../schemas/forgot-password.schema';
-import { ResetPasswordRequest } from '../schemas/reset-password.schema';
-import { SignInRequest } from '../schemas/sign-in.schema';
-import { SignUpApiRequest } from '../schemas/sign-up.schema';
-import { VerifyCodeRequest } from '../schemas/verify-email-code.schema';
+import {
+  DeleteAccountRequest,
+  DeleteAccountResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  SignInRequest,
+  SignInResponse,
+  SignUpRequest,
+  SignUpResponse,
+  User,
+  VerifyEmailCodeRequest,
+  VerifyEmailCodeResponse,
+} from '@ascencio/shared';
 
-type AuthStatus = 'authenticated' | 'unauthenticated' | 'loading' | 'network-error';
+type AuthStatus =
+  | 'authenticated'
+  | 'unauthenticated'
+  | 'loading'
+  | 'network-error';
 
 export interface AuthState {
   // Properties
@@ -37,14 +43,16 @@ export interface AuthState {
   isAdmin: () => boolean;
 
   // Methods
-  signUp: (data: SignUpApiRequest) => Promise<SignUpResponse>;
-  verifyCode: (data: VerifyCodeRequest) => Promise<VerifyCodeResponse>;
-  signIn: (credentials: SignInRequest) => Promise<AuthResponse>;
+  signUp: (data: SignUpRequest) => Promise<SignUpResponse>;
+  verifyCode: (
+    data: VerifyEmailCodeRequest,
+  ) => Promise<VerifyEmailCodeResponse>;
+  signIn: (credentials: SignInRequest) => Promise<SignInResponse>;
   checkAuthStatus: () => Promise<boolean>;
   deleteAccount: (data: DeleteAccountRequest) => Promise<DeleteAccountResponse>;
   logout: () => Promise<void>;
   forgotPassword: (
-    data: ForgotPasswordRequest
+    data: ForgotPasswordRequest,
   ) => Promise<ForgotPasswordResponse>;
   resetPassword: (data: ResetPasswordRequest) => Promise<ResetPasswordResponse>;
 }
@@ -88,15 +96,27 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     }
   },
 
-  signUp: async (data: SignUpApiRequest) => {
-    const response = await signUpAction(data);
+  signUp: async (data: SignUpRequest) => {
     set({ tempEmail: data.email });
-    return response;
+
+    return await signUpAction(data);
   },
 
-  verifyCode: async (data: VerifyCodeRequest) => {
-    const response = await verifyCodeAction(data);
-    return response;
+  verifyCode: async (data: VerifyEmailCodeRequest) => {
+    try {
+      const response = await verifyCodeAction(data);
+      await StorageAdapter.setItem('access_token', response.access_token);
+      set({
+        user: response.user,
+        access_token: response.access_token,
+        authStatus: 'authenticated',
+      });
+      return response;
+    } catch (error) {
+      await StorageAdapter.removeItem('access_token');
+      set({ user: null, access_token: null, authStatus: 'unauthenticated' });
+      throw error;
+    }
   },
 
   signIn: async (credentials: SignInRequest) => {

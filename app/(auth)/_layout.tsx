@@ -1,6 +1,6 @@
-import { theme } from "@/components/ui";
-import { Stack } from "expo-router";
-import React from "react";
+import React from 'react';
+import { Stack } from 'expo-router';
+import { theme } from '@/components/ui';
 
 export default function AuthLayout() {
   return (
@@ -18,28 +18,28 @@ export default function AuthLayout() {
         name="forgot-password"
         options={{
           headerShown: true,
-          title: "",
+          title: '',
         }}
       />
 
       <Stack.Screen
         name="login"
         options={{
-          title: "",
+          title: '',
         }}
       />
 
       <Stack.Screen
         name="register"
         options={{
-          title: "",
+          title: '',
         }}
       />
 
       <Stack.Screen
         name="verify-email"
         options={{
-          title: "",
+          title: '',
           headerShown: true,
           headerBackVisible: false,
         }}
@@ -48,7 +48,7 @@ export default function AuthLayout() {
       <Stack.Screen
         name="reset-password"
         options={{
-          title: "",
+          title: '',
           headerShown: true,
           headerBackVisible: false,
         }}

@@ -1,11 +1,12 @@
 import { api } from '@/core/api/api';
-import { DeleteAccountResponse } from '../interfaces/delete-account.response';
-import { DeleteAccountRequest } from '../schemas/delete-account.schema';
+import { DeleteAccountResponse, DeleteAccountRequest } from '@ascencio/shared';
 
-export const deleteAccountAction = async (request: DeleteAccountRequest): Promise<DeleteAccountResponse> => {
+export const deleteAccountAction = async (
+  request: DeleteAccountRequest,
+): Promise<DeleteAccountResponse> => {
   const { data } = await api.post<DeleteAccountResponse>(
     '/auth/delete-account',
-    request
+    request,
   );
 
   return data;

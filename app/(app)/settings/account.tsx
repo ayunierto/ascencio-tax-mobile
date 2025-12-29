@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
-import { Ionicons } from '@expo/vector-icons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,6 +6,11 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -29,15 +29,12 @@ import {
 } from '@/components/ui/Select';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
-import {
-  UpdateProfileRequest,
-  updateProfileSchema,
-} from '@/core/auth/schemas/update-profile.schema';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
 import useIPGeolocation from '@/core/hooks/useIPGeolocation';
 import { useUpdateProfileMutation } from '@/core/user/hooks/useUpdateProfileMutation';
 import Toast from 'react-native-toast-message';
+import { UpdateProfileRequest, updateProfileSchema } from '@ascencio/shared';
 
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
@@ -57,7 +54,6 @@ export default function AccountScreen() {
     defaultValues: {
       firstName: user?.firstName,
       lastName: user?.lastName,
-      email: user?.email,
       phoneNumber: user?.phoneNumber || '',
       countryCode: user?.countryCode || callingCode || '',
     },
@@ -212,52 +208,42 @@ export default function AccountScreen() {
                     </ThemedText>
                   </View>
 
-                  <Controller
-                    control={control}
-                    name="email"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <View>
-                        <Input
-                          label="Email"
-                          value={value}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          keyboardType="email-address"
-                          autoCapitalize="none"
-                          autoComplete="email"
-                          readOnly={true}
-                          error={!!errors.email}
-                          errorMessage={errors.email?.message || ''}
-                        />
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 6,
-                            marginTop: 6,
-                            backgroundColor: theme.muted + '30',
-                            padding: 8,
-                            borderRadius: theme.radius / 2,
-                          }}
-                        >
-                          <Ionicons
-                            name="information-circle-outline"
-                            size={16}
-                            color={theme.mutedForeground}
-                          />
-                          <ThemedText
-                            style={{
-                              fontSize: 12,
-                              color: theme.mutedForeground,
-                              flex: 1,
-                            }}
-                          >
-                            Email cannot be changed for security reasons
-                          </ThemedText>
-                        </View>
-                      </View>
-                    )}
-                  />
+                  <View>
+                    <Input
+                      value={user.email}
+                      label="Email"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      readOnly={true}
+                    />
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginTop: 6,
+                        backgroundColor: theme.muted + '30',
+                        padding: 8,
+                        borderRadius: theme.radius / 2,
+                      }}
+                    >
+                      <Ionicons
+                        name="information-circle-outline"
+                        size={16}
+                        color={theme.mutedForeground}
+                      />
+                      <ThemedText
+                        style={{
+                          fontSize: 12,
+                          color: theme.mutedForeground,
+                          flex: 1,
+                        }}
+                      >
+                        Email cannot be changed for security reasons
+                      </ThemedText>
+                    </View>
+                  </View>
 
                   <View style={{ flexDirection: 'row', gap: 10 }}>
                     <Controller
@@ -444,7 +430,7 @@ export default function AccountScreen() {
                   Deleting your account is permanent and cannot be undone
                 </ThemedText>
                 <Link
-                  href={'/(app)/(tabs)/profile/delete-account'}
+                  href={'/settings/delete-account'}
                   style={styles.deleteButton}
                 >
                   <Ionicons

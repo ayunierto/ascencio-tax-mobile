@@ -3,11 +3,11 @@ import { AxiosError } from 'axios';
 import Toast from 'react-native-toast-message';
 
 import { ServerException } from '@/core/interfaces/server-exception.response';
-import { Company } from '@ascencio/shared/interfaces';
+import { Company, PaginatedResponse } from '@ascencio/shared/interfaces';
 import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
-} from '@ascencio/shared/schemas/accounting';
+  CreateCompanyRequest,
+  UpdateCompanyRequest,
+} from '@ascencio/shared/schemas';
 import { getCompaniesAction } from '../actions/get-companies.action';
 import { getCompanyAction } from '../actions/get-company.action';
 import { createCompanyAction } from '../actions/create-company.action';
@@ -15,10 +15,14 @@ import { updateCompanyAction } from '../actions/update-company.action';
 import { deleteCompanyAction } from '../actions/delete-company.action';
 
 export const useCompanies = () => {
-  return useQuery<Company[], AxiosError<ServerException>, Company[]>({
+  return useQuery<
+    PaginatedResponse<Company>,
+    AxiosError<ServerException>,
+    PaginatedResponse<Company>,
+    string[]
+  >({
     queryKey: ['companies'],
     queryFn: getCompaniesAction,
-    refetchOnWindowFocus: false,
     retry: 1,
   });
 };
@@ -29,14 +33,19 @@ export const useCompany = (id: string) => {
     queryFn: () => getCompanyAction(id),
     refetchOnWindowFocus: false,
     retry: 1,
-    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    // enabled: !!id,
   });
 };
 
 export const useCreateCompany = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Company, AxiosError<ServerException>, CreateCompanyDto>({
+  return useMutation<
+    CreateCompanyRequest,
+    AxiosError<ServerException>,
+    CreateCompanyRequest
+  >({
     mutationFn: createCompanyAction,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['companies'] });
@@ -47,6 +56,7 @@ export const useCreateCompany = () => {
       });
     },
     onError: (error) => {
+      console.error(error);
       Toast.show({
         type: 'error',
         text1: 'createFailed',
@@ -59,7 +69,11 @@ export const useCreateCompany = () => {
 export const useUpdateCompany = (id: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<Company, AxiosError<ServerException>, UpdateCompanyDto>({
+  return useMutation<
+    Company,
+    AxiosError<ServerException>,
+    UpdateCompanyRequest
+  >({
     mutationFn: (input) => updateCompanyAction(id, input),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['companies'] });
@@ -93,6 +107,7 @@ export const useDeleteCompany = () => {
       });
     },
     onError: (error) => {
+      console.warn(error);
       Toast.show({
         type: 'error',
         text1: 'deleteFailed',

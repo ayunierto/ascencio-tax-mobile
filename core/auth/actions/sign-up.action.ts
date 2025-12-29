@@ -1,12 +1,12 @@
 import { api } from '@/core/api/api';
-import type { SignUpResponse } from '../interfaces/sign-up.response';
-import { SignUpApiRequest } from '../schemas/sign-up.schema';
+import { SignUpRequest, SignUpResponse } from '@ascencio/shared';
 
 export const signUpAction = async (
-  newUser: SignUpApiRequest
+  newUser: SignUpRequest,
 ): Promise<SignUpResponse> => {
   newUser.email = newUser.email.toLocaleLowerCase().trim();
-
+  console.warn({ newUser });
   const { data } = await api.post<SignUpResponse>('/auth/signup', newUser);
+
   return data;
 };

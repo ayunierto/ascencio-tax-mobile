@@ -1,22 +1,19 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
-import React, { useCallback, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
-import Toast from "react-native-toast-message";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
+import React, { useCallback, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import { Button, ButtonText } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { AuthFormContainer } from "@/core/auth/components/AuthFormContainer";
-import { ErrorBox } from "@/core/auth/components/ErrorBox";
-import Header from "@/core/auth/components/Header";
-import { useForgotPasswordMutation } from "@/core/auth/hooks/useForgotPasswordMutation";
-import {
-  ForgotPasswordRequest,
-  forgotPasswordSchema,
-} from "@/core/auth/schemas/forgot-password.schema";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { authStyles } from "@/core/auth/styles/authStyles";
+import { Button, ButtonText } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { AuthFormContainer } from '@/core/auth/components/AuthFormContainer';
+import { ErrorBox } from '@/core/auth/components/ErrorBox';
+import Header from '@/core/auth/components/Header';
+import { useForgotPasswordMutation } from '@/core/auth/hooks/useForgotPasswordMutation';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { authStyles } from '@/core/auth/styles/authStyles';
+import { ForgotPasswordRequest, forgotPasswordSchema } from '@ascencio/shared';
 
 const ForgotPassword = () => {
   const { tempEmail } = useAuthStore();
@@ -28,7 +25,7 @@ const ForgotPassword = () => {
   } = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: tempEmail || "",
+      email: tempEmail || '',
     },
   });
 
@@ -39,27 +36,27 @@ const ForgotPassword = () => {
       forgotPassword(values, {
         onSuccess: (data) => {
           Toast.show({
-            type: "success",
-            text1: "Email sent",
+            type: 'success',
+            text1: 'Email sent',
             text2: data.message,
           });
-          router.replace("/reset-password");
+          router.replace('/reset-password');
         },
         onError: (error) => {
           Toast.show({
-            type: "error",
-            text1: "Forgot Password Error",
+            type: 'error',
+            text1: 'Forgot Password Error',
             text2: error.response?.data.message || error.message,
           });
         },
       });
     },
-    [forgotPassword]
+    [forgotPassword],
   );
 
   const submitButtonText = useMemo(
-    () => (isPending ? "Sending..." : "Send"),
-    [isPending]
+    () => (isPending ? 'Sending...' : 'Send'),
+    [isPending],
   );
 
   return (
@@ -102,7 +99,7 @@ const ForgotPassword = () => {
           <ButtonText>{submitButtonText}</ButtonText>
         </Button>
 
-        <Button variant="outline" onPress={() => router.replace("/login")}>
+        <Button variant="outline" onPress={() => router.replace('/login')}>
           <ButtonText>Back</ButtonText>
         </Button>
       </View>
