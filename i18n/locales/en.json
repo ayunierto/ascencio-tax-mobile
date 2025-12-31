@@ -57,6 +57,7 @@
   "forgotPassword": "Forgot your password?",
   "dontHaveAccount": "Don't have an account?",
   "signIn": "Sign In",
+  "signingIn": "Signing in...",
   "signInWithApple": "Login with Apple",
   "signInWithGoogle": "Login with Google",
   "signInWithMeta": "Login with Meta",

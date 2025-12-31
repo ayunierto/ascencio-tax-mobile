@@ -5,7 +5,6 @@ export const signUpAction = async (
   newUser: SignUpRequest,
 ): Promise<SignUpResponse> => {
   newUser.email = newUser.email.toLocaleLowerCase().trim();
-  console.warn({ newUser });
   const { data } = await api.post<SignUpResponse>('/auth/signup', newUser);
 
   return data;

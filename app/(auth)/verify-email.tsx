@@ -61,7 +61,6 @@ const VerifyEmail = () => {
           toast.success(t('verifySuccess'));
         },
         onError: (error) => {
-          console.warn({ error });
           toast.error(
             t(error.response?.data.message || error.message || 'unknownError'),
           );
