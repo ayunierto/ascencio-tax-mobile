@@ -2,23 +2,19 @@ import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { theme } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loader from '@/components/Loader';
+import { useCheckAppVersion } from '@/core/hooks/useCheckAppVersion';
 
 export default function AppLayout() {
   const { user, authStatus } = useAuthStore();
-  const {t} = useTranslation();
+  const { checking } = useCheckAppVersion();
+  const { t } = useTranslation();
 
   // Show loading while checking auth
-  if (authStatus === 'loading') {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  if (authStatus === 'loading' || checking) return <Loader />;
 
   // Redirect to login if not authenticated
   if (authStatus !== 'authenticated' || !user) {
@@ -46,7 +42,6 @@ export default function AppLayout() {
               color={color}
             />
           ),
-          
         }}
       />
 
