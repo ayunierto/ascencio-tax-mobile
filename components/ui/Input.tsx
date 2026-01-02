@@ -15,16 +15,17 @@ import {
 } from 'react-native';
 import { theme } from './theme';
 
-interface InputProps extends TextInputProps {
+interface InputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
   leadingIcon?: keyof typeof Ionicons.glyphMap;
   trailingIcon?: keyof typeof Ionicons.glyphMap;
   error?: boolean;
   errorMessage?: string;
   helperText?: string;
-  rootStyle?: StyleProp<ViewStyle>; // Style for the outermost container
-  containerStyle?: StyleProp<ViewStyle>; // Style for the bordered container
-  inputStyle?: StyleProp<TextStyle>; // Style for the actual <TextInput>
+  style?: StyleProp<ViewStyle>;
+  rootStyle?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   labelStyle?: StyleProp<TextStyle>;
   errorTextStyle?: StyleProp<TextStyle>;
   focusedBorderColor?: string;
@@ -41,6 +42,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       error,
       errorMessage,
       helperText,
+      style,
       rootStyle,
       containerStyle,
       inputStyle,
@@ -49,7 +51,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       focusedBorderColor = theme.primary,
       onFocus,
       onBlur,
-      readOnly,
+      editable = true,
       ...props
     },
     forwardedRef,
@@ -57,10 +59,8 @@ export const Input = forwardRef<TextInput, InputProps>(
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const internalRef = useRef<TextInput>(null);
 
-    // Merge refs: use forwarded ref if provided, otherwise use internal ref
     const textInputRef = forwardedRef || internalRef;
 
-    // We use UseRef for the animated value so that it does not restart in each render.
     const animatedValue = useRef(new Animated.Value(0)).current;
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(
@@ -70,36 +70,30 @@ export const Input = forwardRef<TextInput, InputProps>(
     const hasValue = value && value.length > 0;
     const shouldFloat = isFocused || hasValue;
 
-    // --- Animation Logic ---
     useEffect(() => {
-      // We use UseRef for the animated value so that it does not restart in each render.
       Animated.timing(animatedValue, {
         toValue: shouldFloat ? 1 : 0,
-        duration: 200, // Duration of the animation
+        duration: 200,
         useNativeDriver: true,
       }).start();
     }, [shouldFloat, animatedValue]);
 
-    // --- Handlers ---
     const handleFocus = (
       event: NativeSyntheticEvent<TextInputFocusEventData>,
     ): void => {
       setIsFocused(true);
-      onFocus?.(event); // Call the original onFocus if it exists.
+      onFocus?.(event);
     };
 
     const handleBlur = (
       event: NativeSyntheticEvent<TextInputFocusEventData>,
     ): void => {
       setIsFocused(false);
-      onBlur?.(event); // Call the original onBlur if it exists.
+      onBlur?.(event);
     };
 
-    // --- Dynamic Styles using useMemo for performance ---
-
-    // We memorize the styles of the container to avoid recalculating them on each render.
     const computedContainerStyle = useMemo<StyleProp<ViewStyle>>(() => {
-      const borderColor = readOnly
+      const borderColor = !editable
         ? theme.mutedForeground
         : error
         ? theme.destructive
@@ -114,22 +108,19 @@ export const Input = forwardRef<TextInput, InputProps>(
         { borderColor, borderWidth },
         containerStyle,
       ];
-    }, [isFocused, error, readOnly, focusedBorderColor, containerStyle]);
+    }, [isFocused, error, editable, focusedBorderColor, containerStyle]);
 
     const animatedLabelStyles = useMemo(() => {
-      // The label moves up and becomes smaller.
       const translateY = animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, -26], // Moves the label 26px up.
+        outputRange: [0, -26],
       });
 
-      // The label scales to 85% of its original size.
       const scale = animatedValue.interpolate({
         inputRange: [0, 1],
         outputRange: [1, 0.85],
       });
 
-      // The label color changes based on focus and error state.
       const color = error
         ? theme.destructive
         : animatedValue.interpolate({
@@ -141,26 +132,28 @@ export const Input = forwardRef<TextInput, InputProps>(
         styles.labelBase,
         labelStyle,
         { color },
-        // It is crucial that the `transform` is at the end for the animation to work.
         { transform: [{ translateY }, { scale }] },
       ];
     }, [animatedValue, labelStyle, error, focusedBorderColor]);
 
-    // We memorize the styles of TextInput.
     const computedInputStyle = useMemo<StyleProp<TextStyle>>(() => {
       return [
         styles.inputBase,
-        { color: readOnly ? theme.mutedForeground : theme.primaryForeground },
+        { color: !editable ? theme.mutedForeground : theme.primaryForeground },
         inputStyle,
       ];
-    }, [readOnly, inputStyle]);
+    }, [editable, inputStyle]);
+
+    const computedRootStyle = useMemo<StyleProp<ViewStyle>>(() => {
+      return [styles.root, style, rootStyle];
+    }, [style, rootStyle]);
 
     const handleTogglePasswordVisibility = () => {
       setIsPasswordVisible((prev) => !prev);
     };
 
     return (
-      <View style={[styles.root, rootStyle]}>
+      <View style={computedRootStyle}>
         <View style={computedContainerStyle}>
           <View style={styles.inputWrapper}>
             {leadingIcon && (
@@ -185,8 +178,6 @@ export const Input = forwardRef<TextInput, InputProps>(
                       textInputRef?.current
                     ) {
                       textInputRef.current.focus();
-                    } else if (typeof textInputRef === 'function') {
-                      // Handle callback ref
                     }
                   }}
                 >
@@ -200,7 +191,7 @@ export const Input = forwardRef<TextInput, InputProps>(
                 value={value}
                 onFocus={handleFocus as any}
                 onBlur={handleBlur as any}
-                readOnly={readOnly}
+                editable={editable}
                 placeholder={!label ? placeholder : ''}
                 placeholderTextColor={theme.muted}
                 underlineColorAndroid="transparent"
@@ -230,8 +221,11 @@ export const Input = forwardRef<TextInput, InputProps>(
           </View>
         </View>
 
-        {/* Show helper text or error message */}
-        {(helperText || errorMessage) && (
+        {helperText && (
+          <Text style={[styles.helperTextBase]}>{helperText}</Text>
+        )}
+
+        {errorMessage && (
           <Text
             style={[
               styles.helperTextBase,
@@ -286,7 +280,7 @@ const styles = StyleSheet.create({
   },
   icon: {},
   helperTextBase: {
-    marginTop: 6,
+    marginTop: 4,
     fontSize: 13,
     paddingLeft: 4,
     color: theme.mutedForeground,

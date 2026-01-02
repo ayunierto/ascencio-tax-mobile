@@ -1,63 +1,39 @@
 import React, { useLayoutEffect } from 'react';
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
 import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { EmptyContent } from '@/core/components';
-import {
-  useCompanies,
-  useDeleteCompany,
-} from '@/core/accounting/companies/hooks/useCompanies';
-import { Company } from '@ascencio/shared/interfaces';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { t } from 'i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CompaniesList } from '@/core/accounting/companies/components';
 
 const CompaniesScreen = () => {
-  const navigation: any = useNavigation();
-  const {
-    data: companies,
-    isPending,
-    isError,
-    error,
-    refetch,
-    isRefetching,
-  } = useCompanies();
-  const { mutate: deleteCompany, isPending: isDeleting } = useDeleteCompany();
+  const navigation = useNavigation();
 
   // Add an Add button to the parent drawer/header
   useLayoutEffect(() => {
     const parentNav = navigation.getParent ? navigation.getParent() : null;
     const targetNav = parentNav ?? navigation;
 
-    const headerButton = () => (
-      <Button
-        variant="ghost"
-        onPress={() => router.push('/(app)/companies/new')}
-        style={{
-          marginRight: 12,
-          borderRadius: 8,
-          padding: 8,
-          opacity: isDeleting ? 0.6 : 1,
-        }}
-        disabled={isDeleting}
+    const headerLeft = () => (
+      <TouchableOpacity
+        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+        style={{ marginRight: 30 }}
       >
-        <Ionicons name="add-circle-outline" size={28} color="white" />
-      </Button>
+        <Ionicons name="menu" size={24} color={theme.foreground} />
+      </TouchableOpacity>
     );
 
-    targetNav.setOptions({ headerRight: headerButton });
+    const headerRight = () => (
+      <TouchableOpacity onPress={() => router.push('/(app)/companies/create')}>
+        <Ionicons name="add-circle-outline" size={28} color={theme.primary} />
+      </TouchableOpacity>
+    );
+
+    navigation.setOptions({
+      headerLeft,
+      headerRight,
+    });
 
     return () => {
       try {
@@ -66,147 +42,9 @@ const CompaniesScreen = () => {
         // ignore
       }
     };
-  }, [navigation, isDeleting]);
+  }, [navigation]);
 
-  const handleDelete = (company: Company) => {
-    Alert.alert('deleteTitle', 'deleteConfirm', [
-      { text: 'cancel', onPress: () => {} },
-      {
-        text: 'delete',
-        onPress: () => deleteCompany(company.id),
-        style: 'destructive',
-      },
-    ]);
-  };
-
-  const renderCompanyCard = ({ item }: { item: Company }) => (
-    <TouchableOpacity
-      style={{
-        backgroundColor: theme.card,
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        marginHorizontal: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderLeftWidth: 4,
-        borderLeftColor: theme.primary,
-      }}
-      onPress={() => router.push(`/(app)/companies`)}
-      disabled={isDeleting}
-    >
-      <View style={{ flex: 1 }}>
-        <ThemedText numberOfLines={1}>{item.name}</ThemedText>
-        {item.legalName && (
-          <ThemedText style={{ marginTop: 4, opacity: 0.7 }} numberOfLines={1}>
-            {item.legalName}
-          </ThemedText>
-        )}
-        {item.businessNumber && (
-          <ThemedText style={{ marginTop: 2, opacity: 0.6, fontSize: 12 }}>
-            {item.businessNumber}
-          </ThemedText>
-        )}
-      </View>
-      <TouchableOpacity
-        onPress={() => handleDelete(item)}
-        style={{ marginLeft: 12 }}
-        disabled={isDeleting}
-      >
-        <Ionicons
-          name="trash-outline"
-          size={20}
-          color={theme.destructive}
-          style={{ opacity: isDeleting ? 0.5 : 1 }}
-        />
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-
-  if (isError) {
-    return (
-      <EmptyContent
-        title="loadError"
-        subtitle={error?.response?.data.message || error?.message}
-        onRetry={() => refetch()}
-      />
-    );
-  }
-
-  if (isPending) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
-  }
-
-  console.log(companies?.items);
-
-  if (!companies || companies.items.length === 0) {
-    return (
-      <EmptyContent
-        title={t('noCompaniesTitle')}
-        subtitle={t('noCompaniesSubtitle')}
-        action={
-          <Button onPress={() => router.push('/(app)/companies/new')}>
-            <ButtonIcon name="add-circle-outline" />
-            <ButtonText>{t('createCompany')}</ButtonText>
-          </Button>
-        }
-      />
-    );
-  }
-
-  const inset = useSafeAreaInsets();
-
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={inset.bottom}
-      style={{ flex: 1 }}
-    >
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={companies.items}
-          renderItem={renderCompanyCard}
-          keyExtractor={(item) => item.id}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={() => refetch()}
-              tintColor={theme.primary}
-            />
-          }
-          ListHeaderComponent={
-            <View
-              style={{
-                paddingHorizontal: 16,
-                paddingTop: 16,
-                paddingBottom: 8,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <ThemedText>myCompanies</ThemedText>
-              <TouchableOpacity
-                // onPress={() => router.push('/companies')}
-                style={{
-                  backgroundColor: theme.primary,
-                  borderRadius: 8,
-                  padding: 8,
-                }}
-              >
-                <Ionicons name="add" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
-          }
-        />
-      </View>
-    </KeyboardAvoidingView>
-  );
+  return <CompaniesList />;
 };
 
 export default CompaniesScreen;

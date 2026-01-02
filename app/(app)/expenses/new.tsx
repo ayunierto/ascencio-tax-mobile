@@ -1,12 +1,11 @@
-import { useFocusEffect } from "expo-router";
-import React, { useCallback } from "react";
-import { View, StyleSheet } from "react-native";
-import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import { useCategories } from "@/core/accounting/categories/hooks/useCategories";
-import ExpenseForm from "@/core/accounting/expenses/components/ExpenseForm/ExpenseForm";
-import { useExpenseStore } from "@/core/accounting/expenses/store/useExpenseStore";
-import { EmptyContent } from "@/core/components";
+import React, { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
+
+import { useCategories } from '@/core/accounting/categories/hooks/useCategories';
+import ExpenseForm from '@/core/accounting/expenses/components/ExpenseForm/ExpenseForm';
+import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStore';
+import { EmptyContent } from '@/core/components';
+import Loader from '@/components/Loader';
 
 export default function NewExpenseScreen() {
   const {
@@ -37,7 +36,7 @@ export default function NewExpenseScreen() {
         removeImage();
         reset();
       };
-    }, [removeImage, reset])
+    }, [removeImage, reset]),
   );
 
   if (isErrorCategories) {
@@ -68,9 +67,9 @@ export default function NewExpenseScreen() {
 
   // Create a new expense with scanned details if available
   const newExpense = {
-    id: "new",
-    imageUrl: imageUrl || "",
-    merchant: merchant || "",
+    id: 'new',
+    imageUrl: imageUrl || '',
+    merchant: merchant || '',
     date: date || new Date().toISOString(),
     total: total || 0,
     tax: tax || 0,
@@ -79,21 +78,10 @@ export default function NewExpenseScreen() {
       categories
         .find((cat) => cat.id === categoryId)
         ?.subcategories.find((sub) => sub.id === subcategoryId) || undefined,
-    notes: "",
+    notes: '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
-  return (
-    <View style={styles.container}>
-      <ExpenseForm expense={newExpense} categories={categories} />
-    </View>
-  );
+  return <ExpenseForm expense={newExpense} categories={categories} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.background,
-  },
-});

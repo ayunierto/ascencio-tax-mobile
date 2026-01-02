@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { router } from "expo-router";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { router } from 'expo-router';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { Button, ButtonIcon } from "@/components/ui/Button";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { theme } from "@/components/ui/theme";
-import { SinglePhotoViewer } from "@/core/components/SinglePhotoViewer";
-import Toast from "react-native-toast-message";
-import { useReceiptImageMutation } from "../hooks/useReceiptImageMutation";
+import { Button, ButtonIcon } from '@/components/ui/Button';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { theme } from '@/components/ui/theme';
+import { SinglePhotoViewer } from '@/core/components/SinglePhotoViewer';
+import Toast from 'react-native-toast-message';
+import { useReceiptImageMutation } from '../hooks/useReceiptImageMutation';
 
 type ExpenseImageProps = {
   imageUrl?: string;
@@ -34,19 +34,19 @@ const ReceiptUploader = ({
       {
         onSuccess: () => {
           Toast.show({
-            type: "success",
-            text1: "Image removed",
+            type: 'success',
+            text1: 'Image removed',
           });
           onChange(undefined);
         },
         onError: (error) => {
           console.error(error);
           Toast.show({
-            type: "error",
+            type: 'error',
             text1: error.response?.data.message || error.message,
           });
         },
-      }
+      },
     );
   };
 
@@ -54,10 +54,10 @@ const ReceiptUploader = ({
     <View style={styles.imageContainer}>
       <View
         style={{
-          flexDirection: "row",
+          flexDirection: 'row',
           gap: 10,
-          alignItems: "center",
-          justifyContent: "space-between",
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
         {imageUrl ? (
@@ -83,13 +83,13 @@ const ReceiptUploader = ({
           <ThemedText>No receipt image selected</ThemedText>
         )}
 
-        <View style={{ flexDirection: "row", gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
           <Button
             variant="default"
             size="icon"
             onPress={() =>
               router.replace({
-                pathname: "/(app)/(tabs)/expenses/scan",
+                pathname: '/(app)/expenses/scan',
                 params: { id: expenseId },
               })
             }

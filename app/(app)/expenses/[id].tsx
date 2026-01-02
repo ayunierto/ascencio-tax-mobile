@@ -1,13 +1,13 @@
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useCallback } from "react";
-import { View, StyleSheet } from "react-native";
-import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import { useCategories } from "@/core/accounting/categories/hooks/useCategories";
-import ExpenseForm from "@/core/accounting/expenses/components/ExpenseForm/ExpenseForm";
-import { useExpense } from "@/core/accounting/expenses/hooks/useExpense";
-import { useExpenseStore } from "@/core/accounting/expenses/store/useExpenseStore";
-import { EmptyContent } from "@/core/components";
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { useCallback } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Loader from '@/components/Loader';
+import { theme } from '@/components/ui/theme';
+import { useCategories } from '@/core/accounting/categories/hooks/useCategories';
+import ExpenseForm from '@/core/accounting/expenses/components/ExpenseForm/ExpenseForm';
+import { useExpense } from '@/core/accounting/expenses/hooks/useExpense';
+import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStore';
+import { EmptyContent } from '@/core/components';
 
 export default function EditExpenseScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,7 +30,7 @@ export default function EditExpenseScreen() {
     isError,
     error,
     refetch,
-  } = useExpense(id || "");
+  } = useExpense(id || '');
 
   const {
     data: categories,
@@ -49,7 +49,7 @@ export default function EditExpenseScreen() {
         removeImage();
         reset();
       };
-    }, [refetch, removeImage, reset])
+    }, [refetch, removeImage, reset]),
   );
 
   if (isError) {
@@ -67,7 +67,7 @@ export default function EditExpenseScreen() {
   }
 
   if (!expense) {
-    router.replace("/(app)/(tabs)/expenses");
+    router.replace('/(app)/expenses');
     return null;
   }
 
@@ -126,6 +126,5 @@ export default function EditExpenseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
   },
 });

@@ -1,17 +1,17 @@
-import { router } from "expo-router";
-import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import ExpensesList from "@/core/accounting/expenses/components/ExpensesList";
-import { useExpenses } from "@/core/accounting/expenses/hooks/useExpenses";
-import { ThemedText } from "@/components/themed-text";
+import { router } from 'expo-router';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Loader from '@/components/Loader';
+import { theme } from '@/components/ui/theme';
+import ExpensesList from '@/core/accounting/expenses/components/ExpensesList';
+import { useExpenses } from '@/core/accounting/expenses/hooks/useExpenses';
+import { ThemedText } from '@/components/themed-text';
 
 export default function ExpensesIndexScreen() {
-  const { expensesQuery, loadNextPage } = useExpenses();
   const insets = useSafeAreaInsets();
+  const { expensesQuery, loadNextPage } = useExpenses();
 
   if (expensesQuery.isLoading) {
     return <Loader message="Loading expenses..." />;
@@ -26,7 +26,7 @@ export default function ExpensesIndexScreen() {
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => router.push("/(app)/(tabs)/expenses/new")}
+            onPress={() => router.push('/(app)/expenses/new')}
           >
             <Ionicons
               name="add-circle-outline"
@@ -36,7 +36,7 @@ export default function ExpensesIndexScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => router.push("/(app)/(tabs)/expenses/scan")}
+            onPress={() => router.push('/(app)/expenses/scan')}
           >
             <Ionicons name="camera-outline" size={24} color={theme.primary} />
           </TouchableOpacity>
@@ -54,19 +54,19 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   headerActions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
   },
   actionButton: {

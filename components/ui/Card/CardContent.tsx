@@ -7,15 +7,20 @@ import {
   StyleSheet,
 } from 'react-native';
 
-interface SimpleCardContentProps extends ViewProps {
+interface CardContentProps extends ViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ * @deprecated Use CardContent from components/ui/Card instead.
+ * @param param0
+ * @returns
+ */
 export const CardContent = ({
   style,
   children,
   ...props
-}: SimpleCardContentProps) => {
+}: CardContentProps) => {
   return (
     <View style={[styles.cardContent, style]} {...props}>
       {children}

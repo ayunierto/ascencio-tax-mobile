@@ -1,29 +1,29 @@
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import DateTimePicker from "@/components/ui/DateTimePicker/DateTimePicker";
-import { Input } from "@/components/ui/Input";
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
+import { router } from 'expo-router';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Toast from 'react-native-toast-message';
+
+import { Controller, useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/Input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@/components/ui/Select";
-import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
+} from '@/components/ui/Select';
+import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
 import {
   ExpenseFormFields,
   expenseSchema,
-} from "@/core/accounting/expenses/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, ScrollView, View } from "react-native";
-import Toast from "react-native-toast-message";
-
-import { Category } from "@/core/accounting/categories/interfaces/category.interface";
-import ExpenseImage from "@/core/accounting/expenses/components/ExpenseImage";
-import { useExpenseMutation } from "@/core/accounting/expenses/hooks/useExpenseMutation";
-import { Subcategory } from "@/core/accounting/subcategories/interfaces";
-import ErrorMessage from "@/core/components/ErrorMessage";
+} from '@/core/accounting/expenses/schemas';
+import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
+import { Category } from '@/core/accounting/categories/interfaces/category.interface';
+import ExpenseImage from '@/core/accounting/expenses/components/ExpenseImage';
+import { useExpenseMutation } from '@/core/accounting/expenses/hooks/useExpenseMutation';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Subcategory } from '@/core/accounting/subcategories/interfaces';
+import ErrorMessage from '@/core/components/ErrorMessage';
 
 interface ExpenseFormProps {
   expense: ExpenseResponse;
@@ -33,7 +33,7 @@ interface ExpenseFormProps {
 export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   const [subcategories, setSubcategories] = useState<Subcategory[]>(
     categories.find((cat) => cat.id === expense.category?.id)?.subcategories ||
-      []
+      [],
   );
   const {
     handleSubmit,
@@ -58,15 +58,15 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     await expenseMutation.mutateAsync(values, {
       onSuccess: () => {
         Toast.show({
-          type: "success",
-          text1: "Expense created",
+          type: 'success',
+          text1: 'Expense created',
         });
         reset();
-        router.replace("/(app)/(tabs)/expenses");
+        router.replace('/(app)/expenses');
       },
       onError: (error) => {
         Toast.show({
-          type: "error",
+          type: 'error',
           text1: error.response?.data.message || error.message,
         });
       },
@@ -84,7 +84,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
               <ExpenseImage
                 onChange={(image) => {
                   onChange(null);
-                  setValue("imageUrl", image);
+                  setValue('imageUrl', image);
                 }}
                 imageUrl={value}
                 expenseId={expense.id}
@@ -99,7 +99,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
 
           <Controller
             control={control}
-            name={"merchant"}
+            name={'merchant'}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 label="Merchant"
@@ -133,7 +133,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 label="Total"
-                value={value ? value.toString() : ""}
+                value={value ? value.toString() : ''}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 keyboardType="number-pad"
@@ -149,7 +149,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 label="Tax"
-                value={value ? value.toString() : ""}
+                value={value ? value.toString() : ''}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 keyboardType="number-pad"
@@ -161,7 +161,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
 
           <Controller
             control={control}
-            name={"categoryId"}
+            name={'categoryId'}
             render={({ field: { onChange, value } }) => (
               <Select
                 value={value}
@@ -171,7 +171,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                     categories.find((cat) => cat.id === id)?.subcategories ||
                     [];
                   setSubcategories(sub);
-                  setValue("subcategoryId", undefined);
+                  setValue('subcategoryId', undefined);
                 }}
                 error={!!errors.categoryId}
                 errorMessage={errors.categoryId?.message}
@@ -198,7 +198,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
           {subcategories && subcategories.length > 0 && (
             <Controller
               control={control}
-              name={"subcategoryId"}
+              name={'subcategoryId'}
               render={({ field: { onChange, value } }) => (
                 <Select value={value} onValueChange={onChange}>
                   <SelectTrigger
@@ -240,15 +240,15 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             onPress={handleSubmit(onSubmit)}
             disabled={expenseMutation.isPending}
           >
-            <ButtonIcon name={"save-outline"} />
+            <ButtonIcon name={'save-outline'} />
             <ButtonText>
-              {expense.id === "new"
+              {expense.id === 'new'
                 ? expenseMutation.isPending
-                  ? "Creating..."
-                  : "Create"
+                  ? 'Creating...'
+                  : 'Create'
                 : expenseMutation.isPending
-                  ? "Updating..."
-                  : "Update"}
+                ? 'Updating...'
+                : 'Update'}
             </ButtonText>
           </Button>
         </View>

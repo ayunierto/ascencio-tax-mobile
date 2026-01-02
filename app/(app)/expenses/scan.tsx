@@ -1,26 +1,26 @@
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { Alert, Image, StyleSheet, View } from "react-native";
-import { Octicons } from "@expo/vector-icons";
-import "react-native-get-random-values";
-import { Buffer } from "buffer";
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { Alert, Image, StyleSheet, View } from 'react-native';
+import { Octicons } from '@expo/vector-icons';
+import 'react-native-get-random-values';
+import { Buffer } from 'buffer';
 
-import Loader from "@/components/Loader";
-import { Card } from "@/components/ui";
-import { Button, ButtonText } from "@/components/ui/Button";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
+import Loader from '@/components/Loader';
+import { Card } from '@/components/ui';
+import { Button, ButtonText } from '@/components/ui/Button';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
 import {
   ConfirmImageButton,
   GalleryButton,
   RetakeImageButton,
   ReturnCancelButton,
   ShutterButton,
-} from "@/core/camera/components";
-import { useScanReceiptsNew } from "@/core/accounting/expenses/hooks";
+} from '@/core/camera/components';
+import { useScanReceiptsNew } from '@/core/accounting/expenses/hooks';
 
 globalThis.Buffer = Buffer;
 
@@ -46,18 +46,18 @@ export default function ScanReceiptScreen() {
       const { status: cameraPermissionStatus } =
         await requestCameraPermission();
 
-      if (cameraPermissionStatus !== "granted") {
-        Alert.alert("Error", "Camera permission not granted");
+      if (cameraPermissionStatus !== 'granted') {
+        Alert.alert('Error', 'Camera permission not granted');
         return;
       }
       const { status: mediaPermissionStatus } = await requestMediaPermission();
-      if (mediaPermissionStatus !== "granted") {
-        Alert.alert("Error", "Gallery permission not granted");
+      if (mediaPermissionStatus !== 'granted') {
+        Alert.alert('Error', 'Gallery permission not granted');
         return;
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "Permits could not be obtained");
+      Alert.alert('Error', 'Permits could not be obtained');
     }
   };
 
@@ -70,7 +70,7 @@ export default function ScanReceiptScreen() {
     return (
       <View style={{ ...styles.container, padding: 20 }}>
         <Card>
-          <CardContent style={{ alignItems: "center", gap: 10 }}>
+          <CardContent style={{ alignItems: 'center', gap: 10 }}>
             <Octicons name="unlock" size={50} color={theme.foreground} />
             <ThemedText style={styles.message}>
               We need your permission to show the camera and gallery
@@ -94,7 +94,7 @@ export default function ScanReceiptScreen() {
       <View style={styles.container}>
         <Image
           source={{ uri: pictureUri }}
-          style={{ flex: 1, resizeMode: "contain" }}
+          style={{ flex: 1, resizeMode: 'contain' }}
         />
         <ConfirmImageButton
           loading={loading}
@@ -110,10 +110,10 @@ export default function ScanReceiptScreen() {
   // Camera
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={"back"} />
+      <CameraView ref={cameraRef} style={styles.camera} facing={'back'} />
       <GalleryButton
         onPress={pickFromGallery}
-        style={{ position: "absolute", right: 30, bottom: 45 }}
+        style={{ position: 'absolute', right: 30, bottom: 45 }}
       />
 
       <View style={styles.buttonsBottomContainer}>
@@ -128,7 +128,7 @@ export default function ScanReceiptScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   message: {
     paddingBottom: 10,
@@ -138,11 +138,11 @@ const styles = StyleSheet.create({
   },
   buttonsBottomContainer: {
     flex: 1,
-    flexDirection: "row",
-    position: "absolute",
+    flexDirection: 'row',
+    position: 'absolute',
     bottom: 30,
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "100%",
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
   },
 });

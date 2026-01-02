@@ -138,13 +138,20 @@
   "user": "Usuario",
   "client": "Cliente",
   "comingSoon": "Próximamente",
+  "stayTuned": "¡Mantente atento para más actualizaciones!",
   "create": "Crear",
   "update": "Actualizar",
   "saving": "Guardando...",
   "updating": "Actualizando...",
   "phone": "Teléfono",
   "address": "Dirección",
-  "unknownError": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
+  "unknownErrorOccurred": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
+  "image": "Imagen",
+  "areYouSure": "¿Estás absolutamente seguro?",
+  "thisActionCannotBeUndone": "Esta acción no se puede deshacer.",
+  "deleteSuccess": "Eliminado con éxito.",
+  "updateSuccess": "Actualizado con éxito.",
+  "canNotDelete": "No se puede eliminar este elemento.",
 
   "dashboard": "Tablero",
   "expenses": "Gastos",
@@ -168,7 +175,9 @@
 
   "company": "Empresa",
   "companies": "Empresas",
+  "myCompanies": "Mis empresas",
   "newCompany": "Nueva empresa",
+  "companyDetails": "Detalles de la empresa",
   "noCompaniesTitle": "No se encontraron empresas",
   "noCompaniesSubtitle": "Aún no has agregado ninguna empresa.",
   "editCompany": "Editar empresa",
@@ -178,5 +187,7 @@
   "city": "Ciudad",
   "province": "Provincia",
   "postalCode": "Código postal",
-  "payrollAccountNumber": "Número de cuenta de nómina"
+  "payrollAccountNumber": "Número de cuenta de nómina",
+  "companyCreatedSuccessfully": "Empresa creada con éxito",
+  "companyUpdatedSuccessfully": "Empresa actualizada con éxito"
 }

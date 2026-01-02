@@ -28,6 +28,7 @@ export default function AppLayout() {
         drawerActiveTintColor: theme.primary,
         headerStyle: { backgroundColor: theme.background },
         headerTitleStyle: { color: theme.foreground },
+        headerShown: false,
       }}
     >
       <Drawer.Screen

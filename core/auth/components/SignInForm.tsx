@@ -31,7 +31,7 @@ export const SignInForm = () => {
   const onSignIn = (values: SignInRequest) => {
     signIn.mutateAsync(values, {
       onSuccess: () => {
-        toast.success('Sign in successful');
+        toast.success(t('signInSuccess'));
         router.replace('/(app)/(dashboard)');
       },
       onError: (error, variables) => {

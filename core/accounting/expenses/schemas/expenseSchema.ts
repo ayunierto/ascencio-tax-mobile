@@ -17,7 +17,7 @@ import { z } from 'zod';
 //   );
 
 export const expenseSchema = z.object({
-  id: z.string({ required_error: 'The id is required' }),
+  id: z.string({ error: 'The id is required' }),
   date: z.string({ required_error: 'The date is required' }),
   merchant: z
     .string({ required_error: 'The merchant is required' })

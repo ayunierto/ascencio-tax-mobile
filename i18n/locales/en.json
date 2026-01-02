@@ -142,13 +142,20 @@
   "user": "User",
   "client": "Client",
   "comingSoon": "Coming Soon",
+  "stayTuned": "Stay tuned for updates!",
   "create": "Create",
   "update": "Update",
   "saving": "Saving...",
   "updating": "Updating...",
   "phone": "Phone",
   "address": "Address",
-  "unknownError": "Unknown error occurred. Please try again.",
+  "unknownErrorOccurred": "Unknown error occurred. Please try again.",
+  "image": "Image",
+  "areYouSure": "Are you absolutely sure?",
+  "thisActionCannotBeUndone": "This action cannot be undone.",
+  "deleteSuccess": "Deleted successfully.",
+  "updateSuccess": "Updated successfully.",
+  "canNotDelete": "Cannot delete this item.",
 
   "dashboard": "Dashboard",
   "expenses": "Expenses",
@@ -172,7 +179,9 @@
 
   "company": "Company",
   "companies": "Companies",
+  "myCompanies": "My Companies",
   "newCompany": "New Company",
+  "companyDetails": "Company Details",
   "noCompaniesTitle": "No companies found",
   "noCompaniesSubtitle": "You haven't added any companies yet.",
   "editCompany": "Edit Company",
@@ -182,5 +191,7 @@
   "city": "City",
   "province": "Province",
   "postalCode": "Postal Code",
-  "payrollAccountNumber": "Payroll Account Number"
+  "payrollAccountNumber": "Payroll Account Number",
+  "companyCreatedSuccessfully": "Company created successfully",
+  "companyUpdatedSuccessfully": "Company updated successfully"
 }
