@@ -131,20 +131,20 @@ export default function SignUpForm() {
             control={control}
             name={'countryCode'}
             render={({ field: { onChange, value } }) => (
-              <Select value={value} onValueChange={onChange} options={countryCodes}>
+              <Select
+                value={value}
+                onValueChange={onChange}
+                options={countryCodes}
+              >
                 <SelectTrigger placeholder={t('selectYourCountry')} />
                 <SelectContent>
-                  <FlatList
-                    data={countryCodes}
-                    keyExtractor={(item) => item.value + item.label}
-                    renderItem={({ item: opt }) => (
-                      <SelectItem
-                        key={opt.value + opt.label}
-                        label={opt.label}
-                        value={opt.value}
-                      />
-                    )}
-                  />
+                  {countryCodes.map((opt) => (
+                    <SelectItem
+                      key={opt.value + opt.label}
+                      label={opt.label}
+                      value={opt.value}
+                    />
+                  ))}
                 </SelectContent>
               </Select>
             )}
