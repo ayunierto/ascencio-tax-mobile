@@ -4,8 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Card } from '@/components/ui/Card/Card';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { Card, CardContent } from '@/components/ui/Card/Card';
 import { SimpleCardHeader } from '@/components/ui/Card/SimpleCardHeader';
 import { SimpleCardHeaderTitle } from '@/components/ui/Card/SimpleCardHeaderTitle';
 import { theme } from '@/components/ui/theme';
@@ -21,7 +20,7 @@ const ExpenseCard = ({ expense }: ExpenseCardProps) => {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/(app)/(tabs)/expenses/${expense.id}`)}
+      onPress={() => router.push(`/(app)/expenses/${expense.id}`)}
       style={{ marginBottom: 10 }}
     >
       <Card>

@@ -13,7 +13,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
   },
   fieldsContainer: {
-    gap: 14,
+    gap: 16,
   },
   linkText: {
     color: theme.primary,

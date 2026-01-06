@@ -189,5 +189,20 @@
   "postalCode": "Código postal",
   "payrollAccountNumber": "Número de cuenta de nómina",
   "companyCreatedSuccessfully": "Empresa creada con éxito",
-  "companyUpdatedSuccessfully": "Empresa actualizada con éxito"
+  "companyUpdatedSuccessfully": "Empresa actualizada con éxito",
+
+  "permissionRequired": "Permiso requerido",
+  "cameraPermissionMessage": "Necesitamos tu permiso para acceder a la cámara.",
+  "galleryPermissionMessage": "Necesitamos tu permiso para acceder a tu galería de fotos.",
+  "camera": "Cámara",
+  "gallery": "Galería",
+  "companyLogo": "Logo de la empresa",
+  "noImageSelected": "No se ha seleccionado ninguna imagen",
+  "imageLoadError": "Error al cargar la imagen",
+  "imageUploadedSuccessfully": "Imagen subida con éxito",
+  "imageUploadFailed": "Error al subir la imagen",
+  "deleteImage": "Eliminar imagen",
+  "deleteImageConfirmation": "¿Estás seguro de que quieres eliminar esta imagen?",
+  "imageDeletedSuccessfully": "Imagen eliminada con éxito",
+  "imageDeleteFailed": "Error al eliminar la imagen"
 }

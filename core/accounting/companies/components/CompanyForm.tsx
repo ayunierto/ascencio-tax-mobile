@@ -23,7 +23,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { useCompanyMutation } from '../hooks';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { theme } from '@/components/ui';
+import { ImageUploader, theme } from '@/components/ui';
 
 interface CompanyFormProps {
   company: Company;
@@ -103,7 +103,7 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
     >
       <ScrollView
-        style={{ margin: 16, paddingTop: 8 }}
+        style={{ padding: 16, paddingTop: 8 }}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
         keyboardShouldPersistTaps="handled"
       >
@@ -111,12 +111,11 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
           control={control}
           name="logoUrl"
           render={({ field: { onChange, value } }) => (
-            <Input
-              onChangeText={onChange}
+            <ImageUploader
               value={value}
-              label={t('image')}
-              error={!!errors.logoUrl}
-              errorMessage={getErrorMessage(errors.logoUrl)}
+              onChange={onChange}
+              folder="temp_files"
+              // label={t('companyLogo')}
             />
           )}
         />

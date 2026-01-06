@@ -17,30 +17,15 @@ import { z } from 'zod';
 //   );
 
 export const expenseSchema = z.object({
-  id: z.string({ error: 'The id is required' }),
-  date: z.string({ required_error: 'The date is required' }),
-  merchant: z
-    .string({ required_error: 'The merchant is required' })
-    .min(1, 'Merchant is required'),
-  tax: z.coerce
-    .number({
-      invalid_type_error: 'Only numbers with decimals are allowed',
-      message: 'Only numbers with decimals are allowed',
-    })
-    .positive()
-    .multipleOf(0.01),
-  // .regex(/^\d+(\.\d+)?$/, 'Only numbers with decimals are allowed'),
-  total: z.coerce.number().positive().multipleOf(0.01),
-  // .regex(/^\d+(\.\d+)?$/, 'Only numbers with decimals are allowed'),
-  imageUrl: z.string({ required_error: 'The image is required' }).optional(),
-  notes: z.string({ required_error: 'The notes are required' }).optional(),
-  categoryId: z.string({ required_error: 'The category is required' }),
-  subcategoryId: z
-    .string({ required_error: 'The subcategory is required' })
-    .optional(),
-
-  // Transient field for file upload. Not stored in the database.
-  // imageFile: imageFileSchema.optional(),
+  id: z.string(),
+  date: z.string(),
+  merchant: z.string().min(1, 'Merchant is required'),
+  tax: z.number().positive('Tax must be positive').multipleOf(0.01),
+  total: z.number().positive('Total must be positive').multipleOf(0.01),
+  imageUrl: z.string().optional(),
+  notes: z.string().optional(),
+  categoryId: z.string().min(1, 'Category is required'),
+  subcategoryId: z.string().optional(),
 });
 
 export type ExpenseFormFields = z.infer<typeof expenseSchema>;

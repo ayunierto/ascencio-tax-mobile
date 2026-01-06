@@ -44,7 +44,11 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   } = useForm<ExpenseFormFields>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      ...expense,
+      id: expense.id,
+      date: expense.date,
+      merchant: expense.merchant,
+      total: expense.total,
+      tax: expense.tax,
       imageUrl: expense.imageUrl || undefined,
       notes: expense.notes || undefined,
       categoryId: expense.category?.id || undefined,
@@ -135,8 +139,11 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                 label="Total"
                 value={value ? value.toString() : ''}
                 onBlur={onBlur}
-                onChangeText={onChange}
-                keyboardType="number-pad"
+                onChangeText={(text) => {
+                  const numValue = parseFloat(text);
+                  onChange(isNaN(numValue) ? text : numValue);
+                }}
+                keyboardType="decimal-pad"
                 error={!!errors.total}
                 errorMessage={errors.total?.message}
               />
@@ -151,8 +158,11 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                 label="Tax"
                 value={value ? value.toString() : ''}
                 onBlur={onBlur}
-                onChangeText={onChange}
-                keyboardType="number-pad"
+                onChangeText={(text) => {
+                  const numValue = parseFloat(text);
+                  onChange(isNaN(numValue) ? text : numValue);
+                }}
+                keyboardType="decimal-pad"
                 error={!!errors.tax}
                 errorMessage={errors.tax?.message}
               />
@@ -175,6 +185,10 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                 }}
                 error={!!errors.categoryId}
                 errorMessage={errors.categoryId?.message}
+                options={categories.map((cat) => ({
+                  label: cat.name,
+                  value: cat.id,
+                }))}
               >
                 <SelectTrigger
                   placeholder="Select a category"
@@ -200,7 +214,14 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
               control={control}
               name={'subcategoryId'}
               render={({ field: { onChange, value } }) => (
-                <Select value={value} onValueChange={onChange}>
+                <Select
+                  value={value}
+                  onValueChange={onChange}
+                  options={subcategories.map((sub) => ({
+                    label: sub.name,
+                    value: sub.id,
+                  }))}
+                >
                   <SelectTrigger
                     placeholder="Select a subcategory"
                     labelText="Subcategory"

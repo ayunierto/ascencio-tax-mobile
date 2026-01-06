@@ -25,6 +25,52 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## ImageUploader Component
+
+The `ImageUploader` component provides a reusable way to handle image uploads with Cloudinary integration:
+
+```tsx
+import { ImageUploader } from '@/components/ui';
+import { Controller } from 'react-hook-form';
+
+<Controller
+  control={control}
+  name="logoUrl"
+  render={({ field: { onChange, value } }) => (
+    <ImageUploader
+      value={value}
+      onChange={onChange}
+      folder="temp_files"
+      label={t('companyLogo')}
+    />
+  )}
+/>;
+```
+
+### Features:
+
+- **Automatic Upload**: Images are uploaded to Cloudinary immediately after selection
+- **Temporary Storage**: Images go to `temp_files` folder by default
+- **Cleanup**: Automatically deletes temp images on unmount if not saved
+- **Camera & Gallery**: Supports both camera capture and gallery selection
+- **Permissions**: Handles permission requests automatically
+- **Loading States**: Shows upload progress with overlay
+
+### Backend Integration:
+
+The component uses these endpoints:
+
+- `POST /files/upload` - Uploads image to Cloudinary
+- `DELETE /files/:publicId` - Deletes image from Cloudinary
+
+When saving the form, move images from temp to permanent folder:
+
+```ts
+if (data.logoUrl?.includes('/temp_files/')) {
+  await filesService.move(publicId, `companies/${filename}`);
+}
+```
+
 ## Get a fresh project
 
 When you're ready, run:
@@ -48,4 +94,5 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
 # ascencio-tax

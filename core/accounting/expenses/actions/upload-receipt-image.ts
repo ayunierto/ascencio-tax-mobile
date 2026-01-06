@@ -2,7 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 import { ReceiptImage } from '../interfaces/upload-receipt-image.response';
 
 export const uploadReceiptImage = async (
-  uri: string
+  uri: string,
 ): Promise<ReceiptImage> => {
   const formdata = new FormData() as any;
   formdata.append('file', {
@@ -23,10 +23,10 @@ export const uploadReceiptImage = async (
       body: formdata,
       headers: {
         Authorization: `Bearer ${await SecureStore.getItemAsync(
-          'access_token'
+          'access_token',
         )}`,
       },
-    }
+    },
   );
   const data = await response.json();
 

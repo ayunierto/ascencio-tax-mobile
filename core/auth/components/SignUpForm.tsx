@@ -131,7 +131,7 @@ export default function SignUpForm() {
             control={control}
             name={'countryCode'}
             render={({ field: { onChange, value } }) => (
-              <Select value={value} onValueChange={onChange}>
+              <Select value={value} onValueChange={onChange} options={countryCodes}>
                 <SelectTrigger placeholder={t('selectYourCountry')} />
                 <SelectContent>
                   <FlatList

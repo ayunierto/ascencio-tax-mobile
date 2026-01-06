@@ -245,7 +245,7 @@ Input.displayName = 'Input';
 const styles = StyleSheet.create({
   root: {
     width: '100%',
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   containerBase: {
     borderRadius: theme.radius,

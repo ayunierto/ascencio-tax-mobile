@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import React, {
   createContext,
   useCallback,
@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 import {
   Modal,
   ScrollView,
@@ -17,9 +17,9 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from "react-native";
-import { theme } from "./theme";
-import { ThemedText } from "./ThemedText";
+} from 'react-native';
+import { theme } from './theme';
+import { ThemedText } from './ThemedText';
 
 type SelectContextType = {
   value?: string;
@@ -44,6 +44,7 @@ interface SelectProps {
   placeholder?: string;
   errorTextStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
+  options?: Array<{ label: string; value: string }>;
 }
 
 export function Select({
@@ -56,6 +57,7 @@ export function Select({
   disabled,
   errorTextStyle,
   containerStyle,
+  options,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState<string | undefined>(undefined);
@@ -68,8 +70,8 @@ export function Select({
         const props: any = child.props;
         if (
           props &&
-          typeof props.value === "string" &&
-          typeof props.label === "string"
+          typeof props.value === 'string' &&
+          typeof props.label === 'string'
         ) {
           out.push({ val: props.value, lbl: props.label });
         }
@@ -79,7 +81,7 @@ export function Select({
       });
       return out;
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -87,14 +89,22 @@ export function Select({
       setLabel(undefined);
       return;
     }
-    const items = collectItemsFromChildren(children);
+
+    // Si se proporcionan options directamente, úsalas
+    let items: { val: string; lbl: string }[] = [];
+    if (options && options.length > 0) {
+      items = options.map((opt) => ({ val: opt.value, lbl: opt.label }));
+    } else {
+      items = collectItemsFromChildren(children);
+    }
+
     const found = items.find((i) => i.val === value);
     if (found && found.lbl !== label) {
       setLabel(found.lbl);
     } else if (!found) {
       setLabel(undefined);
     }
-  }, [value, children, collectItemsFromChildren, label]);
+  }, [value, children, collectItemsFromChildren, label, options]);
 
   const setValue = useCallback(
     (val: string, lbl: string) => {
@@ -102,14 +112,14 @@ export function Select({
       setLabel(lbl);
       setOpen(false);
     },
-    [onValueChange]
+    [onValueChange],
   );
 
   const handleSetOpen = useCallback(
     (val: boolean) => {
       if (!disabled) setOpen(val);
     },
-    [disabled]
+    [disabled],
   );
 
   const contextValue = useMemo(
@@ -122,7 +132,7 @@ export function Select({
       error,
       disabled,
     }),
-    [value, label, setValue, open, handleSetOpen, error, disabled]
+    [value, label, setValue, open, handleSetOpen, error, disabled],
   );
 
   const helperTextStyles = useMemo(
@@ -130,7 +140,7 @@ export function Select({
       styles.helperTextBase,
       error && [styles.errorMessage, errorTextStyle],
     ],
-    [error, errorTextStyle]
+    [error, errorTextStyle],
   );
 
   return (
@@ -149,12 +159,12 @@ export function Select({
 
 function useSelectContext() {
   const ctx = useContext(SelectContext);
-  if (!ctx) throw new Error("Select components must be used within <Select>");
+  if (!ctx) throw new Error('Select components must be used within <Select>');
   return ctx;
 }
 
 export function SelectTrigger({
-  placeholder = "Select...",
+  placeholder = 'Select...',
   labelText,
   style,
 }: {
@@ -175,7 +185,7 @@ export function SelectTrigger({
       disabled && styles.triggerDisabled,
       style,
     ],
-    [error, disabled, style]
+    [error, disabled, style],
   );
 
   const floatingLabelStyles = useMemo(
@@ -183,7 +193,7 @@ export function SelectTrigger({
       styles.floatingLabel,
       { color: error ? theme.destructive : theme.primary },
     ],
-    [error]
+    [error],
   );
 
   const triggerTextStyles = useMemo(
@@ -196,7 +206,7 @@ export function SelectTrigger({
         ? theme.foreground
         : theme.muted,
     }),
-    [label, disabled, error]
+    [label, disabled, error],
   );
 
   return (
@@ -227,7 +237,7 @@ export function SelectTrigger({
 
 export function SelectContent({
   children,
-  maxHeight = "80%",
+  maxHeight = '80%',
 }: {
   children: React.ReactNode;
   maxHeight?: number | `${number}%`;
@@ -240,7 +250,7 @@ export function SelectContent({
 
   const contentStyles = useMemo(
     () => [styles.content, { maxHeight }],
-    [maxHeight]
+    [maxHeight],
   );
 
   return (
@@ -308,7 +318,7 @@ export function SelectItem({
       isDisabled && styles.itemDisabled,
       style,
     ],
-    [isSelected, isDisabled, style]
+    [isSelected, isDisabled, style],
   );
 
   const textStyles = useMemo(
@@ -317,7 +327,7 @@ export function SelectItem({
       isSelected && styles.itemTextSelected,
       isDisabled && styles.itemTextDisabled,
     ],
-    [isSelected, isDisabled]
+    [isSelected, isDisabled],
   );
 
   return (
@@ -348,9 +358,9 @@ const styles = StyleSheet.create({
     borderColor: theme.border,
     borderRadius: theme.radius,
     backgroundColor: theme.background,
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   triggerError: {
     borderColor: theme.destructive,
@@ -358,37 +368,37 @@ const styles = StyleSheet.create({
   },
   triggerDisabled: {
     opacity: 0.5,
-    backgroundColor: theme.muted + "10",
+    backgroundColor: theme.muted + '10',
   },
   floatingLabel: {
-    position: "absolute",
+    position: 'absolute',
     top: -8,
     left: 15,
     backgroundColor: theme.background,
     paddingHorizontal: 6,
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: '500',
     borderRadius: theme.radius,
   },
   chevron: {
-    marginLeft: "auto",
+    marginLeft: 'auto',
     fontSize: 12,
     color: theme.mutedForeground,
   },
   overlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     padding: 20,
   },
   content: {
     backgroundColor: theme.popover,
     borderRadius: theme.radius,
     padding: 8,
-    width: "90%",
-    maxHeight: "80%",
-    shadowColor: "#000",
+    width: '90%',
+    maxHeight: '80%',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -397,14 +407,14 @@ const styles = StyleSheet.create({
   item: {
     paddingVertical: 16,
     paddingHorizontal: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderRadius: 8,
     marginVertical: 2,
   },
   itemSelected: {
-    backgroundColor: theme.primary + "20",
+    backgroundColor: theme.primary + '20',
   },
   itemDisabled: {
     opacity: 0.5,
@@ -416,7 +426,7 @@ const styles = StyleSheet.create({
   },
   itemTextSelected: {
     color: theme.primary,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   itemTextDisabled: {
     color: theme.mutedForeground,
@@ -424,7 +434,7 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 16,
     color: theme.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginLeft: 8,
   },
   helperTextBase: {
