@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -21,9 +22,17 @@ import {
   createCompanySchema,
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
-import { useCompanyMutation } from '../hooks';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { ImageUploader, theme } from '@/components/ui';
+import {
+  ImageUploader,
+  ImageUploaderRef,
+  theme,
+} from '@/components/ui';
+import {
+  createCompanyMutation,
+  deleteCompanyMutation,
+  updateCompanyMutation,
+} from '../hooks';
 
 interface CompanyFormProps {
   company: Company;
@@ -31,9 +40,15 @@ interface CompanyFormProps {
 
 export const CompanyForm = ({ company }: CompanyFormProps) => {
   const navigation = useNavigation();
-
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const imageUploaderRef = useRef<ImageUploaderRef>(null);
+
+  // For existing companies, use logoUrl as the initial image value
+  // For new companies, mediaToken will be undefined initially
+  const initialMediaToken = company.id !== 'new' ? company.logoUrl : undefined;
+
   const {
     control,
     handleSubmit,
@@ -42,31 +57,75 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
     resolver: zodResolver(createCompanySchema),
     defaultValues: {
       ...company,
+      // Use logoUrl for display when editing existing company
+      mediaToken: initialMediaToken,
     },
   });
-
-  const companyMutation = useCompanyMutation();
+  const createCompany = createCompanyMutation();
+  const updateCompany = updateCompanyMutation();
+  const deleteCompany = deleteCompanyMutation();
 
   const onSubmit = async (values: CreateCompanyRequest) => {
-    await companyMutation.mutateAsync(values, {
+    // Only send mediaToken if it's a new temp upload (starts with temp_files/)
+    // If it's the same as logoUrl, don't send it (no change)
+    const mediaTokenToSend =
+      values.mediaToken?.startsWith('temp_files/') ? values.mediaToken : undefined;
+
+    const submitData = {
+      ...values,
+      mediaToken: mediaTokenToSend,
+    };
+
+    if (values.id !== 'new') {
+      await updateCompany.mutateAsync(submitData, {
+        onSuccess: () => {
+          // Mark image as saved to prevent cleanup
+          imageUploaderRef.current?.markAsSaved();
+          toast.success(t('companyUpdatedSuccessfully'));
+          setTimeout(() => router.back(), 500);
+        },
+        onError: (error) => {
+          toast.error(
+            t(error.response?.data.message || 'unknownErrorOccurred'),
+          );
+        },
+      });
+      return;
+    }
+
+    await createCompany.mutateAsync(submitData, {
       onSuccess: () => {
-        toast.success(
-          values.id === 'new'
-            ? t('companyCreatedSuccessfully')
-            : t('companyUpdatedSuccessfully'),
-        );
+        // Mark image as saved to prevent cleanup
+        imageUploaderRef.current?.markAsSaved();
+        toast.success(t('companyCreatedSuccessfully'));
         setTimeout(() => router.back(), 500);
       },
       onError: (error) => {
-        toast.error(
-          t(
-            error.response?.data.message ||
-              error.message ||
-              'unknownErrorOccurred',
-          ),
-        );
+        toast.error(t(error.response?.data.message || 'unknownErrorOccurred'));
       },
     });
+  };
+
+  const handleDeleteCompany = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteCompany.mutateAsync(company.id, {
+        onSuccess: () => {
+          toast.success(t('deleteSuccess'));
+          setTimeout(() => router.back(), 500);
+        },
+        onError: (error) => {
+          toast.error(
+            t(error.response?.data?.message || error.message || 'canNotDelete'),
+          );
+          setIsDeleting(false);
+        },
+      });
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      toast.error(t('unknownErrorOccurred'));
+      setIsDeleting(false);
+    }
   };
 
   React.useLayoutEffect(() => {
@@ -74,8 +133,11 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
       title: company.id === 'new' ? t('newCompany') : t('companyDetails'),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
-          <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-            {companyMutation.isPending ? (
+          <TouchableOpacity
+            onPress={handleSubmit(onSubmit)}
+            disabled={createCompany.isPending || isDeleting}
+          >
+            {createCompany.isPending ? (
               <ActivityIndicator size="small" color={theme.primary} />
             ) : (
               <Ionicons name="save-outline" size={24} color={theme.primary} />
@@ -83,18 +145,33 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
           </TouchableOpacity>
 
           {company.id !== 'new' && (
-            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-              <Ionicons
-                name="trash-outline"
-                size={24}
-                color={theme.destructive}
-              />
+            <TouchableOpacity
+              onPress={handleDeleteCompany}
+              disabled={createCompany.isPending || isDeleting}
+            >
+              {isDeleting ? (
+                <ActivityIndicator size="small" color={theme.destructive} />
+              ) : (
+                <Ionicons
+                  name="trash-outline"
+                  size={24}
+                  color={theme.destructive}
+                />
+              )}
             </TouchableOpacity>
           )}
         </View>
       ),
     });
-  });
+  }, [
+    company.id,
+    t,
+    handleSubmit,
+    onSubmit,
+    handleDeleteCompany,
+    createCompany.isPending,
+    isDeleting,
+  ]);
 
   return (
     <KeyboardAvoidingView
@@ -107,172 +184,175 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
         contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
         keyboardShouldPersistTaps="handled"
       >
-        <Controller
-          control={control}
-          name="logoUrl"
-          render={({ field: { onChange, value } }) => (
-            <ImageUploader
-              value={value}
-              onChange={onChange}
-              folder="temp_files"
-              // label={t('companyLogo')}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              onChangeText={onChange}
-              value={value}
-              label={t('name')}
-              error={!!errors.name}
-              errorMessage={getErrorMessage(errors.name)}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="legalName"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={`${t('legalName')}`}
-              onChangeText={onChange}
-              value={value}
-              error={!!errors.legalName}
-              errorMessage={getErrorMessage(errors.legalName)}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="businessNumber"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('businessNumber')}
-              onChangeText={onChange}
-              value={value}
-              error={!!errors.businessNumber}
-              errorMessage={getErrorMessage(errors.businessNumber)}
-              helperText="(123456789RC0001)"
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('email')}
-              onChangeText={onChange}
-              value={value}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              error={!!errors.email}
-              errorMessage={getErrorMessage(errors.email)}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="phone"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('phone')}
-              onChangeText={onChange}
-              value={value}
-              keyboardType="phone-pad"
-              error={!!errors.phone}
-              errorMessage={getErrorMessage(errors.phone)}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('address')}
-              onChangeText={onChange}
-              value={value}
-              multiline
-              error={!!errors.address}
-              errorMessage={getErrorMessage(errors.address)}
-            />
-          )}
-        />
-
-        <View style={{ flexDirection: 'row', gap: 16 }}>
+        <View style={{ flex: 1, gap: 16 }}>
           <Controller
             control={control}
-            name="city"
+            name="mediaToken"
             render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('city')}
-                onChangeText={onChange}
+              <ImageUploader
+                ref={imageUploaderRef}
                 value={value}
-                error={!!errors.city}
-                errorMessage={getErrorMessage(errors.city)}
-                style={{ flex: 1 }}
+                onChange={onChange}
+                folder="temp_files"
+                // label={t('companyLogo')}
               />
             )}
           />
 
           <Controller
             control={control}
-            name="province"
+            name="name"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={t('province')}
                 onChangeText={onChange}
                 value={value}
-                error={!!errors.province}
-                errorMessage={getErrorMessage(errors.province)}
-                style={{ flex: 1 }}
+                label={t('name')}
+                error={!!errors.name}
+                errorMessage={getErrorMessage(errors.name)}
               />
             )}
           />
-        </View>
 
-        <Controller
-          control={control}
-          name="postalCode"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('postalCode')}
-              onChangeText={onChange}
-              value={value}
-              error={!!errors.postalCode}
-              errorMessage={getErrorMessage(errors.postalCode)}
+          <Controller
+            control={control}
+            name="legalName"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={`${t('legalName')}`}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.legalName}
+                errorMessage={getErrorMessage(errors.legalName)}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="businessNumber"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('businessNumber')}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.businessNumber}
+                errorMessage={getErrorMessage(errors.businessNumber)}
+                helperText="(123456789RC0001)"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('email')}
+                onChangeText={onChange}
+                value={value}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={!!errors.email}
+                errorMessage={getErrorMessage(errors.email)}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('phone')}
+                onChangeText={onChange}
+                value={value}
+                keyboardType="phone-pad"
+                error={!!errors.phone}
+                errorMessage={getErrorMessage(errors.phone)}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="address"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('address')}
+                onChangeText={onChange}
+                value={value}
+                multiline
+                error={!!errors.address}
+                errorMessage={getErrorMessage(errors.address)}
+              />
+            )}
+          />
+
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <Controller
+              control={control}
+              name="city"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('city')}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.city}
+                  errorMessage={getErrorMessage(errors.city)}
+                  style={{ flex: 1 }}
+                />
+              )}
             />
-          )}
-        />
 
-        <Controller
-          control={control}
-          name="payrollAccountNumber"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              label={t('payrollAccountNumber')}
-              onChangeText={onChange}
-              value={value}
-              error={!!errors.payrollAccountNumber}
-              errorMessage={getErrorMessage(errors.payrollAccountNumber)}
+            <Controller
+              control={control}
+              name="province"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('province')}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.province}
+                  errorMessage={getErrorMessage(errors.province)}
+                  style={{ flex: 1 }}
+                />
+              )}
             />
-          )}
-        />
+          </View>
 
-        {/* <Button onPress={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name="postalCode"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('postalCode')}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.postalCode}
+                errorMessage={getErrorMessage(errors.postalCode)}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="payrollAccountNumber"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={t('payrollAccountNumber')}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.payrollAccountNumber}
+                errorMessage={getErrorMessage(errors.payrollAccountNumber)}
+              />
+            )}
+          />
+
+          {/* <Button onPress={handleSubmit(onSubmit)}>
           <ButtonIcon name="save-outline" />
           <ButtonText>{t('createCompany')}</ButtonText>
         </Button> */}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

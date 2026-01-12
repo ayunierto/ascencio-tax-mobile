@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import { useCompanies, deleteCompanyMutation } from '../hooks';
-import { CompanyCard } from './CompanyCard';
+import { useEmployees, useDeleteEmployeeMutation } from '../hooks';
+import { EmployeeCard } from './EmployeeCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyContent } from '@/core/components';
 import { Button, ButtonIcon, ButtonText, theme } from '@/components/ui';
@@ -10,30 +10,34 @@ import { toast } from 'sonner-native';
 import Loader from '@/components/Loader';
 import { router } from 'expo-router';
 
-export const CompaniesList = () => {
+interface EmployeesListProps {
+  companyId?: string;
+}
+
+export const EmployeesList = ({ companyId }: EmployeesListProps) => {
   const inset = useSafeAreaInsets();
   const { t } = useTranslation();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const {
-    data: companies,
+    data: employees,
     isPending,
     isError,
     error,
     refetch,
     isRefetching,
-  } = useCompanies();
+  } = useEmployees(companyId);
 
-  const { mutateAsync: deleteCompany } = deleteCompanyMutation();
+  const { mutateAsync: deleteEmployee } = useDeleteEmployeeMutation();
 
-  const onDelete = async (companyId: string) => {
-    setDeletingId(companyId);
-    await deleteCompany(companyId, {
+  const onDelete = async (employeeId: string) => {
+    setDeletingId(employeeId);
+    await deleteEmployee(employeeId, {
       onSuccess: () => {
         toast.success(t('deleteSuccess'));
         setDeletingId(null);
       },
-      onError: (error) => {
+      onError: () => {
         toast.error(t('canNotDelete'));
         setDeletingId(null);
       },
@@ -56,15 +60,15 @@ export const CompaniesList = () => {
 
   if (isPending) return <Loader />;
 
-  if (!companies || companies.items.length === 0) {
+  if (!employees || employees.items.length === 0) {
     return (
       <EmptyContent
-        title={t('noCompaniesTitle')}
-        subtitle={t('noCompaniesSubtitle')}
+        title={t('noEmployeesTitle')}
+        subtitle={t('noEmployeesSubtitle')}
         action={
-          <Button onPress={() => router.push('/(app)/companies/create')}>
+          <Button onPress={() => router.push('/(app)/employees/create')}>
             <ButtonIcon name="add-circle-outline" />
-            <ButtonText>{t('createCompany')}</ButtonText>
+            <ButtonText>{t('createEmployee')}</ButtonText>
           </Button>
         }
       />
@@ -73,10 +77,10 @@ export const CompaniesList = () => {
 
   return (
     <FlatList
-      data={companies.items}
+      data={employees.items}
       renderItem={({ item }) => (
-        <CompanyCard
-          company={item}
+        <EmployeeCard
+          employee={item}
           isLoading={deletingId === item.id}
           handleDelete={onDelete}
         />

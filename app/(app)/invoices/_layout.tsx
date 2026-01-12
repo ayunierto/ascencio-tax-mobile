@@ -28,13 +28,6 @@ export default function InvoicesLayout() {
           title: 'Invoice Details',
         }}
       />
-
-      <Stack.Screen
-        name="companies"
-        options={{
-          title: 'Companies',
-        }}
-      />
     </Stack>
   );
 }

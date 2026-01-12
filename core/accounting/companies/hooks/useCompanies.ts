@@ -3,9 +3,13 @@ import { AxiosError } from 'axios';
 
 import { ServerException } from '@/core/interfaces/server-exception.response';
 import { Company, PaginatedResponse } from '@ascencio/shared/interfaces';
-import { CreateCompanyRequest } from '@ascencio/shared/schemas';
 import {
-  createUpdateCompany,
+  CreateCompanyRequest,
+  UpdateCompanyRequest,
+} from '@ascencio/shared/schemas';
+import {
+  createCompany,
+  updateCompany,
   deleteCompanyAction,
   getCompaniesAction,
   getCompanyAction,
@@ -28,14 +32,13 @@ export const useCompany = (id: string) => {
   return useQuery<Company, AxiosError<ServerException>, Company>({
     queryKey: ['company', id],
     queryFn: () => getCompanyAction(id),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    // enabled: !!id,
+    staleTime: 0, // Always refetch to get latest image
   });
 };
 
-export const useCompanyMutation = () => {
+export const createCompanyMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -43,14 +46,30 @@ export const useCompanyMutation = () => {
     AxiosError<ServerException>,
     CreateCompanyRequest
   >({
-    mutationFn: createUpdateCompany,
+    mutationFn: createCompany,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['companies'] });
     },
   });
 };
 
-export const useDeleteCompany = () => {
+export const updateCompanyMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    UpdateCompanyRequest,
+    AxiosError<ServerException>,
+    UpdateCompanyRequest
+  >({
+    mutationFn: updateCompany,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
+      queryClient.invalidateQueries({ queryKey: ['company', data.id] });
+    },
+  });
+};
+
+export const deleteCompanyMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<{ id: string }, AxiosError<ServerException>, string>({
