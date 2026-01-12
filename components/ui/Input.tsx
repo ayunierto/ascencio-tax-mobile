@@ -54,7 +54,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       editable = true,
       ...props
     },
-    forwardedRef,
+    forwardedRef
   ) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const internalRef = useRef<TextInput>(null);
@@ -64,7 +64,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     const animatedValue = useRef(new Animated.Value(0)).current;
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(
-      props.secureTextEntry || false,
+      props.secureTextEntry || false
     );
 
     const hasValue = value && value.length > 0;
@@ -79,14 +79,14 @@ export const Input = forwardRef<TextInput, InputProps>(
     }, [shouldFloat, animatedValue]);
 
     const handleFocus = (
-      event: NativeSyntheticEvent<TextInputFocusEventData>,
+      event: NativeSyntheticEvent<TextInputFocusEventData>
     ): void => {
       setIsFocused(true);
       onFocus?.(event);
     };
 
     const handleBlur = (
-      event: NativeSyntheticEvent<TextInputFocusEventData>,
+      event: NativeSyntheticEvent<TextInputFocusEventData>
     ): void => {
       setIsFocused(false);
       onBlur?.(event);
@@ -237,7 +237,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
       </View>
     );
-  },
+  }
 );
 
 Input.displayName = 'Input';

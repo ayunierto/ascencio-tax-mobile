@@ -42,7 +42,7 @@ export const createCompanyMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    CreateCompanyRequest,
+    Company,
     AxiosError<ServerException>,
     CreateCompanyRequest
   >({
@@ -57,7 +57,7 @@ export const updateCompanyMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    UpdateCompanyRequest,
+    Company,
     AxiosError<ServerException>,
     UpdateCompanyRequest
   >({
