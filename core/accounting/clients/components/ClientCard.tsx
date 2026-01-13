@@ -7,17 +7,7 @@ import { Card, CardContent, theme } from '@/components/ui';
 import { Client } from '@ascencio/shared';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { Button, ButtonIcon } from '@/components/ui/Button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/AlertDialog';
+import { DeleteConfirmationDialog } from '@/core/components';
 
 interface ClientCardProps {
   client: Client;
@@ -55,34 +45,14 @@ export const ClientCard = ({
             <ThemedText style={styles.subtitle}>{client.phone}</ThemedText>
           </View>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                disabled={isLoading}
-                isLoading={isLoading}
-              >
-                <ButtonIcon
-                  name="trash-outline"
-                  style={{ color: theme.destructive }}
-                />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('thisActionCannotBeUndone')}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onPress={() => handleDelete(client.id)}>
-                  {t('delete')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteConfirmationDialog onDelete={() => handleDelete(client.id)}>
+            <Button variant="ghost" disabled={isLoading} isLoading={isLoading}>
+              <ButtonIcon
+                name="trash-outline"
+                style={{ color: theme.destructive }}
+              />
+            </Button>
+          </DeleteConfirmationDialog>
         </CardContent>
       </Card>
     </TouchableOpacity>

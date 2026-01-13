@@ -1,23 +1,13 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, theme } from '@/components/ui';
 import { Company } from '@ascencio/shared';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { Button, ButtonIcon } from '@/components/ui/Button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/AlertDialog';
-import { useTranslation } from 'react-i18next';
+import { DeleteConfirmationDialog } from '@/core/components';
 
 interface CompanyCardProps {
   company: Company;
@@ -56,34 +46,14 @@ export const CompanyCard = ({
             </ThemedText>
           </View>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                disabled={isLoading}
-                isLoading={isLoading}
-              >
-                <ButtonIcon
-                  name="trash-outline"
-                  style={{ color: theme.destructive }}
-                />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('thisActionCannotBeUndone')}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onPress={() => handleDelete(company.id)}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteConfirmationDialog onDelete={() => handleDelete(company.id)}>
+            <Button variant="ghost" disabled={isLoading} isLoading={isLoading}>
+              <ButtonIcon
+                name="trash-outline"
+                style={{ color: theme.destructive }}
+              />
+            </Button>
+          </DeleteConfirmationDialog>
         </CardContent>
       </Card>
     </TouchableOpacity>

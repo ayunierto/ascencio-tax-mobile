@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { EmptyContent } from '@/core/components';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui';
 import { View } from 'react-native';
+import { mapNullToUndefined } from '@/utils';
 
 const UpdateClientScreen = () => {
   const { t } = useTranslation();
@@ -58,7 +59,11 @@ const UpdateClientScreen = () => {
     );
   }
 
-  return <ClientForm client={client} />;
+  const clientMapped = mapNullToUndefined(client);
+
+  console.warn('Client loaded:', clientMapped);
+
+  return <ClientForm client={clientMapped} />;
 };
 
 export default UpdateClientScreen;

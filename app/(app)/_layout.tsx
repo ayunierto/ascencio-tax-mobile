@@ -62,6 +62,21 @@ export default function AppLayout() {
       />
 
       <Drawer.Screen
+        name="clients"
+        options={{
+          drawerLabel: t('myClients'),
+          title: t('myClients'),
+          drawerIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'people' : 'people-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
         name="expenses"
         options={{
           drawerLabel: t('expenses'),

@@ -1,15 +1,6 @@
 import React, { useState, useRef } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { router, useNavigation } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -25,14 +16,17 @@ import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import {
   ImageUploader,
-  ImageUploaderRef,
   theme,
+  Button,
+  ButtonIcon,
+  ImageUploaderRef,
 } from '@/components/ui';
 import {
   createCompanyMutation,
   deleteCompanyMutation,
   updateCompanyMutation,
 } from '../hooks';
+import { DeleteConfirmationDialog } from '@/core/components';
 
 interface CompanyFormProps {
   company: Company;
@@ -68,8 +62,9 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
   const onSubmit = async (values: CreateCompanyRequest) => {
     // Only send mediaToken if it's a new temp upload (starts with temp_files/)
     // If it's the same as logoUrl, don't send it (no change)
-    const mediaTokenToSend =
-      values.mediaToken?.startsWith('temp_files/') ? values.mediaToken : undefined;
+    const mediaTokenToSend = values.mediaToken?.startsWith('temp_files/')
+      ? values.mediaToken
+      : undefined;
 
     const submitData = {
       ...values,
@@ -86,7 +81,7 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data.message || 'unknownErrorOccurred'),
+            t(error.response?.data.message || 'unknownErrorOccurred')
           );
         },
       });
@@ -116,7 +111,7 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data?.message || error.message || 'canNotDelete'),
+            t(error.response?.data?.message || error.message || 'canNotDelete')
           );
           setIsDeleting(false);
         },
@@ -133,32 +128,30 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
       title: company.id === 'new' ? t('newCompany') : t('companyDetails'),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
-          <TouchableOpacity
+          <Button
+            variant="ghost"
+            size="icon"
+            isLoading={createCompany.isPending || updateCompany.isPending}
             onPress={handleSubmit(onSubmit)}
-            disabled={createCompany.isPending || isDeleting}
+            disabled={createCompany.isPending || updateCompany.isPending}
           >
-            {createCompany.isPending ? (
-              <ActivityIndicator size="small" color={theme.primary} />
-            ) : (
-              <Ionicons name="save-outline" size={24} color={theme.primary} />
-            )}
-          </TouchableOpacity>
+            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
+          </Button>
 
           {company.id !== 'new' && (
-            <TouchableOpacity
-              onPress={handleDeleteCompany}
-              disabled={createCompany.isPending || isDeleting}
-            >
-              {isDeleting ? (
-                <ActivityIndicator size="small" color={theme.destructive} />
-              ) : (
-                <Ionicons
+            <DeleteConfirmationDialog onDelete={handleDeleteCompany}>
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={deleteCompany.isPending}
+                isLoading={deleteCompany.isPending}
+              >
+                <ButtonIcon
                   name="trash-outline"
-                  size={24}
-                  color={theme.destructive}
+                  style={{ color: theme.destructive }}
                 />
-              )}
-            </TouchableOpacity>
+              </Button>
+            </DeleteConfirmationDialog>
           )}
         </View>
       ),

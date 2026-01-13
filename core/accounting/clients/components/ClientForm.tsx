@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { router, useNavigation } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -22,12 +14,13 @@ import {
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { theme } from '@/components/ui';
+import { Button, ButtonIcon, theme } from '@/components/ui';
 import {
   createClientMutation,
   deleteClientMutation,
   updateClientMutation,
 } from '../hooks';
+import { DeleteConfirmationDialog } from '@/core/components';
 
 interface ClientFormProps {
   client: Client;
@@ -106,32 +99,34 @@ export const ClientForm = ({ client }: ClientFormProps) => {
       title: client.id === 'new' ? t('newClient') : t('clientDetails'),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
-          <TouchableOpacity
+          <Button
+            size="icon"
+            variant="ghost"
             onPress={handleSubmit(onSubmit)}
-            disabled={createMutation.isPending || isDeleting}
+            isLoading={createMutation.isPending || updateMutation.isPending}
+            disabled={
+              createMutation.isPending ||
+              updateMutation.isPending ||
+              deleteMutation.isPending
+            }
           >
-            {createMutation.isPending ? (
-              <ActivityIndicator size="small" color={theme.primary} />
-            ) : (
-              <Ionicons name="save-outline" size={24} color={theme.primary} />
-            )}
-          </TouchableOpacity>
+            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
+          </Button>
 
           {client.id !== 'new' && (
-            <TouchableOpacity
-              onPress={handleDeleteClient}
-              disabled={createMutation.isPending || isDeleting}
-            >
-              {isDeleting ? (
-                <ActivityIndicator size="small" color={theme.destructive} />
-              ) : (
-                <Ionicons
+            <DeleteConfirmationDialog onDelete={handleDeleteClient}>
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={updateMutation.isPending || deleteMutation.isPending}
+                isLoading={deleteMutation.isPending}
+              >
+                <ButtonIcon
                   name="trash-outline"
-                  size={24}
-                  color={theme.destructive}
+                  style={{ color: theme.destructive }}
                 />
-              )}
-            </TouchableOpacity>
+              </Button>
+            </DeleteConfirmationDialog>
           )}
         </View>
       ),
