@@ -42,6 +42,7 @@ import {
 } from '../hooks';
 import { useCompanies } from '../../companies/hooks';
 import { useClients } from '../../clients/hooks';
+import { ClientSelector } from './ClientSelector';
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -63,6 +64,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const insets = useSafeAreaInsets();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isManualClientEntry, setIsManualClientEntry] = useState(
+    !invoice.billToClientId && !!invoice.billToName
+  );
 
   // Initialize line items from invoice or with one empty row
   const [lineItems, setLineItems] = useState<LineItemLocal[]>(() => {
@@ -94,6 +98,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     defaultValues: {
       fromCompanyId: invoice.fromCompanyId,
       billToClientId: invoice.billToClientId || '',
+      billToName: invoice.billToName || '',
+      billToEmail: invoice.billToEmail || '',
+      billToPhone: invoice.billToPhone || '',
+      billToAddress: invoice.billToAddress || '',
       taxRate: invoice.taxRate ?? 13,
       description: invoice.description,
       notes: invoice.notes,
@@ -475,35 +483,28 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
               name="billToClientId"
               render={({ field: { onChange, value } }) => (
                 <View>
-                  <Select
-                    value={value || ''}
-                    onValueChange={(val) => onChange(val)}
-                    options={[
-                      { label: t('selectClient'), value: '' },
-                      ...clients.map((client) => ({
-                        label: client.fullName,
-                        value: client.id,
-                      })),
-                    ]}
-                  >
-                    <SelectTrigger
-                      placeholder={t('selectClient')}
-                      labelText={`${t('billTo')} *`}
-                    />
-                    <SelectContent>
-                      <SelectItem label={t('selectClient')} value="" />
-                      {clients.map((client) => (
-                        <SelectItem
-                          key={client.id}
-                          label={`${client.fullName}${
-                            client.email ? ` (${client.email})` : ''
-                          }`}
-                          value={client.id}
-                        />
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.billToClientId && (
+                  <ClientSelector
+                    clients={clients}
+                    selectedClientId={value || undefined}
+                    onClientSelect={(clientId) => {
+                      onChange(clientId || '');
+                      if (clientId) {
+                        // Clear manual fields when client is selected
+                        setValue('billToName', '');
+                        setValue('billToEmail', '');
+                        setValue('billToPhone', '');
+                        setValue('billToAddress', '');
+                      }
+                    }}
+                    onManualMode={(enabled) => {
+                      setIsManualClientEntry(enabled);
+                      if (enabled) {
+                        onChange('');
+                      }
+                    }}
+                    isManualMode={isManualClientEntry}
+                  />
+                  {errors.billToClientId && !isManualClientEntry && (
                     <ThemedText
                       style={{
                         color: theme.destructive,
@@ -517,6 +518,75 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 </View>
               )}
             />
+
+            {/* Manual Client Entry Fields */}
+            {isManualClientEntry && (
+              <View style={{ gap: 12, marginTop: 12 }}>
+                <Controller
+                  control={control}
+                  name="billToName"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={`${t('clientName')} *`}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterClientName')}
+                      editable={canEdit}
+                      error={errors.billToName ? getErrorMessage(errors.billToName) : undefined}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToEmail"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('email')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterEmail')}
+                      keyboardType="email-address"
+                      editable={canEdit}
+                      error={errors.billToEmail ? getErrorMessage(errors.billToEmail) : undefined}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToPhone"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('phone')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterPhone')}
+                      keyboardType="phone-pad"
+                      editable={canEdit}
+                      error={errors.billToPhone ? getErrorMessage(errors.billToPhone) : undefined}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToAddress"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('address')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterAddress')}
+                      multiline
+                      numberOfLines={3}
+                      editable={canEdit}
+                      error={errors.billToAddress ? getErrorMessage(errors.billToAddress) : undefined}
+                    />
+                  )}
+                />
+              </View>
+            )}
           </View>
 
           {/* Section: Dates */}

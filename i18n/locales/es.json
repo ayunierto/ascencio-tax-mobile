@@ -342,5 +342,18 @@
   "draftInvoiceNote": "Esta factura está en estado borrador. Emítela para hacerla oficial y crear una cuenta por cobrar.",
   "paymentStatus": "Estado de Pago",
   "recordPayment": "Registrar Pago",
-  "issue": "Emitir"
+  "issue": "Emitir",
+  "manualEntry": "Entrada Manual",
+  "searchClient": "Buscar Cliente",
+  "searchOrSelectClient": "Buscar o seleccionar cliente",
+  "searchByNameEmailPhone": "Buscar por nombre, email o teléfono",
+  "enterClientManually": "Ingresar datos del cliente manualmente",
+  "noClientsFound": "No se encontraron clientes",
+  "clientName": "Nombre del Cliente",
+  "enterClientName": "Ingrese nombre del cliente",
+  "enterEmail": "Ingrese correo electrónico",
+  "enterPhone": "Ingrese número de teléfono",
+  "enterAddress": "Ingrese dirección",
+  "address": "Dirección",
+  "phone": "Teléfono"
 }

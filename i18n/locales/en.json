@@ -345,5 +345,18 @@
   "draftInvoiceNote": "This invoice is in draft status. Issue it to make it official and create an account receivable.",
   "paymentStatus": "Payment Status",
   "recordPayment": "Record Payment",
-  "issue": "Issue"
+  "issue": "Issue",
+  "manualEntry": "Manual Entry",
+  "searchClient": "Search Client",
+  "searchOrSelectClient": "Search or select client",
+  "searchByNameEmailPhone": "Search by name, email or phone",
+  "enterClientManually": "Enter client data manually",
+  "noClientsFound": "No clients found",
+  "clientName": "Client Name",
+  "enterClientName": "Enter client name",
+  "enterEmail": "Enter email address",
+  "enterPhone": "Enter phone number",
+  "enterAddress": "Enter address",
+  "address": "Address",
+  "phone": "Phone"
 }
