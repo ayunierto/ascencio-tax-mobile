@@ -102,6 +102,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       billToEmail: invoice.billToEmail || '',
       billToPhone: invoice.billToPhone || '',
       billToAddress: invoice.billToAddress || '',
+      billToCity: invoice.billToCity || '',
+      billToProvince: invoice.billToProvince || '',
+      billToPostalCode: invoice.billToPostalCode || '',
+      billToCountry: invoice.billToCountry || '',
       taxRate: invoice.taxRate ?? 13,
       description: invoice.description,
       notes: invoice.notes,
@@ -605,6 +609,70 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       editable={canEdit}
                       error={!!errors.billToAddress}
                       errorMessage={getErrorMessage(errors.billToAddress)}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToCity"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('city')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterCity')}
+                      editable={canEdit}
+                      error={!!errors.billToCity}
+                      errorMessage={getErrorMessage(errors.billToCity)}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToProvince"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('province')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterProvince')}
+                      editable={canEdit}
+                      error={!!errors.billToProvince}
+                      errorMessage={getErrorMessage(errors.billToProvince)}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToPostalCode"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('postalCode')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterPostalCode')}
+                      editable={canEdit}
+                      error={!!errors.billToPostalCode}
+                      errorMessage={getErrorMessage(errors.billToPostalCode)}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="billToCountry"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      label={t('country')}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={t('enterCountry')}
+                      editable={canEdit}
+                      error={!!errors.billToCountry}
+                      errorMessage={getErrorMessage(errors.billToCountry)}
                     />
                   )}
                 />

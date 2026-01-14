@@ -45,6 +45,7 @@
   "validationPositive": "Este campo debe ser un número positivo.",
   "validationNonNegative": "Este campo no puede ser negativo.",
   "validationMinItems": "Se requiere al menos un elemento.",
+  "validationBillToRequired": "Por favor, proporciona información del cliente (selecciona un cliente existente o ingresa los detalles manualmente).",
 
   "signUpScreenTitle": "Crea tu cuenta",
   "signUpScreenSubtitle": "Rellena el formulario a continuación para crear tu cuenta",
@@ -353,8 +354,10 @@
   "enterEmail": "Ingrese correo electrónico",
   "enterPhone": "Ingrese número de teléfono",
   "enterAddress": "Ingrese dirección",
-  "address": "Dirección",
-  "phone": "Teléfono",
+  "enterCity": "Ingrese ciudad",
+  "enterProvince": "Ingrese provincia",
+  "enterPostalCode": "Ingrese código postal",
+  "enterCountry": "Ingrese país",
   "soleProprietor": "Empresa Unipersonal",
-  "soleProprietorAutoCreate": "Se creará automáticamente una empresa 'Sole Proprietor' con los datos de tu perfil. Podrás editarla después en Configuración de Empresa."
+  "soleProprietorAutoCreate": "No tienes una empresa. Una vez emitida la primera factura, se creará automáticamente una empresa 'Empresario Individual' con los datos de tu perfil. Siempre podrás editarla después en Configuración de Empresa."
 }

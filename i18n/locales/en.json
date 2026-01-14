@@ -45,6 +45,7 @@
   "validationPositive": "This field must be a positive number.",
   "validationNonNegative": "This field cannot be negative.",
   "validationMinItems": "At least one item is required.",
+  "validationBillToRequired": "Please provide client information (select an existing client or enter details manually).",
 
   "signUpScreenTitle": "Create Your Account",
   "signUpScreenSubtitle": "Fill in the form below to create your account",
@@ -356,8 +357,10 @@
   "enterEmail": "Enter email address",
   "enterPhone": "Enter phone number",
   "enterAddress": "Enter address",
-  "address": "Address",
-  "phone": "Phone",
+  "enterCity": "Enter city",
+  "enterProvince": "Enter province",
+  "enterPostalCode": "Enter postal code",
+  "enterCountry": "Enter country",
   "soleProprietor": "Sole Proprietor",
-  "soleProprietorAutoCreate": "A 'Sole Proprietor' company will be automatically created with your profile data. You can edit it later in Company Settings."
+  "soleProprietorAutoCreate": "You don't have a company. Once the first invoice is issued, a 'Sole Proprietor' company will be automatically created with your profile data. You can always edit it later in Company Settings."
 }
