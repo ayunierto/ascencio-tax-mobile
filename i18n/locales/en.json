@@ -280,6 +280,10 @@
   "pending": "Pending",
   "overdue": "Overdue",
   "canceled": "Canceled",
+  "draft": "Draft",
+  "issued": "Issued",
+  "partiallyPaid": "Partially Paid",
+  "void": "Void",
   "billTo": "Bill To",
   "lineItems": "Line Items",
   "description": "Description",
@@ -334,5 +338,12 @@
   "generatePdf": "Generate PDF",
   "regeneratePdf": "Regenerate PDF",
   "downloadPdf": "Download PDF",
-  "pdfGenerated": "PDF generated successfully"
+  "pdfGenerated": "PDF generated successfully",
+  "issueInvoice": "Issue Invoice",
+  "issueInvoiceConfirmation": "This will mark the invoice as issued and make it immutable. You won't be able to edit it anymore. Continue?",
+  "invoiceIssued": "Invoice issued successfully",
+  "draftInvoiceNote": "This invoice is in draft status. Issue it to make it official and create an account receivable.",
+  "paymentStatus": "Payment Status",
+  "recordPayment": "Record Payment",
+  "issue": "Issue"
 }

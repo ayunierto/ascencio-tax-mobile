@@ -31,11 +31,16 @@ const getStatusColor = (status: InvoiceStatus) => {
   switch (status) {
     case 'paid':
       return theme.success;
-    case 'pending':
-      return '#f59e0b'; // warning color
+    case 'draft':
+      return '#9ca3af'; // gray
+    case 'issued':
+      return '#3b82f6'; // blue
+    case 'partial':
+      return '#f59e0b'; // warning/orange
     case 'overdue':
       return theme.destructive;
     case 'canceled':
+    case 'void':
       return theme.muted;
     default:
       return theme.muted;
@@ -46,12 +51,18 @@ const getStatusLabel = (status: InvoiceStatus, t: (key: string) => string) => {
   switch (status) {
     case 'paid':
       return t('paid');
-    case 'pending':
-      return t('pending');
+    case 'draft':
+      return t('draft');
+    case 'issued':
+      return t('issued');
+    case 'partial':
+      return t('partiallyPaid');
     case 'overdue':
       return t('overdue');
     case 'canceled':
       return t('canceled');
+    case 'void':
+      return t('void');
     default:
       return status;
   }

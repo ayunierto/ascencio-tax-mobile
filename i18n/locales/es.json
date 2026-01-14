@@ -277,6 +277,10 @@
   "pending": "Pendiente",
   "overdue": "Vencido",
   "canceled": "Cancelado",
+  "draft": "Borrador",
+  "issued": "Emitida",
+  "partiallyPaid": "Parcialmente Pagado",
+  "void": "Anulada",
   "billTo": "Facturar a",
   "lineItems": "Líneas de factura",
   "description": "Descripción",
@@ -331,5 +335,12 @@
   "generatePdf": "Generar PDF",
   "regeneratePdf": "Regenerar PDF",
   "downloadPdf": "Descargar PDF",
-  "pdfGenerated": "PDF generado exitosamente"
+  "pdfGenerated": "PDF generado exitosamente",
+  "issueInvoice": "Emitir Factura",
+  "issueInvoiceConfirmation": "Esto marcará la factura como emitida y la hará inmutable. No podrás editarla más. ¿Continuar?",
+  "invoiceIssued": "Factura emitida exitosamente",
+  "draftInvoiceNote": "Esta factura está en estado borrador. Emítela para hacerla oficial y crear una cuenta por cobrar.",
+  "paymentStatus": "Estado de Pago",
+  "recordPayment": "Registrar Pago",
+  "issue": "Emitir"
 }

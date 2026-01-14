@@ -38,6 +38,7 @@ import {
   useDeleteInvoiceMutation,
   useUpdateInvoiceMutation,
   useGeneratePdfMutation,
+  useIssueInvoiceMutation,
 } from '../hooks';
 import { useCompanies } from '../../companies/hooks';
 import { useClients } from '../../clients/hooks';
@@ -131,8 +132,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const updateInvoice = useUpdateInvoiceMutation();
   const deleteInvoice = useDeleteInvoiceMutation();
   const generatePdf = useGeneratePdfMutation();
+  const issueInvoice = useIssueInvoiceMutation();
 
   const isNew = invoice.id === 'new';
+  const isDraft = invoice.status === 'draft';
+  const canEdit = isDraft || invoice.status === 'canceled';
+  const canIssue = isDraft && !isNew;
 
   /**
    * Handler for validation errors - shows toast with first error
@@ -183,6 +188,30 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     } finally {
       setIsGeneratingPdf(false);
     }
+  };
+
+  const handleIssueInvoice = async () => {
+    if (!canIssue) return;
+
+    Alert.alert(
+      t('issueInvoice'),
+      t('issueInvoiceConfirmation'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('issue'),
+          onPress: async () => {
+            try {
+              await issueInvoice.mutateAsync(invoice.id);
+              toast.success(t('invoiceIssued'));
+              router.back();
+            } catch (error: any) {
+              toast.error(t(error.response?.data?.message || 'unknownErrorOccurred'));
+            }
+          },
+        },
+      ]
+    );
   };
 
   // Update line items in form when local state changes
@@ -321,20 +350,22 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         : `${t('invoice')} #${invoice.invoiceNumber}`,
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit, onValidationError)}
-            disabled={
-              createInvoice.isPending || updateInvoice.isPending || isDeleting
-            }
-          >
-            {createInvoice.isPending || updateInvoice.isPending ? (
-              <ActivityIndicator size="small" color={theme.primary} />
-            ) : (
-              <Ionicons name="save-outline" size={24} color={theme.primary} />
-            )}
-          </TouchableOpacity>
+          {canEdit && (
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit, onValidationError)}
+              disabled={
+                createInvoice.isPending || updateInvoice.isPending || isDeleting
+              }
+            >
+              {createInvoice.isPending || updateInvoice.isPending ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <Ionicons name="save-outline" size={24} color={theme.primary} />
+              )}
+            </TouchableOpacity>
+          )}
 
-          {!isNew && (
+          {!isNew && canEdit && (
             <TouchableOpacity
               onPress={handleDeleteInvoice}
               disabled={
@@ -804,6 +835,74 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 )}
                 <ButtonText>{t('generatePdf')}</ButtonText>
               </Button>
+
+              {/* Issue Invoice Button */}
+              {canIssue && (
+                <Button
+                  onPress={handleIssueInvoice}
+                  disabled={issueInvoice.isPending}
+                  style={{ flexDirection: 'row', gap: 8, backgroundColor: theme.success }}
+                >
+                  {issueInvoice.isPending ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <ButtonIcon name="checkmark-circle-outline" />
+                  )}
+                  <ButtonText>{t('issueInvoice')}</ButtonText>
+                </Button>
+              )}
+
+              {/* Payment Info for issued invoices */}
+              {!isDraft && invoice.status !== 'canceled' && (
+                <View style={{
+                  padding: 12,
+                  backgroundColor: theme.card,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: theme.border,
+                  gap: 8,
+                }}>
+                  <ThemedText style={{ fontWeight: 'bold' }}>
+                    {t('paymentStatus')}
+                  </ThemedText>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <ThemedText>{t('amountPaid')}:</ThemedText>
+                    <ThemedText style={{ fontWeight: '600' }}>
+                      CA${Number(invoice.amountPaid).toFixed(2)}
+                    </ThemedText>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <ThemedText>{t('balanceDue')}:</ThemedText>
+                    <ThemedText style={{ fontWeight: '600', color: invoice.balanceDue > 0 ? theme.destructive : theme.success }}>
+                      CA${Number(invoice.balanceDue).toFixed(2)}
+                    </ThemedText>
+                  </View>
+                  {invoice.balanceDue > 0 && (
+                    <Button
+                      onPress={() => router.push(`/(app)/invoices/${invoice.id}/payment`)}
+                      variant="default"
+                      style={{ marginTop: 8 }}
+                    >
+                      <ButtonText>{t('recordPayment')}</ButtonText>
+                    </Button>
+                  )}
+                </View>
+              )}
+
+              {/* Draft Note */}
+              {isDraft && !isNew && (
+                <View style={{
+                  padding: 12,
+                  backgroundColor: '#f59e0b20',
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: '#f59e0b',
+                }}>
+                  <ThemedText style={{ color: '#f59e0b', fontSize: 12 }}>
+                    {t('draftInvoiceNote')}
+                  </ThemedText>
+                </View>
+              )}
             </View>
           )}
         </View>
