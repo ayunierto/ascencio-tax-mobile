@@ -5,7 +5,7 @@ export const useIssueInvoiceMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: issueInvoiceAction,
+    mutationFn: (id: string) => issueInvoiceAction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['invoice'] });

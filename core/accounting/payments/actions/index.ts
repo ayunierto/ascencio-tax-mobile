@@ -1,4 +1,4 @@
-import { api } from '@/core/api';
+import { api } from '@/core/api/api';
 import { Payment, AccountReceivable } from '@ascencio/shared/interfaces';
 
 export const recordPaymentAction = async (paymentData: {

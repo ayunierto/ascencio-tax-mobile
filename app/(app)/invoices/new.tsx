@@ -9,6 +9,7 @@ export default function NewInvoiceScreen() {
   const emptyInvoice: Invoice = {
     id: 'new',
     userId: '',
+    fromCompanyId: '', // Required field
     invoiceNumber: '',
     invoiceYear: new Date().getFullYear(),
     billToClientId: '',
@@ -22,7 +23,7 @@ export default function NewInvoiceScreen() {
     total: 0,
     amountPaid: 0,
     balanceDue: 0,
-    status: 'pending',
+    status: 'draft',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     lineItems: [],
