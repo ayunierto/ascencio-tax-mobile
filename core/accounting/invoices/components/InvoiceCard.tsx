@@ -66,8 +66,8 @@ export const InvoiceCard = ({
   const statusColor = getStatusColor(invoice.status);
 
   const getBillToName = () => {
-    if (invoice.billToFullName) {
-      return invoice.billToFullName;
+    if (invoice.billToClient) {
+      return invoice.billToClient.fullName;
     }
     return t('noRecipient');
   };

@@ -40,6 +40,7 @@ import {
   useGeneratePdfMutation,
 } from '../hooks';
 import { useCompanies } from '../../companies/hooks';
+import { useClients } from '../../clients/hooks';
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -78,6 +79,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const { data: companiesData } = useCompanies();
   const companies = companiesData?.items ?? [];
 
+  const { data: clientsData } = useClients();
+  const clients = clientsData?.items ?? [];
+
   const {
     control,
     handleSubmit,
@@ -88,11 +92,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     resolver: zodResolver(createInvoiceSchema),
     defaultValues: {
       fromCompanyId: invoice.fromCompanyId,
-      billToFullName: invoice.billToFullName || '',
-      billToAddress: invoice.billToAddress || '',
-      billToBusinessNumber: invoice.billToBusinessNumber || '',
-      billToEmail: invoice.billToEmail || '',
-      billToPhone: invoice.billToPhone || '',
+      billToClientId: invoice.billToClientId || '',
       taxRate: invoice.taxRate ?? 13,
       description: invoice.description,
       notes: invoice.notes,
@@ -194,7 +194,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         description: item.description,
         quantity: item.quantity,
         price: item.price,
-      })),
+      }))
     );
   };
 
@@ -218,7 +218,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const updateLineItem = (
     id: string,
     field: keyof LineItemLocal,
-    value: string | number,
+    value: string | number
   ) => {
     const newItems = lineItems.map((item) => {
       if (item.id === id) {
@@ -232,7 +232,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const onSubmit = async (values: any) => {
     // Validate line items
     const validLineItems = lineItems.filter(
-      (item) => item.description.trim() !== '',
+      (item) => item.description.trim() !== ''
     );
     if (validLineItems.length === 0) {
       toast.error(t('atLeastOneLineItemRequired'));
@@ -247,10 +247,6 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         price: item.price,
       })),
       // Clean empty strings
-      billToEmail: values.billToEmail || undefined,
-      billToPhone: values.billToPhone || undefined,
-      billToAddress: values.billToAddress || undefined,
-      billToBusinessNumber: values.billToBusinessNumber || undefined,
       logoUrl: values.logoUrl || undefined,
     };
 
@@ -264,10 +260,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           },
           onError: (error) => {
             toast.error(
-              t(error.response?.data.message || 'unknownErrorOccurred'),
+              t(error.response?.data.message || 'unknownErrorOccurred')
             );
           },
-        },
+        }
       );
       return;
     }
@@ -302,8 +298,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   t(
                     error.response?.data?.message ||
                       error.message ||
-                      'canNotDelete',
-                  ),
+                      'canNotDelete'
+                  )
                 );
                 setIsDeleting(false);
               },
@@ -441,89 +437,55 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
             />
           </View>
 
-          {/* Section: Bill To */}
+          {/* Section: Bill To (Client Selector) */}
           <View>
-            <ThemedText
-              style={{ marginBottom: 8, fontWeight: '600', fontSize: 16 }}
-            >
-              {t('billTo')}
-            </ThemedText>
-
-            <View style={{ gap: 12 }}>
-              <Controller
-                control={control}
-                name="billToFullName"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={`${t('fullName')} *`}
-                    onChangeText={onChange}
+            <Controller
+              control={control}
+              name="billToClientId"
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <Select
                     value={value || ''}
-                    error={!!errors.billToFullName}
-                    errorMessage={getErrorMessage(errors.billToFullName)}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="billToEmail"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={t('email')}
-                    onChangeText={onChange}
-                    value={value || ''}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    error={!!errors.billToEmail}
-                    errorMessage={getErrorMessage(errors.billToEmail)}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="billToPhone"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={t('phone')}
-                    onChangeText={onChange}
-                    value={value || ''}
-                    keyboardType="phone-pad"
-                    error={!!errors.billToPhone}
-                    errorMessage={getErrorMessage(errors.billToPhone)}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="billToAddress"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={t('address')}
-                    onChangeText={onChange}
-                    value={value || ''}
-                    multiline
-                    error={!!errors.billToAddress}
-                    errorMessage={getErrorMessage(errors.billToAddress)}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="billToBusinessNumber"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={t('businessNumber')}
-                    onChangeText={onChange}
-                    value={value || ''}
-                    error={!!errors.billToBusinessNumber}
-                    errorMessage={getErrorMessage(errors.billToBusinessNumber)}
-                  />
-                )}
-              />
-            </View>
+                    onValueChange={(val) => onChange(val)}
+                    options={[
+                      { label: t('selectClient'), value: '' },
+                      ...clients.map((client) => ({
+                        label: client.fullName,
+                        value: client.id,
+                      })),
+                    ]}
+                  >
+                    <SelectTrigger
+                      placeholder={t('selectClient')}
+                      labelText={`${t('billTo')} *`}
+                    />
+                    <SelectContent>
+                      <SelectItem label={t('selectClient')} value="" />
+                      {clients.map((client) => (
+                        <SelectItem
+                          key={client.id}
+                          label={`${client.fullName}${
+                            client.email ? ` (${client.email})` : ''
+                          }`}
+                          value={client.id}
+                        />
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.billToClientId && (
+                    <ThemedText
+                      style={{
+                        color: theme.destructive,
+                        fontSize: 12,
+                        marginTop: 4,
+                      }}
+                    >
+                      {getErrorMessage(errors.billToClientId)}
+                    </ThemedText>
+                  )}
+                </View>
+              )}
+            />
           </View>
 
           {/* Section: Dates */}

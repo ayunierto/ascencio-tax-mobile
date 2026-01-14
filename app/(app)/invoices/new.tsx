@@ -11,7 +11,7 @@ export default function NewInvoiceScreen() {
     userId: '',
     invoiceNumber: '',
     invoiceYear: new Date().getFullYear(),
-    billToType: 'company',
+    billToClientId: '',
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       .toISOString()

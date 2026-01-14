@@ -81,7 +81,7 @@ export function Select({
       });
       return out;
     },
-    [],
+    []
   );
 
   useEffect(() => {
@@ -112,14 +112,14 @@ export function Select({
       setLabel(lbl);
       setOpen(false);
     },
-    [onValueChange],
+    [onValueChange]
   );
 
   const handleSetOpen = useCallback(
     (val: boolean) => {
       if (!disabled) setOpen(val);
     },
-    [disabled],
+    [disabled]
   );
 
   const contextValue = useMemo(
@@ -132,7 +132,7 @@ export function Select({
       error,
       disabled,
     }),
-    [value, label, setValue, open, handleSetOpen, error, disabled],
+    [value, label, setValue, open, handleSetOpen, error, disabled]
   );
 
   const helperTextStyles = useMemo(
@@ -140,7 +140,7 @@ export function Select({
       styles.helperTextBase,
       error && [styles.errorMessage, errorTextStyle],
     ],
-    [error, errorTextStyle],
+    [error, errorTextStyle]
   );
 
   return (
@@ -185,7 +185,7 @@ export function SelectTrigger({
       disabled && styles.triggerDisabled,
       style,
     ],
-    [error, disabled, style],
+    [error, disabled, style]
   );
 
   const floatingLabelStyles = useMemo(
@@ -193,7 +193,7 @@ export function SelectTrigger({
       styles.floatingLabel,
       { color: error ? theme.destructive : theme.primary },
     ],
-    [error],
+    [error]
   );
 
   const triggerTextStyles = useMemo(
@@ -206,7 +206,7 @@ export function SelectTrigger({
         ? theme.foreground
         : theme.muted,
     }),
-    [label, disabled, error],
+    [label, disabled, error]
   );
 
   return (
@@ -228,7 +228,7 @@ export function SelectTrigger({
         <Ionicons
           name="chevron-down-outline"
           color={theme.foreground}
-          size={24}
+          size={18}
         />
       </Text>
     </TouchableOpacity>
@@ -250,7 +250,7 @@ export function SelectContent({
 
   const contentStyles = useMemo(
     () => [styles.content, { maxHeight }],
-    [maxHeight],
+    [maxHeight]
   );
 
   return (
@@ -318,7 +318,7 @@ export function SelectItem({
       isDisabled && styles.itemDisabled,
       style,
     ],
-    [isSelected, isDisabled, style],
+    [isSelected, isDisabled, style]
   );
 
   const textStyles = useMemo(
@@ -327,7 +327,7 @@ export function SelectItem({
       isSelected && styles.itemTextSelected,
       isDisabled && styles.itemTextDisabled,
     ],
-    [isSelected, isDisabled],
+    [isSelected, isDisabled]
   );
 
   return (
@@ -343,7 +343,7 @@ export function SelectItem({
       <Text style={textStyles}>{label}</Text>
       {isSelected && (
         <Text style={styles.checkmark}>
-          <Ionicons name="checkmark" size={18} />
+          <Ionicons name="checkmark" />
         </Text>
       )}
     </TouchableOpacity>
