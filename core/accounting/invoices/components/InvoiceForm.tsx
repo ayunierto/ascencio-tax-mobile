@@ -87,13 +87,6 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const { data: clientsData } = useClients();
   const clients = clientsData?.items ?? [];
 
-  // Auto-select first company if user has only one and no company is selected
-  React.useEffect(() => {
-    if (companies.length === 1 && !invoice.fromCompanyId) {
-      setValue('fromCompanyId', companies[0].id);
-    }
-  }, [companies, invoice.fromCompanyId, setValue]);
-
   const {
     control,
     handleSubmit,
@@ -451,17 +444,17 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
               <View
                 style={{
                   padding: 12,
-                  backgroundColor: theme.colors.blue[50],
+                  backgroundColor: '#eff6ff',
                   borderRadius: 8,
                   borderLeftWidth: 4,
-                  borderLeftColor: theme.colors.blue[500],
+                  borderLeftColor: '#3b82f6',
                   marginBottom: 12,
                   flexDirection: 'row',
                   gap: 8,
                 }}
               >
-                <Ionicons name="information-circle" size={20} color={theme.colors.blue[500]} />
-                <ThemedText style={{ flex: 1, fontSize: 14, color: theme.colors.blue[700] }}>
+                <Ionicons name="information-circle" size={20} color="#3b82f6" />
+                <ThemedText style={{ flex: 1, fontSize: 14, color: '#1e40af' }}>
                   {t('soleProprietorAutoCreate')}
                 </ThemedText>
               </View>
