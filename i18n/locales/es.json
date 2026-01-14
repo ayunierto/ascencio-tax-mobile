@@ -278,7 +278,6 @@
   "overdue": "Vencido",
   "canceled": "Cancelado",
   "draft": "Borrador",
-  "issued": "Emitida",
   "partiallyPaid": "Parcialmente Pagado",
   "void": "Anulada",
   "billTo": "Facturar a",
@@ -355,5 +354,7 @@
   "enterPhone": "Ingrese número de teléfono",
   "enterAddress": "Ingrese dirección",
   "address": "Dirección",
-  "phone": "Teléfono"
+  "phone": "Teléfono",
+  "soleProprietor": "Empresa Unipersonal",
+  "soleProprietorAutoCreate": "Se creará automáticamente una empresa 'Sole Proprietor' con los datos de tu perfil. Podrás editarla después en Configuración de Empresa."
 }

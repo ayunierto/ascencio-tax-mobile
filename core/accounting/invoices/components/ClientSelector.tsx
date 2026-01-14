@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, FlatList, Modal } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Client } from '@ascencio/shared/interfaces';
@@ -31,7 +37,7 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
     (client) =>
       client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.phone.includes(searchQuery),
+      client.phone.includes(searchQuery)
   );
 
   const handleSelectClient = (client: Client) => {
@@ -50,7 +56,13 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
   return (
     <View style={{ gap: 12 }}>
       {/* Header with toggle */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
           {t('billTo')}
         </ThemedText>
@@ -62,23 +74,23 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
             gap: 6,
             paddingHorizontal: 12,
             paddingVertical: 6,
-            backgroundColor: isManualMode ? theme.colors.primary : theme.colors.gray[100],
+            backgroundColor: isManualMode ? theme.muted : theme.primary,
             borderRadius: 8,
           }}
         >
           <Ionicons
-            name={isManualMode ? 'create-outline' : 'search-outline'}
+            name={isManualMode ? 'search-outline' : 'create-outline'}
             size={16}
-            color={isManualMode ? '#fff' : theme.colors.gray[600]}
+            color={isManualMode ? theme.mutedForeground : '#fff'}
           />
           <ThemedText
             style={{
               fontSize: 12,
-              color: isManualMode ? '#fff' : theme.colors.gray[600],
+              color: isManualMode ? theme.mutedForeground : '#fff',
               fontWeight: '500',
             }}
           >
-            {isManualMode ? t('manualEntry') : t('searchClient')}
+            {isManualMode ? t('searchClient') : t('manualEntry')}
           </ThemedText>
         </TouchableOpacity>
       </View>
@@ -90,10 +102,10 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
             <View
               style={{
                 padding: 12,
-                backgroundColor: theme.colors.gray[50],
+                backgroundColor: theme.muted,
                 borderRadius: 8,
                 borderWidth: 1,
-                borderColor: theme.colors.gray[200],
+                borderColor: theme.muted,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -103,11 +115,11 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                 <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
                   {selectedClient.fullName}
                 </ThemedText>
-                <ThemedText style={{ fontSize: 14, color: theme.colors.gray[600] }}>
+                <ThemedText style={{ fontSize: 14, color: theme.muted }}>
                   {selectedClient.email}
                 </ThemedText>
                 {selectedClient.phone && (
-                  <ThemedText style={{ fontSize: 14, color: theme.colors.gray[600] }}>
+                  <ThemedText style={{ fontSize: 14, color: theme.muted }}>
                     {selectedClient.phone}
                   </ThemedText>
                 )}
@@ -119,7 +131,7 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                 }}
                 style={{ padding: 8 }}
               >
-                <Ionicons name="close-circle" size={24} color={theme.colors.gray[400]} />
+                <Ionicons name="close-circle" size={24} color={theme.muted} />
               </TouchableOpacity>
             </View>
           ) : (
@@ -130,18 +142,18 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                   flexDirection: 'row',
                   alignItems: 'center',
                   padding: 12,
-                  backgroundColor: '#fff',
+                  backgroundColor: theme.background,
                   borderRadius: 8,
                   borderWidth: 1,
-                  borderColor: theme.colors.gray[300],
+                  borderColor: theme.muted,
                   gap: 8,
                 }}
               >
-                <Ionicons name="search" size={20} color={theme.colors.gray[400]} />
-                <ThemedText style={{ flex: 1, color: theme.colors.gray[500] }}>
+                <Ionicons name="search" size={20} color={theme.muted} />
+                <ThemedText style={{ flex: 1, color: theme.muted }}>
                   {t('searchOrSelectClient')}
                 </ThemedText>
-                <Ionicons name="chevron-down" size={20} color={theme.colors.gray[400]} />
+                <Ionicons name="chevron-down" size={20} color={theme.muted} />
               </TouchableOpacity>
 
               {/* Dropdown Modal */}
@@ -176,13 +188,13 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: theme.colors.gray[50],
+                        backgroundColor: theme.muted,
                         borderRadius: 8,
                         paddingHorizontal: 12,
                         marginBottom: 12,
                       }}
                     >
-                      <Ionicons name="search" size={20} color={theme.colors.gray[400]} />
+                      <Ionicons name="search" size={20} color={theme.muted} />
                       <TextInput
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -196,7 +208,11 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                       />
                       {searchQuery.length > 0 && (
                         <TouchableOpacity onPress={() => setSearchQuery('')}>
-                          <Ionicons name="close-circle" size={20} color={theme.colors.gray[400]} />
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color={theme.muted}
+                          />
                         </TouchableOpacity>
                       )}
                     </View>
@@ -208,14 +224,24 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                         flexDirection: 'row',
                         alignItems: 'center',
                         padding: 12,
-                        backgroundColor: theme.colors.primary + '10',
+                        backgroundColor: theme.muted,
                         borderRadius: 8,
                         marginBottom: 12,
                         gap: 8,
                       }}
                     >
-                      <Ionicons name="add-circle" size={24} color={theme.colors.primary} />
-                      <ThemedText style={{ flex: 1, fontWeight: '600', color: theme.colors.primary }}>
+                      <Ionicons
+                        name="add-circle"
+                        size={24}
+                        color={theme.primary}
+                      />
+                      <ThemedText
+                        style={{
+                          flex: 1,
+                          fontWeight: '600',
+                          color: theme.primary,
+                        }}
+                      >
                         {t('enterClientManually')}
                       </ThemedText>
                     </TouchableOpacity>
@@ -230,17 +256,23 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                           style={{
                             padding: 12,
                             borderBottomWidth: 1,
-                            borderBottomColor: theme.colors.gray[100],
+                            borderBottomColor: theme.muted,
                           }}
                         >
-                          <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
+                          <ThemedText
+                            style={{ fontSize: 16, fontWeight: '600' }}
+                          >
                             {item.fullName}
                           </ThemedText>
-                          <ThemedText style={{ fontSize: 14, color: theme.colors.gray[600] }}>
+                          <ThemedText
+                            style={{ fontSize: 14, color: theme.muted }}
+                          >
                             {item.email}
                           </ThemedText>
                           {item.phone && (
-                            <ThemedText style={{ fontSize: 14, color: theme.colors.gray[600] }}>
+                            <ThemedText
+                              style={{ fontSize: 14, color: theme.muted }}
+                            >
                               {item.phone}
                             </ThemedText>
                           )}
@@ -248,8 +280,14 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                       )}
                       ListEmptyComponent={
                         <View style={{ padding: 20, alignItems: 'center' }}>
-                          <Ionicons name="search-outline" size={48} color={theme.colors.gray[300]} />
-                          <ThemedText style={{ marginTop: 12, color: theme.colors.gray[500] }}>
+                          <Ionicons
+                            name="search-outline"
+                            size={48}
+                            color={theme.muted}
+                          />
+                          <ThemedText
+                            style={{ marginTop: 12, color: theme.muted }}
+                          >
                             {t('noClientsFound')}
                           </ThemedText>
                         </View>

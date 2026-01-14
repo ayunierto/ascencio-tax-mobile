@@ -87,6 +87,13 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const { data: clientsData } = useClients();
   const clients = clientsData?.items ?? [];
 
+  // Auto-select first company if user has only one and no company is selected
+  React.useEffect(() => {
+    if (companies.length === 1 && !invoice.fromCompanyId) {
+      setValue('fromCompanyId', companies[0].id);
+    }
+  }, [companies, invoice.fromCompanyId, setValue]);
+
   const {
     control,
     handleSubmit,
@@ -96,7 +103,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   } = useForm({
     resolver: zodResolver(createInvoiceSchema),
     defaultValues: {
-      fromCompanyId: invoice.fromCompanyId,
+      fromCompanyId: invoice.fromCompanyId || (companies.length === 1 ? companies[0].id : ''),
       billToClientId: invoice.billToClientId || '',
       billToName: invoice.billToName || '',
       billToEmail: invoice.billToEmail || '',
@@ -201,25 +208,23 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const handleIssueInvoice = async () => {
     if (!canIssue) return;
 
-    Alert.alert(
-      t('issueInvoice'),
-      t('issueInvoiceConfirmation'),
-      [
-        { text: t('cancel'), style: 'cancel' },
-        {
-          text: t('issue'),
-          onPress: async () => {
-            try {
-              await issueInvoice.mutateAsync(invoice.id);
-              toast.success(t('invoiceIssued'));
-              router.back();
-            } catch (error: any) {
-              toast.error(t(error.response?.data?.message || 'unknownErrorOccurred'));
-            }
-          },
+    Alert.alert(t('issueInvoice'), t('issueInvoiceConfirmation'), [
+      { text: t('cancel'), style: 'cancel' },
+      {
+        text: t('issue'),
+        onPress: async () => {
+          try {
+            await issueInvoice.mutateAsync(invoice.id);
+            toast.success(t('invoiceIssued'));
+            router.back();
+          } catch (error: any) {
+            toast.error(
+              t(error.response?.data?.message || 'unknownErrorOccurred')
+            );
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   // Update line items in form when local state changes
@@ -442,6 +447,26 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
           {/* Section: From Company */}
           <View>
+            {companies.length === 0 && (
+              <View
+                style={{
+                  padding: 12,
+                  backgroundColor: theme.colors.blue[50],
+                  borderRadius: 8,
+                  borderLeftWidth: 4,
+                  borderLeftColor: theme.colors.blue[500],
+                  marginBottom: 12,
+                  flexDirection: 'row',
+                  gap: 8,
+                }}
+              >
+                <Ionicons name="information-circle" size={20} color={theme.colors.blue[500]} />
+                <ThemedText style={{ flex: 1, fontSize: 14, color: theme.colors.blue[700] }}>
+                  {t('soleProprietorAutoCreate')}
+                </ThemedText>
+              </View>
+            )}
+
             <Controller
               control={control}
               name="fromCompanyId"
@@ -450,16 +475,17 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   value={value || ''}
                   onValueChange={(val) => onChange(val || undefined)}
                   options={[
-                    { label: t('selectCompany'), value: '' },
+                    { label: companies.length === 0 ? t('soleProprietor') : t('selectCompany'), value: '' },
                     ...companies.map((company) => ({
                       label: company.name,
                       value: company.id,
                     })),
                   ]}
+                  disabled={companies.length === 0}
                 >
                   <SelectTrigger
-                    placeholder={t('selectCompany')}
-                    labelText={`${t('fromCompany')} (${t('optional')})`}
+                    placeholder={companies.length === 0 ? t('soleProprietor') : t('selectCompany')}
+                    labelText={t('fromCompany')}
                   />
                   <SelectContent>
                     <SelectItem label={t('selectCompany')} value="" />
@@ -532,7 +558,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       onChangeText={onChange}
                       placeholder={t('enterClientName')}
                       editable={canEdit}
-                      error={errors.billToName ? getErrorMessage(errors.billToName) : undefined}
+                      error={!!errors.billToName}
+                      errorMessage={getErrorMessage(errors.billToName)}
                     />
                   )}
                 />
@@ -548,7 +575,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       placeholder={t('enterEmail')}
                       keyboardType="email-address"
                       editable={canEdit}
-                      error={errors.billToEmail ? getErrorMessage(errors.billToEmail) : undefined}
+                      error={!!errors.billToEmail}
+                      errorMessage={getErrorMessage(errors.billToEmail)}
                     />
                   )}
                 />
@@ -564,7 +592,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       placeholder={t('enterPhone')}
                       keyboardType="phone-pad"
                       editable={canEdit}
-                      error={errors.billToPhone ? getErrorMessage(errors.billToPhone) : undefined}
+                      error={!!errors.billToPhone}
+                      errorMessage={getErrorMessage(errors.billToPhone)}
                     />
                   )}
                 />
@@ -581,7 +610,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       multiline
                       numberOfLines={3}
                       editable={canEdit}
-                      error={errors.billToAddress ? getErrorMessage(errors.billToAddress) : undefined}
+                      error={!!errors.billToAddress}
+                      errorMessage={getErrorMessage(errors.billToAddress)}
                     />
                   )}
                 />
@@ -911,7 +941,11 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 <Button
                   onPress={handleIssueInvoice}
                   disabled={issueInvoice.isPending}
-                  style={{ flexDirection: 'row', gap: 8, backgroundColor: theme.success }}
+                  style={{
+                    flexDirection: 'row',
+                    gap: 8,
+                    backgroundColor: theme.success,
+                  }}
                 >
                   {issueInvoice.isPending ? (
                     <ActivityIndicator size="small" color="white" />
@@ -924,32 +958,54 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
               {/* Payment Info for issued invoices */}
               {!isDraft && invoice.status !== 'canceled' && (
-                <View style={{
-                  padding: 12,
-                  backgroundColor: theme.card,
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  borderColor: theme.border,
-                  gap: 8,
-                }}>
+                <View
+                  style={{
+                    padding: 12,
+                    backgroundColor: theme.card,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                    gap: 8,
+                  }}
+                >
                   <ThemedText style={{ fontWeight: 'bold' }}>
                     {t('paymentStatus')}
                   </ThemedText>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}
+                  >
                     <ThemedText>{t('amountPaid')}:</ThemedText>
                     <ThemedText style={{ fontWeight: '600' }}>
                       CA${Number(invoice.amountPaid).toFixed(2)}
                     </ThemedText>
                   </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}
+                  >
                     <ThemedText>{t('balanceDue')}:</ThemedText>
-                    <ThemedText style={{ fontWeight: '600', color: invoice.balanceDue > 0 ? theme.destructive : theme.success }}>
+                    <ThemedText
+                      style={{
+                        fontWeight: '600',
+                        color:
+                          invoice.balanceDue > 0
+                            ? theme.destructive
+                            : theme.success,
+                      }}
+                    >
                       CA${Number(invoice.balanceDue).toFixed(2)}
                     </ThemedText>
                   </View>
                   {invoice.balanceDue > 0 && (
                     <Button
-                      onPress={() => router.push(`/(app)/invoices/${invoice.id}/payment`)}
+                      onPress={() =>
+                        router.push(`/(app)/invoices/${invoice.id}/payment`)
+                      }
                       variant="default"
                       style={{ marginTop: 8 }}
                     >
@@ -961,13 +1017,15 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
               {/* Draft Note */}
               {isDraft && !isNew && (
-                <View style={{
-                  padding: 12,
-                  backgroundColor: '#f59e0b20',
-                  borderRadius: 8,
-                  borderWidth: 1,
-                  borderColor: '#f59e0b',
-                }}>
+                <View
+                  style={{
+                    padding: 12,
+                    backgroundColor: '#f59e0b20',
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: '#f59e0b',
+                  }}
+                >
                   <ThemedText style={{ color: '#f59e0b', fontSize: 12 }}>
                     {t('draftInvoiceNote')}
                   </ThemedText>

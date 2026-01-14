@@ -315,7 +315,6 @@
   "overdueInvoices": "Overdue invoices",
   "pastAppointments": "Past Appointments",
   "noRecipient": "No recipient",
-  "issued": "Issued",
   "due": "Due",
   "selectCompany": "Select a company",
   "selectClient": "Select a client",
@@ -358,5 +357,7 @@
   "enterPhone": "Enter phone number",
   "enterAddress": "Enter address",
   "address": "Address",
-  "phone": "Phone"
+  "phone": "Phone",
+  "soleProprietor": "Sole Proprietor",
+  "soleProprietorAutoCreate": "A 'Sole Proprietor' company will be automatically created with your profile data. You can edit it later in Company Settings."
 }
