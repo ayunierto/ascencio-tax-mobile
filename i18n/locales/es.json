@@ -257,6 +257,7 @@
   "department": "Departamento",
 
   "invoice": "Factura",
+  "myInvoices": "Mis facturas",
   "invoiceNumber": "Número de factura",
   "invoiceDate": "Fecha de factura",
   "dueDate": "Fecha de vencimiento",

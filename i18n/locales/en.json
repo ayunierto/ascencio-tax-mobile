@@ -175,7 +175,6 @@
 
   "dashboard": "Dashboard",
   "expenses": "Expenses",
-  "invoices": "Invoices",
   "appointments": "Appointments",
   "services": "Services",
   "settings": "Settings",
@@ -260,6 +259,8 @@
   "department": "Department",
 
   "invoice": "Invoice",
+  "invoices": "Invoices",
+  "myInvoices": "My Invoices",
   "invoiceNumber": "Invoice Number",
   "invoiceDate": "Invoice Date",
   "dueDate": "Due Date",

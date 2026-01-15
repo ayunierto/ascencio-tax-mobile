@@ -1,15 +1,12 @@
-import { useLocalSearchParams } from 'expo-router';
 import React, { useLayoutEffect } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/components/ui/theme';
-import { InvoiceForm, useInvoice } from '@/core/accounting/invoices';
-import Loader from '@/components/Loader';
-import { EmptyContent } from '@/core/components';
+import { InvoiceForm } from '@/core/accounting/invoices';
+import { Invoice } from '@ascencio/shared/interfaces';
 
-export default function InvoiceDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+export default function CreateInvoiceScreen() {
   const navigation: any = useNavigation();
 
   useLayoutEffect(() => {
@@ -54,33 +51,34 @@ export default function InvoiceDetailScreen() {
       }
     };
   }, [navigation]);
-  const { data: invoice, isPending, isError, error } = useInvoice(id!);
 
-  if (isPending) return <Loader />;
-
-  if (isError) {
-    return (
-      <EmptyContent
-        title="Error loading invoice"
-        subtitle={error?.message || 'Unknown error'}
-        icon="alert-circle-outline"
-      />
-    );
-  }
-
-  if (!invoice) {
-    return (
-      <EmptyContent
-        title="Invoice not found"
-        subtitle="The invoice you're looking for doesn't exist"
-        icon="document-text-outline"
-      />
-    );
-  }
+  // Create an empty invoice template for the form
+  const emptyInvoice: Invoice = {
+    id: 'new',
+    userId: '',
+    fromCompanyId: '', // Required field
+    invoiceNumber: '',
+    invoiceYear: new Date().getFullYear(),
+    billToClientId: '',
+    issueDate: new Date().toISOString().split('T')[0],
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
+    subtotal: 0,
+    taxRate: 13,
+    taxAmount: 0,
+    total: 0,
+    amountPaid: 0,
+    balanceDue: 0,
+    status: 'draft',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lineItems: [],
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <InvoiceForm invoice={invoice} />
+      <InvoiceForm invoice={emptyInvoice} />
     </View>
   );
 }

@@ -25,7 +25,7 @@ export default function InvoicesIndexScreen() {
     );
 
     const headerRight = () => (
-      <TouchableOpacity onPress={() => router.push('/(app)/invoices/new')}>
+      <TouchableOpacity onPress={() => router.push('/(app)/invoices/create')}>
         <Ionicons name="add-circle-outline" size={28} color={theme.primary} />
       </TouchableOpacity>
     );
@@ -37,7 +37,7 @@ export default function InvoicesIndexScreen() {
 
     return () => {
       try {
-        targetNav.setOptions({ headerRight: undefined });
+        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
       } catch (e) {
         // ignore
       }

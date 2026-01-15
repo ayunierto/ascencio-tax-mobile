@@ -104,7 +104,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   } = useForm({
     resolver: zodResolver(isNew ? createInvoiceSchema : updateInvoiceSchema),
     defaultValues: {
-      fromCompanyId: invoice.fromCompanyId || (companies.length === 1 ? companies[0].id : ''),
+      fromCompanyId:
+        invoice.fromCompanyId ||
+        (companies.length === 1 ? companies[0].id : ''),
       billToClientId: invoice.billToClientId || '',
       billToName: invoice.billToName || '',
       billToEmail: invoice.billToEmail || '',
@@ -282,7 +284,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     const newItems = lineItems.map((item) => {
       if (item.id === id) {
         if (field === 'quantity' || field === 'price') {
-          return { ...item, [field]: toNumber(value, field === 'quantity' ? 1 : 0) };
+          return {
+            ...item,
+            [field]: toNumber(value, field === 'quantity' ? 1 : 0),
+          };
         }
         return { ...item, [field]: value };
       }
@@ -515,7 +520,13 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   value={value || ''}
                   onValueChange={(val) => onChange(val || undefined)}
                   options={[
-                    { label: companies.length === 0 ? t('soleProprietor') : t('selectCompany'), value: '' },
+                    {
+                      label:
+                        companies.length === 0
+                          ? t('soleProprietor')
+                          : t('selectCompany'),
+                      value: '',
+                    },
                     ...companies.map((company) => ({
                       label: company.name,
                       value: company.id,
@@ -526,7 +537,11 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   errorMessage={getErrorMessage(errors.fromCompanyId)}
                 >
                   <SelectTrigger
-                    placeholder={companies.length === 0 ? t('soleProprietor') : t('selectCompany')}
+                    placeholder={
+                      companies.length === 0
+                        ? t('soleProprietor')
+                        : t('selectCompany')
+                    }
                     labelText={t('fromCompany')}
                   />
                   <SelectContent>
@@ -841,7 +856,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   }
                   style={{ marginBottom: 8 }}
                   error={!!errors.lineItems?.[index]?.description}
-                  errorMessage={getErrorMessage(errors.lineItems?.[index]?.description)}
+                  errorMessage={getErrorMessage(
+                    errors.lineItems?.[index]?.description
+                  )}
                 />
 
                 <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -861,7 +878,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     keyboardType="numeric"
                     style={{ flex: 1 }}
                     error={!!errors.lineItems?.[index]?.quantity}
-                    errorMessage={getErrorMessage(errors.lineItems?.[index]?.quantity)}
+                    errorMessage={getErrorMessage(
+                      errors.lineItems?.[index]?.quantity
+                    )}
                   />
                   <Input
                     label={t('price')}
@@ -879,7 +898,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     keyboardType="decimal-pad"
                     style={{ flex: 1 }}
                     error={!!errors.lineItems?.[index]?.price}
-                    errorMessage={getErrorMessage(errors.lineItems?.[index]?.price)}
+                    errorMessage={getErrorMessage(
+                      errors.lineItems?.[index]?.price
+                    )}
                   />
                   <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                     <ThemedText style={{ color: theme.muted, fontSize: 11 }}>
