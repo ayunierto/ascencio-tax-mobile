@@ -479,6 +479,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     })),
                   ]}
                   disabled={companies.length === 0}
+                  error={!!errors.fromCompanyId}
+                  errorMessage={getErrorMessage(errors.fromCompanyId)}
                 >
                   <SelectTrigger
                     placeholder={companies.length === 0 ? t('soleProprietor') : t('selectCompany')}
@@ -795,6 +797,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     updateLineItem(item.id, 'description', text)
                   }
                   style={{ marginBottom: 8 }}
+                  error={!!errors.lineItems?.[index]?.description}
+                  errorMessage={getErrorMessage(errors.lineItems?.[index]?.description)}
                 />
 
                 <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -807,6 +811,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     }}
                     keyboardType="numeric"
                     style={{ flex: 1 }}
+                    error={!!errors.lineItems?.[index]?.quantity}
+                    errorMessage={getErrorMessage(errors.lineItems?.[index]?.quantity)}
                   />
                   <Input
                     label={t('price')}
@@ -817,6 +823,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     }}
                     keyboardType="decimal-pad"
                     style={{ flex: 1 }}
+                    error={!!errors.lineItems?.[index]?.price}
+                    errorMessage={getErrorMessage(errors.lineItems?.[index]?.price)}
                   />
                   <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                     <ThemedText style={{ color: theme.muted, fontSize: 11 }}>
@@ -850,8 +858,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   onChange(num);
                 }}
                 keyboardType="decimal-pad"
+                editable={canEdit}
                 error={!!errors.taxRate}
-                errorMessage={errors.taxRate?.message}
+                errorMessage={getErrorMessage(errors.taxRate)}
               />
             )}
           />
@@ -937,8 +946,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 value={value || ''}
                 multiline
                 numberOfLines={2}
+                editable={canEdit}
                 error={!!errors.description}
-                errorMessage={errors.description?.message}
+                errorMessage={getErrorMessage(errors.description)}
               />
             )}
           />
@@ -953,8 +963,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 value={value || ''}
                 multiline
                 numberOfLines={3}
+                editable={canEdit}
                 error={!!errors.notes}
-                errorMessage={errors.notes?.message}
+                errorMessage={getErrorMessage(errors.notes)}
                 helperText={t('notesHelperText')}
               />
             )}
