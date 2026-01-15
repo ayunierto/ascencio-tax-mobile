@@ -51,8 +51,12 @@ export const InvoicesList = () => {
   // Calculate stats
   const stats = {
     total: invoices?.items.length ?? 0,
-    totalAmount: invoices?.items.reduce((sum, inv) => sum + Number(inv.total), 0) ?? 0,
-    pending: invoices?.items.filter((i) => i.status === 'draft' || i.status === 'issued').length ?? 0,
+    totalAmount:
+      invoices?.items.reduce((sum, inv) => sum + Number(inv.total), 0) ?? 0,
+    pending:
+      invoices?.items.filter(
+        (i) => i.status === 'draft' || i.status === 'issued'
+      ).length ?? 0,
     paid: invoices?.items.filter((i) => i.status === 'paid').length ?? 0,
   };
 
@@ -131,7 +135,11 @@ export const InvoicesList = () => {
             {t('totalAmount')}
           </ThemedText>
           <ThemedText
-            style={{ fontWeight: 'bold', fontSize: 14, fontFamily: 'monospace' }}
+            style={{
+              fontWeight: 'bold',
+              fontSize: 14,
+              fontFamily: 'monospace',
+            }}
           >
             ${stats.totalAmount.toFixed(2)}
           </ThemedText>

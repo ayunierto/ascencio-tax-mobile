@@ -59,6 +59,11 @@ interface LineItemLocal {
 const generateLocalId = () =>
   `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+const toNumber = (value: unknown, fallback = 0) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+};
+
 export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -77,8 +82,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       return invoice.lineItems.map((item) => ({
         id: item.id,
         description: item.description,
-        quantity: item.quantity,
-        price: item.price,
+        quantity: toNumber(item.quantity, 1),
+        price: toNumber(item.price, 0),
       }));
     }
     return [{ id: generateLocalId(), description: '', quantity: 1, price: 0 }];
@@ -109,7 +114,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       billToProvince: invoice.billToProvince || '',
       billToPostalCode: invoice.billToPostalCode || '',
       billToCountry: invoice.billToCountry || '',
-      taxRate: invoice.taxRate ?? 13,
+      taxRate: toNumber(invoice.taxRate, 13),
       description: invoice.description || '',
       notes: invoice.notes || '',
       logoUrl: invoice.logoUrl || '',
@@ -121,8 +126,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           .split('T')[0],
       lineItems: invoice.lineItems?.map((item) => ({
         description: item.description,
-        quantity: item.quantity,
-        price: item.price,
+        quantity: toNumber(item.quantity, 1),
+        price: toNumber(item.price, 0),
       })) || [{ description: '', quantity: 1, price: 0 }],
       status: invoice.status || 'pending',
     },
@@ -236,10 +241,15 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
   // Update line items in form when local state changes
   const updateLineItemsInForm = (items: LineItemLocal[]) => {
-    setLineItems(items);
+    const normalized = items.map((item) => ({
+      ...item,
+      quantity: toNumber(item.quantity, 1),
+      price: toNumber(item.price, 0),
+    }));
+    setLineItems(normalized);
     setValue(
       'lineItems',
-      items.map((item) => ({
+      normalized.map((item) => ({
         description: item.description,
         quantity: item.quantity,
         price: item.price,
@@ -271,6 +281,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   ) => {
     const newItems = lineItems.map((item) => {
       if (item.id === id) {
+        if (field === 'quantity' || field === 'price') {
+          return { ...item, [field]: toNumber(value, field === 'quantity' ? 1 : 0) };
+        }
         return { ...item, [field]: value };
       }
       return item;
@@ -298,9 +311,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       ...values,
       lineItems: validLineItems.map((item) => ({
         description: item.description,
-        quantity: item.quantity,
-        price: item.price,
+        quantity: toNumber(item.quantity, 1),
+        price: toNumber(item.price, 0),
       })),
+      taxRate: toNumber(values.taxRate, 13),
       // Clean optional string fields
       description: cleanValue(values.description),
       notes: cleanValue(values.notes),
