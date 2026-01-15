@@ -278,6 +278,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       return;
     }
 
+    // Clean empty strings and convert to undefined for optional fields
+    const cleanValue = (val: any) => {
+      if (val === '' || val === null) return undefined;
+      return val;
+    };
+
     const submitData: CreateInvoiceRequest = {
       ...values,
       lineItems: validLineItems.map((item) => ({
@@ -285,8 +291,17 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         quantity: item.quantity,
         price: item.price,
       })),
-      // Clean empty strings
-      logoUrl: values.logoUrl || undefined,
+      // Clean optional string fields
+      description: cleanValue(values.description),
+      notes: cleanValue(values.notes),
+      logoUrl: cleanValue(values.logoUrl),
+      billToAddress: cleanValue(values.billToAddress),
+      billToCity: cleanValue(values.billToCity),
+      billToProvince: cleanValue(values.billToProvince),
+      billToPostalCode: cleanValue(values.billToPostalCode),
+      billToCountry: cleanValue(values.billToCountry),
+      billToPhone: cleanValue(values.billToPhone),
+      billToEmail: cleanValue(values.billToEmail),
     };
 
     if (!isNew) {
