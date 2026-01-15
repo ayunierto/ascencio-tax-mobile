@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -152,6 +152,14 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const isDraft = invoice.status === 'draft';
   const canEdit = isDraft || invoice.status === 'canceled';
   const canIssue = isDraft && !isNew;
+
+  // Prevent state updates after unmount
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   /**
    * Handler for validation errors - shows toast with first error
@@ -311,10 +319,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         { id: invoice.id, data: submitData },
         {
           onSuccess: () => {
+            if (!isMounted.current) return;
             toast.success(t('invoiceUpdatedSuccessfully'));
             router.replace('/(app)/invoices');
           },
           onError: (error) => {
+            if (!isMounted.current) return;
             toast.error(
               t(error.response?.data.message || 'unknownErrorOccurred')
             );
@@ -326,10 +336,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
     await createInvoice.mutateAsync(submitData, {
       onSuccess: () => {
+        if (!isMounted.current) return;
         toast.success(t('invoiceCreatedSuccessfully'));
         router.replace('/(app)/invoices');
       },
       onError: (error) => {
+        if (!isMounted.current) return;
         toast.error(t(error.response?.data.message || 'unknownErrorOccurred'));
       },
     });
@@ -823,8 +835,14 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     label={t('quantity')}
                     value={item.quantity.toString()}
                     onChangeText={(text) => {
-                      const num = parseInt(text) || 0;
-                      updateLineItem(item.id, 'quantity', num);
+                      if (text === '') {
+                        updateLineItem(item.id, 'quantity', 0);
+                        return;
+                      }
+                      const num = parseInt(text);
+                      if (!isNaN(num)) {
+                        updateLineItem(item.id, 'quantity', num);
+                      }
                     }}
                     keyboardType="numeric"
                     style={{ flex: 1 }}
@@ -835,8 +853,14 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                     label={t('price')}
                     value={item.price.toString()}
                     onChangeText={(text) => {
-                      const num = parseFloat(text) || 0;
-                      updateLineItem(item.id, 'price', num);
+                      if (text === '' || text === '.') {
+                        updateLineItem(item.id, 'price', 0);
+                        return;
+                      }
+                      const num = parseFloat(text);
+                      if (!isNaN(num)) {
+                        updateLineItem(item.id, 'price', num);
+                      }
                     }}
                     keyboardType="decimal-pad"
                     style={{ flex: 1 }}
@@ -871,8 +895,14 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 label={`${t('taxRate')} (%)`}
                 value={(value ?? 13).toString()}
                 onChangeText={(text) => {
-                  const num = parseFloat(text) || 0;
-                  onChange(num);
+                  if (text === '' || text === '.') {
+                    onChange(0);
+                    return;
+                  }
+                  const num = parseFloat(text);
+                  if (!isNaN(num)) {
+                    onChange(num);
+                  }
                 }}
                 keyboardType="decimal-pad"
                 editable={canEdit}
