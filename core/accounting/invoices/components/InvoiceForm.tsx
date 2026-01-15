@@ -20,6 +20,7 @@ import {
   Invoice,
   CreateInvoiceRequest,
   createInvoiceSchema,
+  updateInvoiceSchema,
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
@@ -68,6 +69,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     !invoice.billToClientId && !!invoice.billToName
   );
 
+  const isNew = invoice.id === 'new';
+
   // Initialize line items from invoice or with one empty row
   const [lineItems, setLineItems] = useState<LineItemLocal[]>(() => {
     if (invoice.lineItems && invoice.lineItems.length > 0) {
@@ -94,7 +97,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     setValue,
     watch,
   } = useForm({
-    resolver: zodResolver(createInvoiceSchema),
+    resolver: zodResolver(isNew ? createInvoiceSchema : updateInvoiceSchema),
     defaultValues: {
       fromCompanyId: invoice.fromCompanyId || (companies.length === 1 ? companies[0].id : ''),
       billToClientId: invoice.billToClientId || '',
@@ -107,9 +110,9 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       billToPostalCode: invoice.billToPostalCode || '',
       billToCountry: invoice.billToCountry || '',
       taxRate: invoice.taxRate ?? 13,
-      description: invoice.description,
-      notes: invoice.notes,
-      logoUrl: invoice.logoUrl,
+      description: invoice.description || '',
+      notes: invoice.notes || '',
+      logoUrl: invoice.logoUrl || '',
       issueDate: invoice.issueDate || new Date().toISOString().split('T')[0],
       dueDate:
         invoice.dueDate ||
@@ -146,7 +149,6 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const generatePdf = useGeneratePdfMutation();
   const issueInvoice = useIssueInvoiceMutation();
 
-  const isNew = invoice.id === 'new';
   const isDraft = invoice.status === 'draft';
   const canEdit = isDraft || invoice.status === 'canceled';
   const canIssue = isDraft && !isNew;
