@@ -167,10 +167,12 @@ export function SelectTrigger({
   placeholder = 'Select...',
   labelText,
   style,
+  icon,
 }: {
   placeholder?: string;
   labelText?: string;
   style?: StyleProp<ViewStyle>;
+  icon?: React.ReactNode;
 }) {
   const { label, setOpen, error, disabled } = useSelectContext();
 
@@ -223,7 +225,11 @@ export function SelectTrigger({
       {labelText && (
         <ThemedText style={floatingLabelStyles}>{labelText}</ThemedText>
       )}
+
+      {icon && <View style={{ marginRight: 8 }}>{icon}</View>}
+
       <Text style={triggerTextStyles}>{label || placeholder}</Text>
+
       <Text style={styles.chevron}>
         <Ionicons
           name="chevron-down-outline"
@@ -238,9 +244,11 @@ export function SelectTrigger({
 export function SelectContent({
   children,
   maxHeight = '80%',
+  style,
 }: {
   children: React.ReactNode;
   maxHeight?: number | `${number}%`;
+  style?: StyleProp<ViewStyle>;
 }) {
   const { open, setOpen, disabled } = useSelectContext();
 
@@ -249,8 +257,8 @@ export function SelectContent({
   }, [disabled, setOpen]);
 
   const contentStyles = useMemo(
-    () => [styles.content, { maxHeight }],
-    [maxHeight]
+    () => [styles.content, { maxHeight }, style],
+    [maxHeight, style]
   );
 
   return (
@@ -272,13 +280,13 @@ export function SelectContent({
           activeOpacity={1}
           onPress={(e) => e.stopPropagation()}
         >
-          <ScrollView
+          {/* <ScrollView
             showsVerticalScrollIndicator
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingVertical: 4 }}
-          >
-            {children}
-          </ScrollView>
+          > */}
+          {children}
+          {/* </ScrollView> */}
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
