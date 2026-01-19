@@ -43,4 +43,7 @@ export const theme = {
 
   // Border radius for card, input and buttons
   radius: 12,
+
+  // Gap spacing
+  gap: 12,
 };

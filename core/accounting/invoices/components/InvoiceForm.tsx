@@ -24,7 +24,14 @@ import {
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { theme, Button, ButtonText, ButtonIcon } from '@/components/ui';
+import {
+  theme,
+  Button,
+  ButtonText,
+  ButtonIcon,
+  Card,
+  CardContent,
+} from '@/components/ui';
 import { ThemedText } from '@/components/ui/ThemedText';
 import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 import {
@@ -43,7 +50,7 @@ import {
 } from '../hooks';
 import { useCompanies } from '../../companies/hooks';
 import { useClients } from '../../clients/hooks';
-import { ClientSelector } from './ClientSelector';
+import { ClientSelector } from './ClientSelector/';
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -71,7 +78,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isManualClientEntry, setIsManualClientEntry] = useState(
-    !invoice.billToClientId && !!invoice.billToName
+    !invoice.billToClientId && !!invoice.billToName,
   );
 
   const isNew = invoice.id === 'new';
@@ -233,7 +240,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
             router.back();
           } catch (error: any) {
             toast.error(
-              t(error.response?.data?.message || 'unknownErrorOccurred')
+              t(error.response?.data?.message || 'unknownErrorOccurred'),
             );
           }
         },
@@ -255,7 +262,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         description: item.description,
         quantity: item.quantity,
         price: item.price,
-      }))
+      })),
     );
   };
 
@@ -279,7 +286,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const updateLineItem = (
     id: string,
     field: keyof LineItemLocal,
-    value: string | number
+    value: string | number,
   ) => {
     const newItems = lineItems.map((item) => {
       if (item.id === id) {
@@ -299,7 +306,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const onSubmit = async (values: any) => {
     // Validate line items
     const validLineItems = lineItems.filter(
-      (item) => item.description.trim() !== ''
+      (item) => item.description.trim() !== '',
     );
     if (validLineItems.length === 0) {
       toast.error(t('atLeastOneLineItemRequired'));
@@ -345,10 +352,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           onError: (error) => {
             if (!isMounted.current) return;
             toast.error(
-              t(error.response?.data.message || 'unknownErrorOccurred')
+              t(error.response?.data.message || 'unknownErrorOccurred'),
             );
           },
-        }
+        },
       );
       return;
     }
@@ -385,8 +392,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   t(
                     error.response?.data?.message ||
                       error.message ||
-                      'canNotDelete'
-                  )
+                      'canNotDelete',
+                  ),
                 );
                 setIsDeleting(false);
               },
@@ -462,10 +469,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
     >
       <ScrollView
-        style={{ padding: 16, paddingTop: 8 }}
+        style={{ padding: 10 }}
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: insets.bottom + 100,
+          // paddingBottom: insets.bottom + 100,
         }}
         keyboardShouldPersistTaps="handled"
       >
@@ -573,7 +580,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       onChange(clientId || '');
                       if (clientId) {
                         // Clear manual fields when client is selected
-                        setValue('billToName', '');
+                        setValue('billToFullName', '');
                         setValue('billToEmail', '');
                         setValue('billToPhone', '');
                         setValue('billToAddress', '');
@@ -607,7 +614,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
               <View style={{ gap: 12, marginTop: 12 }}>
                 <Controller
                   control={control}
-                  name="billToName"
+                  name="billToFullName"
                   render={({ field: { onChange, value } }) => (
                     <Input
                       label={`${t('clientName')} *`}
@@ -615,8 +622,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                       onChangeText={onChange}
                       placeholder={t('enterClientName')}
                       editable={canEdit}
-                      error={!!errors.billToName}
-                      errorMessage={getErrorMessage(errors.billToName)}
+                      error={!!errors.billToFullName}
+                      errorMessage={getErrorMessage(errors.billToFullName)}
                     />
                   )}
                 />
@@ -796,128 +803,124 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
               <ThemedText style={{ fontWeight: '600', fontSize: 16 }}>
                 {t('lineItems')}
               </ThemedText>
-              <TouchableOpacity
-                onPress={addLineItem}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: 8,
-                }}
-              >
-                <Ionicons name="add-circle" size={20} color={theme.primary} />
-                <ThemedText style={{ color: theme.primary, fontWeight: '500' }}>
-                  {t('addItem')}
-                </ThemedText>
-              </TouchableOpacity>
+
+              <Button size="sm" onPress={addLineItem} disabled={!canEdit}>
+                <ButtonIcon name="add-circle-outline" />
+                <ButtonText size="sm">{t('addItem')}</ButtonText>
+              </Button>
             </View>
 
             {lineItems.map((item, index) => (
-              <View
+              <Card
                 key={item.id}
                 style={{
-                  backgroundColor: theme.card,
-                  borderRadius: 8,
-                  padding: 12,
                   marginBottom: 8,
                   borderWidth: 1,
                   borderColor: theme.border,
+                  position: 'relative',
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 8,
-                  }}
-                >
-                  <ThemedText style={{ fontWeight: '500', color: theme.muted }}>
-                    {t('item')} #{index + 1}
-                  </ThemedText>
-                  <TouchableOpacity
-                    onPress={() => removeLineItem(item.id)}
-                    disabled={lineItems.length <= 1}
-                    style={{ opacity: lineItems.length <= 1 ? 0.3 : 1 }}
+                <CardContent style={{ gap: theme.gap }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginHorizontal: 4,
+                      position: 'static',
+                    }}
                   >
-                    <Ionicons
-                      name="trash-outline"
-                      size={18}
-                      color={theme.destructive}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <Input
-                  label={t('description')}
-                  value={item.description}
-                  onChangeText={(text) =>
-                    updateLineItem(item.id, 'description', text)
-                  }
-                  style={{ marginBottom: 8 }}
-                  error={!!errors.lineItems?.[index]?.description}
-                  errorMessage={getErrorMessage(
-                    errors.lineItems?.[index]?.description
-                  )}
-                />
-
-                <View style={{ flexDirection: 'row', gap: 12 }}>
-                  <Input
-                    label={t('quantity')}
-                    value={item.quantity.toString()}
-                    onChangeText={(text) => {
-                      if (text === '') {
-                        updateLineItem(item.id, 'quantity', 0);
-                        return;
-                      }
-                      const num = parseInt(text);
-                      if (!isNaN(num)) {
-                        updateLineItem(item.id, 'quantity', num);
-                      }
-                    }}
-                    keyboardType="numeric"
-                    style={{ flex: 1 }}
-                    error={!!errors.lineItems?.[index]?.quantity}
-                    errorMessage={getErrorMessage(
-                      errors.lineItems?.[index]?.quantity
-                    )}
-                  />
-                  <Input
-                    label={t('price')}
-                    value={item.price.toString()}
-                    onChangeText={(text) => {
-                      if (text === '' || text === '.') {
-                        updateLineItem(item.id, 'price', 0);
-                        return;
-                      }
-                      const num = parseFloat(text);
-                      if (!isNaN(num)) {
-                        updateLineItem(item.id, 'price', num);
-                      }
-                    }}
-                    keyboardType="decimal-pad"
-                    style={{ flex: 1 }}
-                    error={!!errors.lineItems?.[index]?.price}
-                    errorMessage={getErrorMessage(
-                      errors.lineItems?.[index]?.price
-                    )}
-                  />
-                  <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                    <ThemedText style={{ color: theme.muted, fontSize: 11 }}>
-                      {t('lineTotal')}
+                    <ThemedText style={{ color: theme.mutedForeground }}>
+                      {t('item')} #{index + 1}
                     </ThemedText>
-                    <ThemedText
-                      style={{
-                        fontWeight: 'bold',
-                        fontSize: 16,
-                        fontFamily: 'monospace',
-                      }}
+
+                    <Button
+                      style={{ position: 'absolute', top: 0, right: 4 }}
+                      size="sm"
+                      variant="ghost"
+                      onPress={() => removeLineItem(item.id)}
+                      disabled={lineItems.length <= 1}
                     >
-                      ${(item.quantity * item.price).toFixed(2)}
-                    </ThemedText>
+                      <ButtonIcon
+                        name="trash-outline"
+                        style={{ color: theme.destructive }}
+                      />
+                    </Button>
                   </View>
-                </View>
-              </View>
+
+                  <Input
+                    label={t('description')}
+                    value={item.description}
+                    onChangeText={(text) =>
+                      updateLineItem(item.id, 'description', text)
+                    }
+                    style={{ marginBottom: 8 }}
+                    error={!!errors.lineItems?.[index]?.description}
+                    errorMessage={getErrorMessage(
+                      errors.lineItems?.[index]?.description,
+                    )}
+                  />
+
+                  {/* quantity, price and total */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      gap: 12,
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Input
+                      label={t('quantity')}
+                      value={item.quantity.toString()}
+                      onChangeText={(text) => {
+                        if (text === '') {
+                          updateLineItem(item.id, 'quantity', 0);
+                          return;
+                        }
+                        const num = parseInt(text);
+                        if (!isNaN(num)) {
+                          updateLineItem(item.id, 'quantity', num);
+                        }
+                      }}
+                      keyboardType="numeric"
+                      style={{ flex: 1 }}
+                      error={!!errors.lineItems?.[index]?.quantity}
+                      errorMessage={getErrorMessage(
+                        errors.lineItems?.[index]?.quantity,
+                      )}
+                    />
+
+                    <Input
+                      label={t('price')}
+                      value={item.price.toString()}
+                      onChangeText={(text) => {
+                        if (text === '' || text === '.') {
+                          updateLineItem(item.id, 'price', 0);
+                          return;
+                        }
+                        const num = parseFloat(text);
+                        if (!isNaN(num)) {
+                          updateLineItem(item.id, 'price', num);
+                        }
+                      }}
+                      keyboardType="decimal-pad"
+                      style={{ flex: 1 }}
+                      error={!!errors.lineItems?.[index]?.price}
+                      errorMessage={getErrorMessage(
+                        errors.lineItems?.[index]?.price,
+                      )}
+                    />
+
+                    <Input
+                      label={t('total')}
+                      value={`$${(item.quantity * item.price).toFixed(2)}`}
+                      editable={false}
+                      style={{ flex: 1 }}
+                    />
+                  </View>
+                </CardContent>
+              </Card>
             ))}
           </View>
 

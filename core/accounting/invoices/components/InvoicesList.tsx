@@ -180,7 +180,7 @@ export const InvoicesList = () => {
           title={t('noInvoicesTitle')}
           subtitle={t('noInvoicesSubtitle')}
           action={
-            <Button onPress={() => router.push('/(app)/invoices/new')}>
+            <Button onPress={() => router.push('/(app)/invoices/create')}>
               <ButtonIcon name="add-circle-outline" />
               <ButtonText>{t('createInvoice')}</ButtonText>
             </Button>

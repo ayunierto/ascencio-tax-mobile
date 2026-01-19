@@ -13,7 +13,7 @@ export default function InvoicesLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: t('myInvoices') }} />
-      <Stack.Screen name="new" options={{ title: t('newInvoice') }} />
+      <Stack.Screen name="create" options={{ title: t('newInvoice') }} />
       <Stack.Screen name="[id]" options={{ title: t('invoiceDetails') }} />
     </Stack>
   );

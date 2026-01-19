@@ -29,7 +29,7 @@ interface DateTimePickerProps {
   mode?: 'date' | 'time' | 'datetime';
   is24Hour?: boolean;
   onChange?: (date: string | null) => void;
-  value?: string | null;
+  value?: string | null | Date;
   placeholder?: string;
   labelText?: string;
   helperText?: string;
@@ -97,7 +97,7 @@ const DateTimeInput = ({
             hour: '2-digit',
             minute: '2-digit',
             hour12: !is24Hour,
-          }
+          },
         )}`;
       default:
         return parsedDate.toLocaleDateString();
@@ -122,7 +122,7 @@ const DateTimeInput = ({
         }
       }
     },
-    [onChange]
+    [onChange],
   );
 
   // Optimización: Memoizar handler de apertura
@@ -159,7 +159,7 @@ const DateTimeInput = ({
         onChange(null);
       }
     },
-    [onChange, disabled]
+    [onChange, disabled],
   );
 
   // Optimización: Memoizar handler de cierre de modal
@@ -175,7 +175,7 @@ const DateTimeInput = ({
       disabled && styles.triggerDisabled,
       triggerStyle,
     ],
-    [error, disabled, triggerStyle]
+    [error, disabled, triggerStyle],
   );
 
   // Optimización: Memoizar estilos del texto
@@ -186,7 +186,7 @@ const DateTimeInput = ({
       disabled && styles.disabledText,
       error && styles.errorText,
     ],
-    [parsedDate, disabled, error]
+    [parsedDate, disabled, error],
   );
 
   // Optimización: Memoizar estilos del label flotante
@@ -195,13 +195,13 @@ const DateTimeInput = ({
       styles.floatingLabel,
       { color: error ? theme.destructive : theme.primary },
     ],
-    [error]
+    [error],
   );
 
   // Optimización: Memoizar estilos del helper text
   const helperTextStyles = useMemo(
     () => [styles.helperText, error && [styles.errorText, errorTextStyle]],
-    [error, errorTextStyle]
+    [error, errorTextStyle],
   );
 
   return (
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     minHeight: 52,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: theme.foreground,
+    borderColor: theme.border,
     borderRadius: theme.radius,
     backgroundColor: theme.background,
     justifyContent: 'center',
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
 
 export type DateTimeFieldProps<
   TFieldValues extends FieldValues,
-  TName extends FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues>,
 > = Omit<DateTimePickerProps, 'value' | 'onChange'> & {
   name: TName;
   control: ControllerProps<TFieldValues, TName>['control'];
@@ -466,7 +466,7 @@ export type DateTimeFieldProps<
 
 export function DateTimeField<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
   control,
