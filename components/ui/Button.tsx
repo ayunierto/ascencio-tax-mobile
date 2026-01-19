@@ -79,7 +79,7 @@ const buttonTextVariants = ({
   size: ButtonSize;
 }): TextStyle[] => {
   const base: TextStyle = {
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
   };
 
