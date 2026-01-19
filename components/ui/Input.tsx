@@ -29,6 +29,7 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
   labelStyle?: StyleProp<TextStyle>;
   errorTextStyle?: StyleProp<TextStyle>;
   focusedBorderColor?: string;
+  clearable?: boolean;
 }
 
 export const Input = forwardRef<TextInput, InputProps>(
@@ -52,9 +53,10 @@ export const Input = forwardRef<TextInput, InputProps>(
       onFocus,
       onBlur,
       editable = true,
+      clearable = false,
       ...props
     },
-    forwardedRef
+    forwardedRef,
   ) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const internalRef = useRef<TextInput>(null);
@@ -64,7 +66,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     const animatedValue = useRef(new Animated.Value(0)).current;
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(
-      props.secureTextEntry || false
+      props.secureTextEntry || false,
     );
 
     const hasValue = value && value.length > 0;
@@ -79,14 +81,14 @@ export const Input = forwardRef<TextInput, InputProps>(
     }, [shouldFloat, animatedValue]);
 
     const handleFocus = (
-      event: NativeSyntheticEvent<TextInputFocusEventData>
+      event: NativeSyntheticEvent<TextInputFocusEventData>,
     ): void => {
       setIsFocused(true);
       onFocus?.(event);
     };
 
     const handleBlur = (
-      event: NativeSyntheticEvent<TextInputFocusEventData>
+      event: NativeSyntheticEvent<TextInputFocusEventData>,
     ): void => {
       setIsFocused(false);
       onBlur?.(event);
@@ -96,10 +98,10 @@ export const Input = forwardRef<TextInput, InputProps>(
       const borderColor = !editable
         ? theme.mutedForeground
         : error
-        ? theme.destructive
-        : isFocused
-        ? focusedBorderColor
-        : theme.border;
+          ? theme.destructive
+          : isFocused
+            ? focusedBorderColor
+            : theme.border;
 
       const borderWidth = error ? 2 : 1;
 
@@ -209,6 +211,24 @@ export const Input = forwardRef<TextInput, InputProps>(
               />
             )}
 
+            {clearable && hasValue && editable && (
+              <Ionicons
+                style={{ backgroundColor: 'transparent', padding: 6 }}
+                name="close-circle-outline"
+                size={20}
+                color={theme.muted}
+                onPress={() => {
+                  if (
+                    typeof textInputRef === 'object' &&
+                    textInputRef?.current
+                  ) {
+                    textInputRef.current.clear();
+                    props.onChangeText?.('');
+                  }
+                }}
+              />
+            )}
+
             {props.secureTextEntry && (
               <Ionicons
                 name={isPasswordVisible ? 'eye' : 'eye-off'}
@@ -237,7 +257,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
       </View>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';
