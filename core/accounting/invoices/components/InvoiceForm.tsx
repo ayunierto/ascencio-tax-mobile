@@ -50,10 +50,12 @@ import {
   useUpdateInvoiceMutation,
   useGeneratePdfMutation,
   useIssueInvoiceMutation,
+  useRecordPaymentMutation,
 } from '../hooks';
 import { useCompanies } from '../../companies/hooks';
 import { useClients } from '../../clients/hooks';
 import { ClientSelector } from './ClientSelector/';
+import { RecordPaymentModal } from './RecordPaymentModal';
 
 interface InvoiceFormProps {
   invoice: Invoice;
@@ -80,9 +82,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const insets = useSafeAreaInsets();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isManualClientEntry, setIsManualClientEntry] = useState(
     !invoice.billToClientId && !!invoice.billToName,
   );
+  // Track price text inputs to allow typing decimals like "1."
+  const [priceTexts, setPriceTexts] = useState<Record<string, string>>({});
 
   const isNew = invoice.id === 'new';
 
@@ -163,6 +168,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   const deleteInvoice = useDeleteInvoiceMutation();
   const generatePdf = useGeneratePdfMutation();
   const issueInvoice = useIssueInvoiceMutation();
+  const recordPayment = useRecordPaymentMutation();
 
   const isDraft = invoice.status === 'draft';
   const canEdit = isDraft || invoice.status === 'canceled';
@@ -219,6 +225,20 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         },
       },
     ]);
+  };
+
+  const handleRecordPayment = async (data: any) => {
+    try {
+      await recordPayment.mutateAsync({
+        invoiceId: invoice.id,
+        data,
+      });
+      toast.success(t('paymentSuccess'));
+      setIsPaymentModalVisible(false);
+    } catch (error: any) {
+      toast.error(t(error.response?.data?.message || 'unknownErrorOccurred'));
+      // throw error; // Re-throw to prevent modal from closing on error
+    }
   };
 
   // Update line items in form when local state changes
@@ -326,9 +346,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           onSuccess: () => {
             if (!isMounted.current) return;
             toast.success(t('invoiceUpdatedSuccessfully'));
-            router.replace('/(app)/invoices');
+            // Stay on the current invoice page after updating
+            // No navigation needed, just refresh the data
           },
-          onError: (error) => {
+          onError: (error: any) => {
             if (!isMounted.current) return;
             toast.error(
               t(error.response?.data.message || 'unknownErrorOccurred'),
@@ -340,12 +361,17 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     }
 
     await createInvoice.mutateAsync(submitData, {
-      onSuccess: () => {
+      onSuccess: (data: any) => {
         if (!isMounted.current) return;
         toast.success(t('invoiceCreatedSuccessfully'));
-        router.replace('/(app)/invoices');
+        // Navigate to the created invoice page with its ID
+        if (data && data.id) {
+          router.replace(`/(app)/invoices/${data.id}`);
+        } else {
+          router.replace('/(app)/invoices');
+        }
       },
-      onError: (error) => {
+      onError: (error: any) => {
         if (!isMounted.current) return;
         toast.error(t(error.response?.data.message || 'unknownErrorOccurred'));
       },
@@ -366,7 +392,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 toast.success(t('deleteSuccess'));
                 setTimeout(() => router.back(), 500);
               },
-              onError: (error) => {
+              onError: (error: any) => {
                 toast.error(
                   t(
                     error.response?.data?.message ||
@@ -909,16 +935,43 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
 
                     <Input
                       label={t('price')}
-                      value={item.price.toString()}
+                      value={priceTexts[item.id] ?? item.price.toString()}
                       onChangeText={(text) => {
-                        if (text === '' || text === '.') {
+                        // Store the text as-is for display
+                        setPriceTexts((prev) => ({ ...prev, [item.id]: text }));
+
+                        // Permitir string vacío
+                        if (text === '') {
                           updateLineItem(item.id, 'price', 0);
                           return;
                         }
-                        const num = parseFloat(text);
-                        if (!isNaN(num)) {
-                          updateLineItem(item.id, 'price', num);
+                        // Validar formato decimal: permite dígitos y un punto decimal
+                        if (/^\d*\.?\d*$/.test(text)) {
+                          // If it's just a dot or ends with a dot, keep the text but set value to 0 or partial number
+                          const num = parseFloat(text);
+                          if (!isNaN(num) && num >= 0) {
+                            updateLineItem(item.id, 'price', num);
+                          } else if (text === '.' || text.endsWith('.')) {
+                            // Allow typing "." by keeping the text but not updating the value
+                            const beforeDot = text.slice(0, -1);
+                            if (beforeDot) {
+                              const partialNum = parseFloat(beforeDot);
+                              if (!isNaN(partialNum)) {
+                                updateLineItem(item.id, 'price', partialNum);
+                              }
+                            } else {
+                              updateLineItem(item.id, 'price', 0);
+                            }
+                          }
                         }
+                      }}
+                      onBlur={() => {
+                        // Clear the text state on blur so it syncs with the actual number value
+                        setPriceTexts((prev) => {
+                          const newState = { ...prev };
+                          delete newState[item.id];
+                          return newState;
+                        });
                       }}
                       keyboardType="decimal-pad"
                       style={{ flex: 1 }}
@@ -1159,9 +1212,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   </View>
                   {invoice.balanceDue > 0 && (
                     <Button
-                      onPress={() =>
-                        router.push(`/(app)/invoices/${invoice.id}/payment`)
-                      }
+                      onPress={() => setIsPaymentModalVisible(true)}
                       variant="default"
                       style={{ marginTop: 8 }}
                     >
@@ -1191,6 +1242,16 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           )}
         </View>
       </ScrollView>
+
+      {/* Record Payment Modal */}
+      <RecordPaymentModal
+        visible={isPaymentModalVisible}
+        onClose={() => setIsPaymentModalVisible(false)}
+        onSubmit={handleRecordPayment}
+        remainingBalance={Number(invoice.balanceDue) || 0}
+        invoiceNumber={invoice.invoiceNumber}
+        isSubmitting={recordPayment.isPending}
+      />
     </KeyboardAvoidingView>
   );
 };

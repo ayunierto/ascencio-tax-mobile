@@ -6,6 +6,7 @@ import { Invoice, PaginatedResponse } from '@ascencio/shared/interfaces';
 import {
   CreateInvoiceRequest,
   UpdateInvoiceRequest,
+  CreateInvoicePaymentRequest,
 } from '@ascencio/shared/schemas';
 import {
   createInvoice,
@@ -17,6 +18,7 @@ import {
   generateInvoicePdf,
   GeneratePdfResponse,
 } from '../actions';
+import { recordInvoicePayment } from '../actions/record-payment.action';
 
 export const useInvoices = (status?: string) => {
   return useQuery<
@@ -98,5 +100,22 @@ export const useBulkDeleteInvoicesMutation = () => {
 export const useGeneratePdfMutation = () => {
   return useMutation<GeneratePdfResponse, AxiosError<ServerException>, string>({
     mutationFn: generateInvoicePdf,
+  });
+};
+
+export const useRecordPaymentMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    Invoice,
+    AxiosError<ServerException>,
+    { invoiceId: string; data: CreateInvoicePaymentRequest }
+  >({
+    mutationFn: ({ invoiceId, data }) => recordInvoicePayment(invoiceId, data),
+    onSuccess: (data) => {
+      // Invalidate and refetch invoice queries
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['invoice', data.id] });
+    },
   });
 };
