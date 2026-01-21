@@ -11,13 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { Client } from '@ascencio/shared/interfaces';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { Button, ButtonIcon, ButtonText, Input, theme } from '@/components/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/Select';
+import { Select, SelectContent, SelectTrigger } from '@/components/ui/Select';
 import NoResultsFound from '@/core/components/NoResultsFound';
+import ErrorMessage from '@/core/components/ErrorMessage';
 
 interface ClientSelectorProps {
   clients: Client[];
@@ -25,6 +21,10 @@ interface ClientSelectorProps {
   onClientSelect: (clientId: string | undefined) => void;
   onManualMode: (enabled: boolean) => void;
   isManualMode: boolean;
+  hasClientError?: boolean;
+  hasManualFieldsError?: boolean;
+  clientErrorMessage?: string;
+  manualFieldsErrorMessage?: string;
 }
 
 export const ClientSelector: React.FC<ClientSelectorProps> = ({
@@ -33,12 +33,23 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
   onClientSelect,
   onManualMode,
   isManualMode,
+  hasClientError = false,
+  hasManualFieldsError = false,
+  clientErrorMessage,
+  manualFieldsErrorMessage,
 }) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const selectedClient = clients.find((c) => c.id === selectedClientId);
+
+  // Mostrar errores según el contexto
+  // En modo manual: mostrar errores de campos manuales
+  // En modo búsqueda: mostrar errores de cliente seleccionado O de campos manuales si existen
+  const shouldShowError = isManualMode ? hasManualFieldsError : (hasClientError || hasManualFieldsError);
+  const displayErrorMessage = isManualMode
+    ? manualFieldsErrorMessage
+    : (clientErrorMessage || manualFieldsErrorMessage);
 
   const filteredClients = clients.filter(
     (client) =>
@@ -51,13 +62,11 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
     onClientSelect(client.id);
     onManualMode(false);
     setSearchQuery('');
-    setShowDropdown(false);
   };
 
   const handleManualEntry = () => {
     onClientSelect(undefined);
     onManualMode(true);
-    setShowDropdown(false);
   };
 
   return (
@@ -118,7 +127,6 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
                 variant="destructive"
                 onPress={() => {
                   onClientSelect(undefined);
-                  setShowDropdown(true);
                 }}
               >
                 <ButtonIcon name="close-circle-outline" />
@@ -206,6 +214,13 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
               </Select>
             </View>
           )}
+        </View>
+      )}
+
+      {/* Error Message - Always visible when there's an error */}
+      {shouldShowError && displayErrorMessage && (
+        <View style={{ marginTop: 8 }}>
+          <ErrorMessage message={displayErrorMessage} />
         </View>
       )}
     </View>

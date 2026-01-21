@@ -31,7 +31,10 @@ import {
   ButtonIcon,
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui';
+import { ErrorBox } from '@/core/auth/components/ErrorBox';
 import { ThemedText } from '@/components/ui/ThemedText';
 import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 import {
@@ -115,7 +118,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         invoice.fromCompanyId ||
         (companies.length === 1 ? companies[0].id : ''),
       billToClientId: invoice.billToClientId || '',
-      billToName: invoice.billToName || '',
+      billToFullName: invoice.billToName || '',
       billToEmail: invoice.billToEmail || '',
       billToPhone: invoice.billToPhone || '',
       billToAddress: invoice.billToAddress || '',
@@ -124,15 +127,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       billToPostalCode: invoice.billToPostalCode || '',
       billToCountry: invoice.billToCountry || '',
       taxRate: toNumber(invoice.taxRate, 13),
-      description: invoice.description || '',
       notes: invoice.notes || '',
       logoUrl: invoice.logoUrl || '',
-      issueDate: invoice.issueDate || new Date().toISOString().split('T')[0],
-      dueDate:
-        invoice.dueDate ||
-        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0],
+      issueDate: invoice.issueDate,
+      dueDate: invoice.dueDate,
       lineItems: invoice.lineItems?.map((item) => ({
         description: item.description,
         quantity: toNumber(item.quantity, 1),
@@ -143,6 +141,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   });
 
   const watchedTaxRate = watch('taxRate') ?? 13;
+
+  console.log({ clientId: watch('billToClientId') });
 
   // Calculate totals
   const { subtotal, taxAmount, total } = useMemo(() => {
@@ -157,6 +157,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     };
   }, [lineItems, watchedTaxRate]);
 
+  // Mutations
   const createInvoice = useCreateInvoiceMutation();
   const updateInvoice = useUpdateInvoiceMutation();
   const deleteInvoice = useDeleteInvoiceMutation();
@@ -176,40 +177,12 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   }, []);
 
   /**
-   * Handler for validation errors - shows toast with first error
+   * Handler for validation errors - logs errors for debugging
    */
   const onValidationError = (formErrors: any) => {
-    console.log('Validation errors:', formErrors);
-
-    // Get the first error message
-    const getFirstError = (errors: any): string | null => {
-      for (const key in errors) {
-        const error = errors[key];
-        if (error?.message) {
-          return typeof error.message === 'string'
-            ? error.message
-            : t('validationRequired');
-        }
-        if (Array.isArray(error)) {
-          for (const item of error) {
-            const nestedError = getFirstError(item);
-            if (nestedError) return nestedError;
-          }
-        }
-        if (typeof error === 'object') {
-          const nestedError = getFirstError(error);
-          if (nestedError) return nestedError;
-        }
-      }
-      return null;
-    };
-
-    const firstError = getFirstError(formErrors);
-    if (firstError) {
-      toast.error(t(firstError) || t('validationRequired'));
-    } else {
-      toast.error(t('pleaseFixFormErrors'));
-    }
+    console.warn('Validation errors:', formErrors);
+    // Errors are now displayed persistently in the form fields
+    // No need for toast notifications on validation errors
   };
 
   const handleGeneratePdf = async () => {
@@ -304,6 +277,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
   };
 
   const onSubmit = async (values: any) => {
+    console.warn('Submitting invoice with values:', values);
     // Validate line items
     const validLineItems = lineItems.filter(
       (item) => item.description.trim() !== '',
@@ -328,16 +302,21 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       })),
       taxRate: toNumber(values.taxRate, 13),
       // Clean optional string fields
+      fromCompanyId: cleanValue(values.fromCompanyId),
+      billToClientId: cleanValue(values.billToClientId),
       description: cleanValue(values.description),
       notes: cleanValue(values.notes),
       logoUrl: cleanValue(values.logoUrl),
+      billToFullName: cleanValue(values.billToFullName),
+      billToEmail: cleanValue(values.billToEmail),
+      billToPhone: cleanValue(values.billToPhone),
       billToAddress: cleanValue(values.billToAddress),
       billToCity: cleanValue(values.billToCity),
       billToProvince: cleanValue(values.billToProvince),
       billToPostalCode: cleanValue(values.billToPostalCode),
       billToCountry: cleanValue(values.billToCountry),
-      billToPhone: cleanValue(values.billToPhone),
-      billToEmail: cleanValue(values.billToEmail),
+      billToSIN: cleanValue(values.billToSIN),
+      billToBusinessNumber: cleanValue(values.billToBusinessNumber),
     };
 
     if (!isNew) {
@@ -469,14 +448,18 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
     >
       <ScrollView
-        style={{ padding: 10 }}
+        style={{ padding: 10, flex: 1 }}
         contentContainerStyle={{
           flexGrow: 1,
-          // paddingBottom: insets.bottom + 100,
+          paddingBottom: insets.bottom + 40,
         }}
         keyboardShouldPersistTaps="handled"
       >
         <View style={{ flex: 1, gap: 16 }}>
+          {/* Error Box for general form errors */}
+          {Object.keys(errors).length > 0 && (
+            <ErrorBox message={t('pleaseFixFormErrors')} />
+          )}
           {/* Invoice Number (read-only for existing) */}
           {!isNew && (
             <View
@@ -583,28 +566,40 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                         setValue('billToFullName', '');
                         setValue('billToEmail', '');
                         setValue('billToPhone', '');
-                        setValue('billToAddress', '');
                       }
                     }}
                     onManualMode={(enabled) => {
                       setIsManualClientEntry(enabled);
+                      // When switching to manual mode, clear the selected client
                       if (enabled) {
                         onChange('');
+                      } else {
+                        // When switching to search mode, clear manual fields
+                        setValue('billToFullName', '');
+                        setValue('billToEmail', '');
+                        setValue('billToPhone', '');
                       }
                     }}
                     isManualMode={isManualClientEntry}
+                    hasClientError={!!errors.billToClientId}
+                    hasManualFieldsError={
+                      !!(
+                        errors.billToFullName ||
+                        errors.billToEmail ||
+                        errors.billToPhone
+                      )
+                    }
+                    clientErrorMessage={getErrorMessage(errors.billToClientId)}
+                    manualFieldsErrorMessage={
+                      errors.billToFullName
+                        ? getErrorMessage(errors.billToFullName)
+                        : errors.billToEmail
+                          ? getErrorMessage(errors.billToEmail)
+                          : errors.billToPhone
+                            ? getErrorMessage(errors.billToPhone)
+                            : undefined
+                    }
                   />
-                  {errors.billToClientId && !isManualClientEntry && (
-                    <ThemedText
-                      style={{
-                        color: theme.destructive,
-                        fontSize: 12,
-                        marginTop: 4,
-                      }}
-                    >
-                      {getErrorMessage(errors.billToClientId)}
-                    </ThemedText>
-                  )}
                 </View>
               )}
             />
@@ -748,13 +743,11 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           </View>
 
           {/* Section: Dates */}
-          <View>
-            <ThemedText
-              style={{ marginBottom: 8, fontWeight: '600', fontSize: 16 }}
-            >
-              {t('dates')}
-            </ThemedText>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('dates')}</CardTitle>
+            </CardHeader>
+            <CardContent style={{ gap: theme.gap, flexDirection: 'row' }}>
               <View style={{ flex: 1 }}>
                 <Controller
                   control={control}
@@ -771,6 +764,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   )}
                 />
               </View>
+
               <View style={{ flex: 1 }}>
                 <Controller
                   control={control}
@@ -787,8 +781,8 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                   )}
                 />
               </View>
-            </View>
-          </View>
+            </CardContent>
+          </Card>
 
           {/* Section: Line Items */}
           <View>
@@ -809,6 +803,28 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                 <ButtonText size="sm">{t('addItem')}</ButtonText>
               </Button>
             </View>
+
+            {/* Error Message for Line Items */}
+            {errors.lineItems &&
+              !Array.isArray(errors.lineItems) &&
+              errors.lineItems.message && (
+                <View
+                  style={{
+                    marginBottom: 8,
+                    padding: 8,
+                    backgroundColor: theme.destructive + '11',
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: theme.destructive + '33',
+                  }}
+                >
+                  <ThemedText
+                    style={{ color: theme.destructive, fontSize: 14 }}
+                  >
+                    {t(errors.lineItems.message as string)}
+                  </ThemedText>
+                </View>
+              )}
 
             {lineItems.map((item, index) => (
               <Card
@@ -1021,23 +1037,6 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
           </View>
 
           {/* Section: Notes */}
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('description')}
-                onChangeText={onChange}
-                value={value || ''}
-                multiline
-                numberOfLines={2}
-                editable={canEdit}
-                error={!!errors.description}
-                errorMessage={getErrorMessage(errors.description)}
-              />
-            )}
-          />
-
           <Controller
             control={control}
             name="notes"

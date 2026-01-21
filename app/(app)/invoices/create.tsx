@@ -60,7 +60,7 @@ export default function CreateInvoiceScreen() {
     invoiceNumber: '',
     invoiceYear: new Date().getFullYear(),
     billToClientId: '',
-    issueDate: new Date().toISOString().split('T')[0],
+    issueDate: new Date().toISOString(),
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split('T')[0],

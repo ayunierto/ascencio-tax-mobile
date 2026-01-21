@@ -45,7 +45,11 @@ export const useInvoice = (id: string) => {
 export const useCreateInvoiceMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Invoice, AxiosError<ServerException>, CreateInvoiceRequest>({
+  return useMutation<
+    Invoice,
+    AxiosError<ServerException>,
+    CreateInvoiceRequest
+  >({
     mutationFn: createInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });

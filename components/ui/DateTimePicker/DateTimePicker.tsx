@@ -371,6 +371,7 @@ const styles = StyleSheet.create({
     top: -10,
     left: 15,
     backgroundColor: theme.background,
+    borderRadius: theme.radius,
     paddingHorizontal: 4,
     paddingVertical: 0,
     fontSize: 12,
