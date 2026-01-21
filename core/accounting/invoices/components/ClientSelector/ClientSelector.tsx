@@ -46,10 +46,12 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
   // Mostrar errores según el contexto
   // En modo manual: mostrar errores de campos manuales
   // En modo búsqueda: mostrar errores de cliente seleccionado O de campos manuales si existen
-  const shouldShowError = isManualMode ? hasManualFieldsError : (hasClientError || hasManualFieldsError);
+  const shouldShowError = isManualMode
+    ? hasManualFieldsError
+    : hasClientError || hasManualFieldsError;
   const displayErrorMessage = isManualMode
     ? manualFieldsErrorMessage
-    : (clientErrorMessage || manualFieldsErrorMessage);
+    : clientErrorMessage || manualFieldsErrorMessage;
 
   const filteredClients = clients.filter(
     (client) =>
