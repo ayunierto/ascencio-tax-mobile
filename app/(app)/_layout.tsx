@@ -110,8 +110,8 @@ export default function AppLayout() {
         name="appointments"
         options={{
           headerShown: true,
-          drawerLabel: t('appointments'),
-          title: t('appointments'),
+          drawerLabel: t('myAppointments'),
+          title: t('myAppointments'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
