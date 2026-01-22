@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import React from 'react';
 import { FlatList, RefreshControl, View, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 import { AppointmentCard } from '@/components/bookings/AppointmentCard';
 import { AppointmentListSkeleton } from '@/components/bookings/AppointmentCardSkeleton';
@@ -17,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 export default function AppointmentsIndexScreen() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const {
@@ -44,15 +46,15 @@ export default function AppointmentsIndexScreen() {
       queryClient.invalidateQueries({ queryKey: ['PastAppts'] });
       Toast.show({
         type: 'success',
-        text1: 'Appointment Cancelled',
-        text2: 'Your appointment has been cancelled successfully.',
+        text1: t('appointmentCancelled'),
+        text2: t('appointmentCancelledDescription'),
       });
     },
     onError: (error: any) => {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: error.response?.data?.message || 'Failed to cancel appointment',
+        text1: t('error'),
+        text2: error.response?.data?.message || t('errorCancellingAppointment'),
       });
     },
   });
@@ -65,7 +67,7 @@ export default function AppointmentsIndexScreen() {
   };
 
   const handleBookNew = () => {
-    router.push('/(app)/appointments/new/availability');
+    router.push('/(app)/services');
   };
 
   const handleViewPast = () => {
@@ -80,7 +82,12 @@ export default function AppointmentsIndexScreen() {
           error.response?.data.message || error.message || 'An error occurred'
         }
         icon="alert-circle-outline"
-        onRetry={refetch}
+        action={
+          <Button onPress={refetch}>
+            <ButtonIcon name="refresh-outline" />
+            <ButtonText>{t('retry')}</ButtonText>
+          </Button>
+        }
       />
     );
   }
@@ -115,10 +122,10 @@ export default function AppointmentsIndexScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <ThemedText style={styles.headerTitle}>
-          Upcoming Appointments
+          {t('upcomingAppointments')}
         </ThemedText>
         <Button onPress={handleViewPast} variant="ghost" size="sm">
-          <ButtonText size="sm">View History</ButtonText>
+          <ButtonText size="sm">{t('viewHistory')}</ButtonText>
           <ButtonIcon name="arrow-forward" />
         </Button>
       </View>

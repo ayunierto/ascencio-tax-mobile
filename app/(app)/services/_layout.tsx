@@ -1,14 +1,16 @@
-import { Stack } from "expo-router";
-import { theme } from "@/components/ui/theme";
+import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { theme } from '@/components/ui/theme';
 
 export default function HomeLayout() {
+  const { t } = useTranslation();
   return (
     <Stack
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitleAlign: "center",
+        headerTitleAlign: 'center',
         headerTintColor: theme.foreground,
         headerShadowVisible: false,
       }}
@@ -20,9 +22,9 @@ export default function HomeLayout() {
         }}
       />
       <Stack.Screen
-        name="[serviceId]"
+        name="[id]"
         options={{
-          title: "Service Details",
+          title: t('serviceDetails'),
         }}
       />
     </Stack>

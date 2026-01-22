@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { FlatList, Image, RefreshControl, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ServiceCard } from '@/components/home/ServiceCard';
 import { ServiceListSkeleton } from '@/components/home/ServiceCardSkeleton';
@@ -14,6 +15,7 @@ import { useServices } from '@/core/services/hooks/useServices';
 import { Service } from '@ascencio/shared/interfaces';
 
 const ServicesScreen = () => {
+  const { t } = useTranslation();
   const { authStatus, user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,7 +31,7 @@ const ServicesScreen = () => {
   const selectService = (service: Service): void => {
     router.push({
       pathname: `/services/[id]`,
-      params: { id: service.name },
+      params: { id: service.id },
     });
   };
 
@@ -41,15 +43,15 @@ const ServicesScreen = () => {
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('goodMorning');
+    if (hour < 18) return t('goodAfternoon');
+    return t('goodEvening');
   };
 
   if (isError)
     return (
       <EmptyContent
-        title="Something went wrong."
+        title={t('error')}
         subtitle={error.response?.data.message || error.message}
       />
     );
@@ -59,8 +61,8 @@ const ServicesScreen = () => {
   if (!servicesResponse || servicesResponse.items.length === 0) {
     return (
       <EmptyContent
-        title="No services available."
-        subtitle="Please check back later."
+        title={t('noServicesTitle')}
+        subtitle={t('noServicesSubtitle')}
         onRetry={refetch}
       />
     );
@@ -109,7 +111,7 @@ const ServicesScreen = () => {
                 <ThemedText
                   style={{ fontSize: 14, color: theme.mutedForeground }}
                 >
-                  Book your next appointment
+                  {t('bookAppointment')}
                 </ThemedText>
               </View>
             )}
@@ -140,7 +142,7 @@ const ServicesScreen = () => {
                   fontSize: 16,
                   color: theme.foreground,
                 }}
-                placeholder="Search services..."
+                placeholder={t('searchServices')}
                 placeholderTextColor={theme.mutedForeground}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -164,15 +166,15 @@ const ServicesScreen = () => {
               }}
             >
               {filteredServices?.length || 0}{' '}
-              {filteredServices?.length === 1 ? 'service' : 'services'}{' '}
-              available
+              {filteredServices?.length === 1 ? t('service') : t('services')}{' '}
+              {t('available')}
             </ThemedText>
           </>
         }
         ListEmptyComponent={
           <EmptyContent
-            title="No services found"
-            subtitle="Try adjusting your search"
+            title={t('noResultsFound')}
+            subtitle={t('tryAdjustingSearch')}
           />
         }
         contentContainerStyle={{

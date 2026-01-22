@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/themed-text';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import { Card } from '@/components/ui';
@@ -16,12 +17,13 @@ import { StaffMember } from '@ascencio/shared/interfaces';
 import Loader from '@/components/Loader';
 
 export default function ServiceDetailScreen() {
-  const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
+  const { t } = useTranslation();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { data: servicesResponse, isPending } = useServices();
   const { updateState } = useBookingStore();
   const { authStatus } = useAuthStore();
 
-  const service = servicesResponse?.items.find((s) => s.id === serviceId);
+  const service = servicesResponse?.items.find((s) => s.id === id);
 
   const handleBookNow = () => {
     if (!service) return;
@@ -32,8 +34,8 @@ export default function ServiceDetailScreen() {
       router.push('/login');
       Toast.show({
         type: 'info',
-        text1: 'Please, sign in',
-        text2: 'You must be authenticated to book a service.',
+        text1: t('pleaseSignInToBook'),
+        text2: t('pleaseSignInDescription'),
       });
       return;
     }
@@ -48,8 +50,8 @@ export default function ServiceDetailScreen() {
   if (!service) {
     return (
       <EmptyContent
-        title="Service not found"
-        subtitle="The service you're looking for doesn't exist."
+        title={t('serviceNotFound')}
+        subtitle={t('serviceNotFoundDescription')}
         icon="alert-circle-outline"
       />
     );
@@ -69,7 +71,7 @@ export default function ServiceDetailScreen() {
             <View style={styles.inactiveBadge}>
               <Ionicons name="alert-circle" size={16} color="#fff" />
               <ThemedText style={styles.inactiveBadgeText}>
-                Currently Unavailable
+                {t('currentlyUnavailable')}
               </ThemedText>
             </View>
           )}
@@ -90,7 +92,9 @@ export default function ServiceDetailScreen() {
                   size={20}
                   color={theme.primary}
                 />
-                <ThemedText style={styles.sectionTitle}>Description</ThemedText>
+                <ThemedText style={styles.sectionTitle}>
+                  {t('serviceDescription')}
+                </ThemedText>
               </View>
               <ThemedText style={styles.description}>
                 {service.description}
@@ -110,7 +114,7 @@ export default function ServiceDetailScreen() {
                   color={theme.primary}
                 />
                 <ThemedText style={styles.sectionTitle}>
-                  Available Staff ({service.staffMembers.length})
+                  {t('availableStaff')} ({service.staffMembers.length})
                 </ThemedText>
               </View>
 
@@ -132,7 +136,9 @@ export default function ServiceDetailScreen() {
                           ]}
                         />
                         <ThemedText style={styles.staffStatusText}>
-                          {staffMember.isActive ? 'Available' : 'Unavailable'}
+                          {staffMember.isActive
+                            ? t('available')
+                            : t('unavailable')}
                         </ThemedText>
                       </View>
                     </View>
@@ -149,7 +155,7 @@ export default function ServiceDetailScreen() {
             <View style={styles.sectionHeader}>
               <Ionicons name="globe-outline" size={20} color={theme.primary} />
               <ThemedText style={styles.sectionTitle}>
-                Service Availability
+                {t('serviceAvailability')}
               </ThemedText>
             </View>
 
@@ -183,12 +189,12 @@ export default function ServiceDetailScreen() {
                         styles.availabilityLabelActive,
                     ]}
                   >
-                    Online Service
+                    {t('onlineService')}
                   </ThemedText>
                   <ThemedText style={styles.availabilityStatus}>
                     {service.isAvailableOnline
-                      ? 'Available remotely'
-                      : 'Not available online'}
+                      ? t('availableRemotely')
+                      : t('notAvailableOnline')}
                   </ThemedText>
                 </View>
               </View>
@@ -222,12 +228,12 @@ export default function ServiceDetailScreen() {
                         styles.availabilityLabelActive,
                     ]}
                   >
-                    In-Person Service
+                    {t('inPersonService')}
                   </ThemedText>
                   <ThemedText style={styles.availabilityStatus}>
                     {!service.isAvailableOnline
-                      ? 'Visit our office'
-                      : 'Also available in-person'}
+                      ? t('visitOurOffice')
+                      : t('alsoAvailableInPerson')}
                   </ThemedText>
                 </View>
               </View>
@@ -245,7 +251,7 @@ export default function ServiceDetailScreen() {
         >
           <ButtonIcon name="calendar-outline" />
           <ButtonText size="lg">
-            {service.isActive ? 'Book Now' : 'Currently Unavailable'}
+            {service.isActive ? t('bookNow') : t('currentlyUnavailable')}
           </ButtonText>
         </Button>
       </View>

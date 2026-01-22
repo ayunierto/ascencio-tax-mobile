@@ -10,7 +10,7 @@ interface EmptyContentProps {
   title: string;
   subtitle?: string;
   /**
-   * @deprecated Use onRetry instead, user action for custom actions
+   * @deprecated Use action instead, user action for custom actions
    */
   onRetry?: () => void;
   action?: React.ReactNode;
@@ -49,9 +49,7 @@ export const EmptyContent = ({
         </Button>
       )}
 
-      {
-        action && (action)
-      }
+      {action && action}
     </View>
   );
 };

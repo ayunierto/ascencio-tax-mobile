@@ -1,5 +1,7 @@
-import { Redirect, router } from 'expo-router';
 import { ScrollView, View, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+
 import { ThemedText } from '@/components/themed-text';
 import { BookingProgressStepper } from '@/components/booking/BookingProgressStepper';
 import { theme } from '@/components/ui/theme';
@@ -7,14 +9,27 @@ import AvailabilityForm from '@/core/booking/components/AvailabilityForm';
 import { EmptyContent } from '@/core/components';
 import { useServices } from '@/core/services/hooks/useServices';
 import { useBookingStore } from '@/core/services/store/useBookingStore';
-import Toast from 'react-native-toast-message';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui';
+import { toast } from 'sonner-native';
 
 export default function SelectAvailabilityScreen() {
+  const { t } = useTranslation();
   const { data: servicesResponse } = useServices();
   const { service } = useBookingStore();
 
   if (!service) {
-    return <Redirect href={'/(app)/(dashboard)'} />;
+    return (
+      <EmptyContent
+        title={t('servicesNotFound')}
+        icon="alert-circle-outline"
+        action={
+          <Button onPress={() => router.push('/(app)/services')}>
+            <ButtonIcon name="arrow-back-outline" />
+            <ButtonText>{t('tryAdjustingSearch')}</ButtonText>
+          </Button>
+        }
+      />
+    );
   }
 
   if (!servicesResponse) {
@@ -37,11 +52,7 @@ export default function SelectAvailabilityScreen() {
   }
 
   const handleBooking = (): void => {
-    Toast.show({
-      type: 'success',
-      text1: 'Selection saved',
-      text2: 'Please add any additional details',
-    });
+    toast.success(t('preferenceSaved'));
     router.push('/(app)/appointments/new/details');
   };
 

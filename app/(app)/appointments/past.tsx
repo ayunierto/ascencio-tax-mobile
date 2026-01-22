@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { FlatList, RefreshControl, View, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { AppointmentCard } from '@/components/bookings/AppointmentCard';
 import { AppointmentListSkeleton } from '@/components/bookings/AppointmentCardSkeleton';
@@ -14,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 export default function PastAppointmentsScreen() {
+  const { t } = useTranslation();
   const {
     data: pastAppointments,
     isLoading,
@@ -32,15 +34,17 @@ export default function PastAppointmentsScreen() {
   });
 
   const handleBookNew = () => {
-    router.push('/(app)/(dashboard)');
+    router.push('/(app)/services');
   };
 
   if (isError) {
     return (
       <EmptyContent
-        title="Error"
+        title={t('error')}
         subtitle={
-          error.response?.data.message || error.message || 'An error occurred'
+          error.response?.data.message ||
+          error.message ||
+          t('errorLoadingAppointment')
         }
         icon="alert-circle-outline"
         onRetry={refetch}
@@ -56,14 +60,14 @@ export default function PastAppointmentsScreen() {
     return (
       <View style={styles.emptyContainer}>
         <EmptyContent
-          title="No Past Appointments"
-          subtitle="Your appointment history will appear here."
+          title={t('noPastAppointments')}
+          subtitle={t('noPastAppointmentsDescription')}
           icon="time-outline"
         />
         <View style={styles.buttonContainer}>
           <Button onPress={handleBookNew}>
             <ButtonIcon name="add-circle-outline" />
-            <ButtonText>Book Appointment</ButtonText>
+            <ButtonText>{t('bookAppointment')}</ButtonText>
           </Button>
         </View>
       </View>
