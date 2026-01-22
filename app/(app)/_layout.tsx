@@ -36,11 +36,11 @@ export default function AppLayout() {
         options={{
           drawerLabel: t('dashboard'),
           title: t('dashboard'),
-          drawerIcon: ({ color, size, focused }) => (
+          drawerIcon: (props) => (
             <Ionicons
-              name={focused ? 'grid' : 'grid-outline'}
-              size={size}
-              color={color}
+              name={props.focused ? 'grid' : 'grid-outline'}
+              size={props.size}
+              color={props.color}
             />
           ),
         }}
