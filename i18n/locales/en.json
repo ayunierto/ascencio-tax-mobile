@@ -485,5 +485,10 @@
   "pleaseSignInToBook": "Please, sign in",
   "pleaseSignInDescription": "You must be authenticated to book a service.",
   "tryAdjustingSearch": "Try adjusting your search",
+
+  "newAppointment": "New Appointment",
+  "viewHistory": "View History",
+  "upcomingAppointments": "Upcoming Appointments",
+  "pastAppointments": "Past Appointments",
   "preferenceSaved": "Preference saved"
 }

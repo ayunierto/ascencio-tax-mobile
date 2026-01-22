@@ -100,18 +100,18 @@ export default function AppointmentsIndexScreen() {
     return (
       <View style={styles.emptyContainer}>
         <EmptyContent
-          title="No Appointments"
-          subtitle="You don't have any upcoming appointments. Book one now!"
+          title={t('noAppointments')}
+          subtitle={t('noAppointmentsDescription')}
           icon="calendar-outline"
         />
         <View style={styles.buttonContainer}>
           <Button onPress={handleBookNew} style={styles.buttonSpacing}>
             <ButtonIcon name="add-circle-outline" />
-            <ButtonText>Book Appointment</ButtonText>
+            <ButtonText>{t('bookAppointment')}</ButtonText>
           </Button>
           <Button onPress={handleViewPast} variant="outline">
             <ButtonIcon name="time-outline" />
-            <ButtonText>View History</ButtonText>
+            <ButtonText>{t('viewHistory')}</ButtonText>
           </Button>
         </View>
       </View>
