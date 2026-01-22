@@ -1,20 +1,20 @@
-import { router } from "expo-router";
-import React from "react";
-import { FlatList, RefreshControl, View, StyleSheet } from "react-native";
-import Toast from "react-native-toast-message";
+import { router } from 'expo-router';
+import React from 'react';
+import { FlatList, RefreshControl, View, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import { AppointmentCard } from "@/components/bookings/AppointmentCard";
-import { AppointmentListSkeleton } from "@/components/bookings/AppointmentCardSkeleton";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/themed-text";
-import { cancelAppointment } from "@/core/appointments/actions/cancel-appointment.action";
-import { getUserAppointments } from "@/core/appointments/actions/get-user-appointments.action";
-import { Appointment } from "@/core/appointments/interfaces/appointmentResponse";
-import { EmptyContent } from "@/core/components";
-import { ServerException } from "@/core/interfaces/server-exception.response";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { AppointmentCard } from '@/components/bookings/AppointmentCard';
+import { AppointmentListSkeleton } from '@/components/bookings/AppointmentCardSkeleton';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/themed-text';
+import { cancelAppointment } from '@/core/appointments/actions/cancel-appointment.action';
+import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
+import { Appointment } from '@/core/appointments/interfaces/appointmentResponse';
+import { EmptyContent } from '@/core/components';
+import { ServerException } from '@/core/interfaces/server-exception.response';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 export default function AppointmentsIndexScreen() {
   const queryClient = useQueryClient();
@@ -27,9 +27,9 @@ export default function AppointmentsIndexScreen() {
     refetch,
     isRefetching,
   } = useQuery<Appointment[], AxiosError<ServerException>>({
-    queryKey: ["pendingAppts"],
+    queryKey: ['pendingAppts'],
     queryFn: async () => {
-      const data = await getUserAppointments("pending");
+      const data = await getUserAppointments('pending');
       return data;
     },
     retry: 1,
@@ -40,36 +40,36 @@ export default function AppointmentsIndexScreen() {
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
       cancelAppointment(id, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pendingAppts"] });
-      queryClient.invalidateQueries({ queryKey: ["PastAppts"] });
+      queryClient.invalidateQueries({ queryKey: ['pendingAppts'] });
+      queryClient.invalidateQueries({ queryKey: ['PastAppts'] });
       Toast.show({
-        type: "success",
-        text1: "Appointment Cancelled",
-        text2: "Your appointment has been cancelled successfully.",
+        type: 'success',
+        text1: 'Appointment Cancelled',
+        text2: 'Your appointment has been cancelled successfully.',
       });
     },
     onError: (error: any) => {
       Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: error.response?.data?.message || "Failed to cancel appointment",
+        type: 'error',
+        text1: 'Error',
+        text2: error.response?.data?.message || 'Failed to cancel appointment',
       });
     },
   });
 
   const handleCancelAppointment = async (
     appointmentId: string,
-    reason?: string
+    reason?: string,
   ) => {
     await cancelMutation.mutateAsync({ id: appointmentId, reason });
   };
 
   const handleBookNew = () => {
-    router.push("/(app)/(tabs)/appointments/new/availability");
+    router.push('/(app)/appointments/new/availability');
   };
 
   const handleViewPast = () => {
-    router.push("/(app)/(tabs)/appointments/past");
+    router.push('/(app)/appointments/past');
   };
 
   if (isError) {
@@ -77,7 +77,7 @@ export default function AppointmentsIndexScreen() {
       <EmptyContent
         title="Error"
         subtitle={
-          error.response?.data.message || error.message || "An error occurred"
+          error.response?.data.message || error.message || 'An error occurred'
         }
         icon="alert-circle-outline"
         onRetry={refetch}
@@ -159,16 +159,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 8,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   listContent: {
     padding: 16,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 16,
   },
   buttonContainer: {
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   fab: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 24,
     right: 16,
     left: 16,

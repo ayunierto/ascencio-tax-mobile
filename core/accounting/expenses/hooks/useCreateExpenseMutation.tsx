@@ -29,7 +29,7 @@ export const useCreateExpenseMutation = () => {
         text2: 'Receipt was saved correctly',
       });
       removeImage();
-      router.replace('/(app)/(tabs)/expenses');
+      router.replace('/(app)/expenses');
     },
     onError() {
       Toast.show({

@@ -34,7 +34,8 @@ export const EmployeeCard = ({
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/(app)/employees/${employee.id}`)}
+      // TODO: Create employees route structure under app/(app)/employees/[id]
+      // onPress={() => router.push(`/(app)/employees/${employee.id}`)}
       disabled={isLoading}
       activeOpacity={0.7}
     >

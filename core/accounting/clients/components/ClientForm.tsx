@@ -54,7 +54,7 @@ export const ClientForm = ({ client }: ClientFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data.message || 'unknownErrorOccurred')
+            t(error.response?.data.message || 'unknownErrorOccurred'),
           );
         },
       });
@@ -82,7 +82,7 @@ export const ClientForm = ({ client }: ClientFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data?.message || error.message || 'canNotDelete')
+            t(error.response?.data?.message || error.message || 'canNotDelete'),
           );
           setIsDeleting(false);
         },
@@ -278,21 +278,6 @@ export const ClientForm = ({ client }: ClientFormProps) => {
           </View>
 
           {/* Campos opcionales para individuos */}
-          <Controller
-            control={control}
-            name="dateOfBirth"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('dateOfBirth')}
-                onChangeText={onChange}
-                value={value}
-                placeholder="YYYY-MM-DD"
-                error={!!errors.dateOfBirth}
-                errorMessage={getErrorMessage(errors.dateOfBirth)}
-              />
-            )}
-          />
-
           <Controller
             control={control}
             name="sin"

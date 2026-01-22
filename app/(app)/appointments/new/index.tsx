@@ -21,7 +21,7 @@ export default function SelectServiceScreen() {
 
   const handleSelectService = (service: any) => {
     updateState({ service });
-    router.push('/(app)/(tabs)/appointments/new/availability');
+    router.push('/(app)/appointments/new/availability');
   };
 
   if (isLoading) {

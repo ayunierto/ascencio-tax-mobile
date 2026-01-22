@@ -66,7 +66,11 @@ export const EmployeesList = ({ companyId }: EmployeesListProps) => {
         title={t('noEmployeesTitle')}
         subtitle={t('noEmployeesSubtitle')}
         action={
-          <Button onPress={() => router.push('/(app)/employees/create')}>
+          <Button
+            // TODO: Create employees route structure under app/(app)/employees/create
+            // onPress={() => router.push('/(app)/employees/create')}
+            disabled
+          >
             <ButtonIcon name="add-circle-outline" />
             <ButtonText>{t('createEmployee')}</ButtonText>
           </Button>

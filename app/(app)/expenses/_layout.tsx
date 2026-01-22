@@ -1,37 +1,24 @@
-import { Stack } from "expo-router";
-import { theme } from "@/components/ui/theme";
+import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { theme } from '@/components/ui/theme';
 
 export default function ExpensesLayout() {
+  const { t } = useTranslation();
+
   return (
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
-        headerTintColor: theme.foreground,
-        headerTitleAlign: "center",
+        headerTitleStyle: { color: theme.foreground },
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="new"
-        options={{
-          title: "New Expense",
-        }}
-      />
-      <Stack.Screen
-        name="[id]"
-        options={{
-          title: "Edit Expense",
-        }}
-      />
+      <Stack.Screen name="index" options={{ title: t('myExpenses') }} />
+      <Stack.Screen name="create" options={{ title: t('newExpense') }} />
+      <Stack.Screen name="[id]" options={{ title: t('expenseDetails') }} />
       <Stack.Screen
         name="scan"
         options={{
-          title: "Scan Receipt",
+          title: t('scanReceipt'),
           headerShown: false,
         }}
       />

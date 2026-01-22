@@ -22,12 +22,15 @@ export const generateInvoicePdf = async (
     });
     console.log('[PDF] API response received, status:', response.status);
     console.log('[PDF] Response data type:', typeof response.data);
-    console.log('[PDF] Response data constructor:', response.data?.constructor?.name);
+    console.log(
+      '[PDF] Response data constructor:',
+      response.data?.constructor?.name,
+    );
 
     // Create file in cache directory
     const fileName = `invoice-${id}-${Date.now()}.pdf`;
     const file = new File(Paths.cache, fileName);
-    
+
     console.log('[PDF] File URI:', file.uri);
 
     // Check if response.data is a Blob
@@ -65,7 +68,7 @@ export const generateInvoicePdf = async (
       bytes[i] = binaryString.charCodeAt(i);
     }
     console.log('[PDF] Bytes array length:', bytes.length);
-    
+
     // Write bytes to file
     file.write(bytes);
     console.log('[PDF] File written successfully');
@@ -73,7 +76,7 @@ export const generateInvoicePdf = async (
     // Get file info to verify it exists
     const fileInfo = await file.info();
     console.log('[PDF] File info:', JSON.stringify(fileInfo, null, 2));
-    
+
     if (!fileInfo.exists) {
       throw new Error('File was not created successfully');
     }

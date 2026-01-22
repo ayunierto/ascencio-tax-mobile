@@ -1,4 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useLayoutEffect } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 
 import { useCategories } from '@/core/accounting/categories/hooks/useCategories';
@@ -6,8 +9,10 @@ import ExpenseForm from '@/core/accounting/expenses/components/ExpenseForm/Expen
 import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStore';
 import { EmptyContent } from '@/core/components';
 import Loader from '@/components/Loader';
+import { theme } from '@/components/ui';
 
-export default function NewExpenseScreen() {
+export default function CreateExpenseScreen() {
+  const navigation: any = useNavigation();
   const {
     imageUrl,
     merchant,
@@ -26,6 +31,50 @@ export default function NewExpenseScreen() {
     error: errorCategories,
     isLoading: isLoadingCategories,
   } = useCategories();
+
+  // Configure header with drawer toggle
+  useLayoutEffect(() => {
+    const parentNav = navigation.getParent ? navigation.getParent() : null;
+    const targetNav = parentNav ?? navigation;
+
+    const openDrawer = () => {
+      const drawerNav = navigation.getParent ? navigation.getParent() : null;
+      if (drawerNav && typeof drawerNav.openDrawer === 'function') {
+        drawerNav.openDrawer();
+      } else if (typeof navigation.openDrawer === 'function') {
+        navigation.openDrawer();
+      }
+    };
+
+    const headerLeft = () => (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {navigation.canGoBack && navigation.canGoBack() ? (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 8, marginRight: 8 }}
+          >
+            <Ionicons color={theme.foreground} size={24} name="chevron-back" />
+          </TouchableOpacity>
+        ) : null}
+        <TouchableOpacity
+          onPress={openDrawer}
+          style={{ marginLeft: 8, marginRight: 8 }}
+        >
+          <Ionicons color={theme.foreground} size={24} name="menu" />
+        </TouchableOpacity>
+      </View>
+    );
+
+    targetNav.setOptions({ headerLeft });
+
+    return () => {
+      try {
+        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, [navigation]);
 
   // Handle cleanup when screen is unfocused
   useFocusEffect(
@@ -52,7 +101,7 @@ export default function NewExpenseScreen() {
   }
 
   if (isLoadingCategories) {
-    return <Loader message="Loading categories..." />;
+    return <Loader />;
   }
 
   if (!categories || categories.length === 0) {

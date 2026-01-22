@@ -1,11 +1,12 @@
 import React, { useLayoutEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
 import { ClientsList } from '@/core/accounting/clients/components';
+import { Button, ButtonIcon } from '@/components/ui';
 
 const ClientsScreen = () => {
   const navigation = useNavigation();
@@ -25,9 +26,18 @@ const ClientsScreen = () => {
     );
 
     const headerRight = () => (
-      <TouchableOpacity onPress={() => router.push('/(app)/clients/create')}>
-        <Ionicons name="add-circle-outline" size={28} color={theme.primary} />
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
+        <Button
+          size="icon"
+          variant="ghost"
+          onPress={() => router.push('/(app)/clients/create')}
+        >
+          <ButtonIcon
+            name="add-circle-outline"
+            style={{ color: theme.primary, fontSize: 24 }}
+          />
+        </Button>
+      </View>
     );
 
     navigation.setOptions({
@@ -37,7 +47,7 @@ const ClientsScreen = () => {
 
     return () => {
       try {
-        targetNav.setOptions({ headerRight: undefined });
+        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
       } catch (e) {
         // ignore
       }

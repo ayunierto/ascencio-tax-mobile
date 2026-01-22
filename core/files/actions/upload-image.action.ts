@@ -1,10 +1,13 @@
 import { api } from '@/core/api/api';
 import { ImagePickerAsset } from 'expo-image-picker';
-import { UploadImageFile } from '../interfaces/upload-image.interface';
+import {
+  UploadImageFile,
+  UploadFileResponse,
+} from '../interfaces/upload-image.interface';
 
 export const uploadImage = async (
-  image: ImagePickerAsset
-): Promise<UploadImageFile> => {
+  image: ImagePickerAsset,
+): Promise<UploadFileResponse> => {
   const formdata = new FormData() as any;
   formdata.append('file', {
     uri: image.uri,
@@ -12,9 +15,9 @@ export const uploadImage = async (
     type: 'image/jpeg',
   });
 
-  const { data } = await api.post<UploadImageFile>(
+  const { data } = await api.post<UploadFileResponse>(
     'files/upload-image',
-    formdata
+    formdata,
   );
 
   return data;

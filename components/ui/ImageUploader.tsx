@@ -11,6 +11,7 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ import { api } from '@/core/api/api';
 import { Button, ButtonIcon } from './Button';
 import { ThemedText } from './ThemedText';
 import { theme } from './theme';
+import { SinglePhotoViewer } from '@/core/components/SinglePhotoViewer';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -141,6 +143,7 @@ export const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
     const { t } = useTranslation();
     const [uploading, setUploading] = useState(false);
     const [imageLoadError, setImageLoadError] = useState(false);
+    const [isViewerVisible, setIsViewerVisible] = useState(false);
     const [localImageUrl, setLocalImageUrl] = useState<string | undefined>(
       resolveCloudinaryUrl(value),
     );
@@ -292,14 +295,14 @@ export const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
           result = await ImagePicker.launchCameraAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
-            aspect: [1, 1],
+            // aspect: [1, 1],
             quality: 0.8,
           });
         } else {
           result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
-            aspect: [1, 1],
+            // aspect: [1, 1],
             quality: 0.8,
           });
         }
@@ -392,11 +395,23 @@ export const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
         <View style={styles.imageContainer}>
           {localImageUrl && !imageLoadError ? (
             <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: localImageUrl }}
-                style={styles.image}
-                onError={() => setImageLoadError(true)}
-                resizeMode="cover"
+              <TouchableOpacity
+                onPress={() => setIsViewerVisible(true)}
+                style={{ flex: 1 }}
+                activeOpacity={0.8}
+              >
+                <Image
+                  source={{ uri: localImageUrl }}
+                  style={styles.image}
+                  onError={() => setImageLoadError(true)}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+
+              <SinglePhotoViewer
+                imageUrl={localImageUrl}
+                isVisible={isViewerVisible}
+                onClose={() => setIsViewerVisible(false)}
               />
 
               <AlertDialog>

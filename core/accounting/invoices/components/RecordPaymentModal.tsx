@@ -49,7 +49,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
     reset,
     watch,
   } = useForm<CreateInvoicePaymentRequest>({
-    resolver: zodResolver(createInvoicePaymentSchema),
+    resolver: zodResolver(createInvoicePaymentSchema) as any,
     defaultValues: {
       amount: remainingBalance,
       paidAt: new Date().toISOString().split('T')[0],
@@ -95,10 +95,14 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
   // Validate amount
   const amountError = useMemo(() => {
-    if (watchedAmount > remainingBalance) {
+    const amount =
+      typeof watchedAmount === 'number'
+        ? watchedAmount
+        : parseFloat(String(watchedAmount) || '0');
+    if (amount > remainingBalance) {
       return t('paymentExceedsBalance');
     }
-    if (watchedAmount <= 0) {
+    if (amount <= 0) {
       return t('invalidAmount');
     }
     return undefined;
@@ -111,7 +115,10 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top', 'bottom']}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: theme.background }}
+        edges={['top', 'bottom']}
+      >
         {/* Header */}
         <View
           style={{
@@ -178,18 +185,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               <Input
                 label={`${t('paymentAmount')} *`}
                 value={value?.toString() || ''}
-                onChangeText={(text) => {
-                  if (text === '') {
-                    onChange(0);
-                    return;
-                  }
-                  if (/^\d*\.?\d*$/.test(text)) {
-                    const num = parseFloat(text);
-                    if (!isNaN(num)) {
-                      onChange(num);
-                    }
-                  }
-                }}
+                onChangeText={onChange}
                 keyboardType="decimal-pad"
                 placeholder={t('enterAmount')}
                 error={!!errors.amount || !!amountError}

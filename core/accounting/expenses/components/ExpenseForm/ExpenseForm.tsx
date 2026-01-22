@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
+import React, { useState, useRef } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { router, useNavigation } from 'expo-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Toast from 'react-native-toast-message';
+import { toast } from 'sonner-native';
+import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/Input';
@@ -15,15 +17,26 @@ import {
 import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
 import {
   ExpenseFormFields,
-  expenseSchema,
+  ExpenseFormInput,
+  expenseFormSchema,
 } from '@/core/accounting/expenses/schemas';
 import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 import { Category } from '@/core/accounting/categories/interfaces/category.interface';
-import ExpenseImage from '@/core/accounting/expenses/components/ExpenseImage';
 import { useExpenseMutation } from '@/core/accounting/expenses/hooks/useExpenseMutation';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import {
+  Button,
+  ButtonIcon,
+  ButtonText,
+  theme,
+  ImageUploader,
+  ImageUploaderRef,
+} from '@/components/ui';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import { Subcategory } from '@/core/accounting/subcategories/interfaces';
 import ErrorMessage from '@/core/components/ErrorMessage';
+import { DeleteConfirmationDialog } from '@/core/components';
+import { useDeleteExpense } from '@/core/accounting/expenses/hooks/useDeleteExpense';
+import { useReceiptImageMutation } from '@/core/accounting/expenses/hooks/useReceiptImageMutation';
 
 interface ExpenseFormProps {
   expense: ExpenseResponse;
@@ -31,24 +44,35 @@ interface ExpenseFormProps {
 }
 
 export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const imageUploaderRef = useRef<ImageUploaderRef>(null);
+  const lastScannedImageRef = useRef<string | undefined>(undefined);
+  const hasAutoScannedRef = useRef<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [subcategories, setSubcategories] = useState<Subcategory[]>(
     categories.find((cat) => cat.id === expense.category?.id)?.subcategories ||
       [],
   );
+
+  const { getReceiptValuesMutation } = useReceiptImageMutation();
   const {
     handleSubmit,
     control,
     formState: { errors },
     setValue,
     reset,
-  } = useForm<ExpenseFormFields>({
-    resolver: zodResolver(expenseSchema),
+    watch,
+  } = useForm<ExpenseFormInput>({
+    resolver: zodResolver(expenseFormSchema),
     defaultValues: {
       id: expense.id,
       date: expense.date,
       merchant: expense.merchant,
-      total: expense.total,
-      tax: expense.tax,
+      total: expense.total.toString(),
+      tax: expense.tax.toString(),
       imageUrl: expense.imageUrl || undefined,
       notes: expense.notes || undefined,
       categoryId: expense.category?.id || undefined,
@@ -56,43 +80,233 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     },
   });
 
-  const expenseMutation = useExpenseMutation();
+  // Update form when expense changes (after scan)
+  React.useEffect(() => {
+    reset({
+      id: expense.id,
+      date: expense.date,
+      merchant: expense.merchant,
+      total: expense.total.toString(),
+      tax: expense.tax.toString(),
+      imageUrl: expense.imageUrl || undefined,
+      notes: expense.notes || undefined,
+      categoryId: expense.category?.id || undefined,
+      subcategoryId: expense.subcategory?.id || undefined,
+    });
+  }, [expense, reset]);
 
-  const onSubmit = async (values: ExpenseFormFields) => {
-    await expenseMutation.mutateAsync(values, {
+  const expenseMutation = useExpenseMutation();
+  const deleteExpense = useDeleteExpense();
+
+  const watchedImageUrl = watch('imageUrl');
+  const previousImageUrlRef = useRef<string | undefined>(watchedImageUrl);
+
+  // Auto scan when a new temp receipt image is uploaded (form value)
+  React.useEffect(() => {
+    const previousImageUrl = previousImageUrlRef.current;
+    const currentImageUrl = watchedImageUrl;
+
+    // Update the previous value for next comparison
+    previousImageUrlRef.current = currentImageUrl;
+
+    // Don't scan if no image
+    if (!currentImageUrl) return;
+
+    // Don't scan if not a temp image (already saved images)
+    if (!currentImageUrl.startsWith('temp_receipts/')) return;
+
+    // Don't scan if it's the same image we already scanned
+    if (lastScannedImageRef.current === currentImageUrl) return;
+
+    // CRITICAL: Don't scan on initial mount - only when image actually changes
+    // This prevents scanning when opening an existing expense from the list
+    if (previousImageUrl === currentImageUrl) return;
+
+    // Don't scan if this is the first render and image was already there
+    // (opening existing expense with image)
+    if (previousImageUrl === undefined && expense.imageUrl === currentImageUrl)
+      return;
+
+    // Mark this image as scanned
+    lastScannedImageRef.current = currentImageUrl;
+    hasAutoScannedRef.current = true;
+
+    // Convert relative path to full Cloudinary URL
+    const cloudinaryCloudName = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    if (!cloudinaryCloudName) {
+      console.error('Cloudinary cloud name not configured');
+      return;
+    }
+    const fullImageUrl = `https://res.cloudinary.com/${cloudinaryCloudName}/image/upload/${currentImageUrl}`;
+    handleScanReceipt(fullImageUrl);
+  }, [watchedImageUrl, expense.imageUrl]);
+
+  const onSubmit = async (values: ExpenseFormInput) => {
+    // Convert string values to numbers for API
+    const expenseData: ExpenseFormFields = {
+      ...values,
+      total: parseFloat(values.total),
+      tax: parseFloat(values.tax),
+    };
+
+    await expenseMutation.mutateAsync(expenseData, {
       onSuccess: () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Expense created',
-        });
+        // Mark image as saved to prevent cleanup
+        imageUploaderRef.current?.markAsSaved();
+        toast.success(
+          expense.id === 'new'
+            ? t('expenseCreatedSuccessfully')
+            : t('expenseUpdatedSuccessfully'),
+        );
         reset();
-        router.replace('/(app)/expenses');
+        // Navigation handled by useExpenseMutation for new expenses
+        if (expense.id !== 'new') {
+          setTimeout(() => router.back(), 500);
+        }
       },
       onError: (error) => {
-        Toast.show({
-          type: 'error',
-          text1: error.response?.data.message || error.message,
-        });
+        toast.error(error.response?.data.message || error.message);
       },
     });
   };
 
+  const handleDeleteExpense = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteExpense.mutateAsync(expense.id, {
+        onSuccess: () => {
+          toast.success(t('deleteSuccess'));
+          setTimeout(() => router.back(), 500);
+        },
+        onError: (error) => {
+          toast.error(
+            t(error.response?.data?.message || error.message || 'canNotDelete'),
+          );
+          setIsDeleting(false);
+        },
+      });
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      toast.error(t('unknownError'));
+      setIsDeleting(false);
+    }
+  };
+
+  /**
+   * Handle OCR scanning of receipt after image upload
+   */
+  const handleScanReceipt = async (imageUrl: string) => {
+    setIsScanning(true);
+    let toastId: string | number | undefined;
+    try {
+      toastId = toast.loading(t('extractingReceiptValues'));
+
+      const extractedValues = await getReceiptValuesMutation.mutateAsync(
+        imageUrl,
+        {
+          onError: (error) => {
+            toast.error(t('errorGettingReceiptValues'), {
+              description: error.response?.data.message || error.message,
+            });
+          },
+        },
+      );
+
+      // Update form with extracted values (convert numbers to strings)
+      if (extractedValues.merchant) {
+        setValue('merchant', extractedValues.merchant);
+      }
+      if (extractedValues.date) {
+        setValue('date', extractedValues.date);
+      }
+      if (extractedValues.total) {
+        setValue('total', extractedValues.total.toString());
+      }
+      if (extractedValues.tax) {
+        setValue('tax', extractedValues.tax.toString());
+      }
+
+      toast.success(t('receiptScannedSuccessfully'));
+      toast.dismiss(toastId);
+    } catch (error) {
+      console.error('Error scanning receipt:', error);
+      toast.error(t('errorGettingReceiptValues'));
+      if (toastId) toast.dismiss(toastId);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: expense.id === 'new' ? t('newExpense') : t('expenseDetails'),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            isLoading={expenseMutation.isPending}
+            onPress={handleSubmit(onSubmit)}
+            disabled={expenseMutation.isPending}
+          >
+            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
+          </Button>
+
+          {expense.id !== 'new' && (
+            <DeleteConfirmationDialog onDelete={handleDeleteExpense}>
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={deleteExpense.isPending}
+                isLoading={deleteExpense.isPending}
+              >
+                <ButtonIcon
+                  name="trash-outline"
+                  style={{ color: theme.destructive }}
+                />
+              </Button>
+            </DeleteConfirmationDialog>
+          )}
+        </View>
+      ),
+    });
+  }, [
+    expense.id,
+    t,
+    handleSubmit,
+    onSubmit,
+    handleDeleteExpense,
+    expenseMutation.isPending,
+    isDeleting,
+  ]);
+
   return (
-    <KeyboardAvoidingView behavior="padding">
-      <ScrollView>
-        <View style={{ margin: 10, gap: 20 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
+    >
+      <ScrollView
+        style={{ padding: 16, paddingTop: 8 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ flex: 1, gap: 16 }}>
           <Controller
             control={control}
             name="imageUrl"
             render={({ field: { onChange, value } }) => (
-              <ExpenseImage
-                onChange={(image) => {
-                  onChange(null);
-                  setValue('imageUrl', image);
-                }}
-                imageUrl={value}
-                expenseId={expense.id}
-              />
+              <View style={{ gap: 8 }}>
+                <ImageUploader
+                  ref={imageUploaderRef}
+                  value={value}
+                  onChange={onChange}
+                  folder="temp_receipts"
+                  label={t('receiptImage')}
+                  allowCamera={true}
+                  allowGallery={true}
+                />
+              </View>
             )}
           />
           {errors.id && <ErrorMessage message={errors.id.message} />}
@@ -106,12 +320,12 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             name={'merchant'}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Merchant"
+                label={t('merchant')}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={!!errors.merchant}
-                errorMessage={errors.merchant?.message}
+                errorMessage={getErrorMessage(errors.merchant)}
               />
             )}
           />
@@ -121,9 +335,9 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             name="date"
             render={({ field: { onChange, value } }) => (
               <DateTimePicker
-                labelText="Date"
+                labelText={t('date')}
                 error={!!errors.date}
-                errorMessage={errors.date?.message}
+                errorMessage={getErrorMessage(errors.date)}
                 value={value ?? null}
                 mode="date"
                 onChange={onChange}
@@ -136,16 +350,13 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             name="total"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Total"
-                value={value ? value.toString() : ''}
+                label={t('total')}
+                value={value?.toString() || ''}
                 onBlur={onBlur}
-                onChangeText={(text) => {
-                  const numValue = parseFloat(text);
-                  onChange(isNaN(numValue) ? text : numValue);
-                }}
+                onChangeText={onChange}
                 keyboardType="decimal-pad"
                 error={!!errors.total}
-                errorMessage={errors.total?.message}
+                errorMessage={getErrorMessage(errors.total)}
               />
             )}
           />
@@ -155,16 +366,13 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             name="tax"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Tax"
-                value={value ? value.toString() : ''}
+                label={t('tax')}
+                value={value?.toString() || ''}
                 onBlur={onBlur}
-                onChangeText={(text) => {
-                  const numValue = parseFloat(text);
-                  onChange(isNaN(numValue) ? text : numValue);
-                }}
+                onChangeText={onChange}
                 keyboardType="decimal-pad"
                 error={!!errors.tax}
-                errorMessage={errors.tax?.message}
+                errorMessage={getErrorMessage(errors.tax)}
               />
             )}
           />
@@ -184,15 +392,15 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                   setValue('subcategoryId', undefined);
                 }}
                 error={!!errors.categoryId}
-                errorMessage={errors.categoryId?.message}
+                errorMessage={getErrorMessage(errors.categoryId)}
                 options={categories.map((cat) => ({
                   label: cat.name,
                   value: cat.id,
                 }))}
               >
                 <SelectTrigger
-                  placeholder="Select a category"
-                  labelText="Category"
+                  placeholder={t('selectACategory')}
+                  labelText={t('category')}
                 />
                 <SelectContent>
                   <ScrollView>
@@ -223,8 +431,8 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
                   }))}
                 >
                   <SelectTrigger
-                    placeholder="Select a subcategory"
-                    labelText="Subcategory"
+                    placeholder={t('selectASubcategory')}
+                    labelText={t('subcategory')}
                   />
                   <SelectContent>
                     <ScrollView>
@@ -247,31 +455,15 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             name="notes"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Notes"
+                label={t('notes')}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={!!errors.notes}
-                errorMessage={errors.notes?.message}
+                errorMessage={getErrorMessage(errors.notes)}
               />
             )}
           />
-
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            disabled={expenseMutation.isPending}
-          >
-            <ButtonIcon name={'save-outline'} />
-            <ButtonText>
-              {expense.id === 'new'
-                ? expenseMutation.isPending
-                  ? 'Creating...'
-                  : 'Create'
-                : expenseMutation.isPending
-                ? 'Updating...'
-                : 'Update'}
-            </ButtonText>
-          </Button>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

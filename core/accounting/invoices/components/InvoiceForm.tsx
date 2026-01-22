@@ -19,6 +19,7 @@ import { toast } from 'sonner-native';
 import {
   Invoice,
   CreateInvoiceRequest,
+  UpdateInvoiceRequest,
   createInvoiceSchema,
   updateInvoiceSchema,
 } from '@ascencio/shared';
@@ -116,8 +117,10 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     formState: { errors },
     setValue,
     watch,
-  } = useForm({
-    resolver: zodResolver(isNew ? createInvoiceSchema : updateInvoiceSchema),
+  } = useForm<CreateInvoiceRequest | UpdateInvoiceRequest>({
+    resolver: zodResolver(
+      isNew ? createInvoiceSchema : updateInvoiceSchema,
+    ) as any,
     defaultValues: {
       fromCompanyId:
         invoice.fromCompanyId ||
@@ -154,7 +157,11 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
     const sub = lineItems.reduce((sum, item) => {
       return sum + item.quantity * item.price;
     }, 0);
-    const tax = sub * (watchedTaxRate / 100);
+    const rate =
+      typeof watchedTaxRate === 'number'
+        ? watchedTaxRate
+        : parseFloat(String(watchedTaxRate) || '13');
+    const tax = sub * (rate / 100);
     return {
       subtotal: sub,
       taxAmount: tax,
@@ -940,29 +947,15 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
                         // Store the text as-is for display
                         setPriceTexts((prev) => ({ ...prev, [item.id]: text }));
 
-                        // Permitir string vacío
+                        // Allow empty string
                         if (text === '') {
                           updateLineItem(item.id, 'price', 0);
                           return;
                         }
-                        // Validar formato decimal: permite dígitos y un punto decimal
+                        // Allow decimal format: digits and one decimal point
                         if (/^\d*\.?\d*$/.test(text)) {
-                          // If it's just a dot or ends with a dot, keep the text but set value to 0 or partial number
-                          const num = parseFloat(text);
-                          if (!isNaN(num) && num >= 0) {
-                            updateLineItem(item.id, 'price', num);
-                          } else if (text === '.' || text.endsWith('.')) {
-                            // Allow typing "." by keeping the text but not updating the value
-                            const beforeDot = text.slice(0, -1);
-                            if (beforeDot) {
-                              const partialNum = parseFloat(beforeDot);
-                              if (!isNaN(partialNum)) {
-                                updateLineItem(item.id, 'price', partialNum);
-                              }
-                            } else {
-                              updateLineItem(item.id, 'price', 0);
-                            }
-                          }
+                          const num = parseFloat(text) || 0;
+                          updateLineItem(item.id, 'price', num);
                         }
                       }}
                       onBlur={() => {
@@ -1001,16 +994,7 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
               <Input
                 label={`${t('taxRate')} (%)`}
                 value={(value ?? 13).toString()}
-                onChangeText={(text) => {
-                  if (text === '' || text === '.') {
-                    onChange(0);
-                    return;
-                  }
-                  const num = parseFloat(text);
-                  if (!isNaN(num)) {
-                    onChange(num);
-                  }
-                }}
+                onChangeText={onChange}
                 keyboardType="decimal-pad"
                 editable={canEdit}
                 error={!!errors.taxRate}

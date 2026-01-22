@@ -1,52 +1,85 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from 'react';
 
-import { CameraView } from "expo-camera";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import Toast from "react-native-toast-message";
-import { useExpenseStore } from "../store/useExpenseStore";
-import { useReceiptImageMutation } from "./useReceiptImageMutation";
+import { CameraView } from 'expo-camera';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import { toast } from 'sonner-native';
+import { useTranslation } from 'react-i18next';
+import { useExpenseStore } from '../store/useExpenseStore';
+import { useReceiptImageMutation } from './useReceiptImageMutation';
 
-export const useScanReceiptsNew = (expenseId?: string) => {
+export const useScanReceiptsNew = (
+  expenseId?: string,
+  preselectedImageUri?: string,
+) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [statusMessage, setStatusMessage] = useState<string>('');
   const ref = useRef<CameraView>(null);
   const [pictureUri, setPictureUri] = useState<string | null>(null);
   const { setDetails } = useExpenseStore();
   const { uploadImageMutation, getReceiptValuesMutation } =
     useReceiptImageMutation();
 
+  // Handle pre-selected image from gallery
+  useEffect(() => {
+    if (preselectedImageUri) {
+      handlePreselectedImage(preselectedImageUri);
+    }
+  }, [preselectedImageUri]);
+
+  const handlePreselectedImage = async (uri: string) => {
+    setLoading(true);
+    setStatusMessage(t('compressingPicture'));
+    const compressedUri = await compressPicture(uri);
+    setPictureUri(compressedUri);
+    setLoading(false);
+  };
+
   const takePicture = async () => {
-    const photo = await ref.current?.takePictureAsync();
-    if (photo?.uri) {
-      setLoading(true);
-      const compressedUri = await compressPicture(photo?.uri);
-      setPictureUri(compressedUri);
+    try {
+      const photo = await ref.current?.takePictureAsync();
+      if (photo?.uri) {
+        setLoading(true);
+        setStatusMessage(t('compressingPicture'));
+        const compressedUri = await compressPicture(photo?.uri);
+        setPictureUri(compressedUri);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error taking picture:', error);
+      toast.error(t('unknownError'));
       setLoading(false);
     }
   };
 
   const pickFromGallery = async () => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const selectedPicture = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-    });
+      const selectedPicture = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+      });
 
-    if (selectedPicture.canceled) {
+      if (selectedPicture.canceled) {
+        setLoading(false);
+        return;
+      }
+
+      setStatusMessage(t('compressingPicture'));
+      const compressedPicture = await compressPicture(
+        selectedPicture.assets[0].uri,
+      );
+
+      setPictureUri(compressedPicture);
       setLoading(false);
-      return;
+    } catch (error) {
+      console.error('Error picking from gallery:', error);
+      toast.error(t('unknownError'));
+      setLoading(false);
     }
-
-    setStatusMessage("Compressing picture...");
-    const compressedPicture = await compressPicture(
-      selectedPicture.assets[0].uri
-    );
-
-    setPictureUri(compressedPicture);
-    setLoading(false);
   };
 
   const confirmPicture = async () => {
@@ -54,40 +87,38 @@ export const useScanReceiptsNew = (expenseId?: string) => {
 
     try {
       setLoading(true);
-      setStatusMessage("Processing receipt image...");
+      setStatusMessage(t('processingReceiptImage'));
 
-      // 1. Upload picture.
-      setStatusMessage("Uploading image...");
+      // 1. Upload picture
+      setStatusMessage(t('uploadingImage'));
       const uploadedPicture = await uploadPicture(pictureUri);
       setDetails({
         imageUrl: uploadedPicture.url,
       });
 
-      setStatusMessage("Extracting receipt values...");
       // 2. Extract receipt values (OCR + GPT)
+      setStatusMessage(t('extractingReceiptValues'));
       const extractedValues = await getReceiptValues(uploadedPicture.url);
       setDetails({ ...extractedValues });
 
       // 3. Redirect to new or edit expense screen
       setPictureUri(null);
-      if (expenseId && expenseId !== "new") {
+      if (expenseId && expenseId !== 'new') {
         router.replace({
-          pathname: "/(app)/(tabs)/expenses/[id]",
+          pathname: '/(app)/expenses/[id]',
           params: { id: expenseId },
         });
       } else {
-        router.replace("/(app)/(tabs)/expenses/new");
+        router.replace('/(app)/expenses/create');
       }
     } catch (error) {
-      console.error(error);
-      Toast.show({
-        type: "error",
-        text1:
-          (error instanceof Error && error.message) ||
-          "Unknown error, please try again.",
-      });
+      console.error('Error confirming picture:', error);
+      toast.error(
+        (error instanceof Error && error.message) || t('unknownError'),
+      );
     } finally {
       setLoading(false);
+      setStatusMessage('');
       setPictureUri(null);
     }
   };
@@ -97,7 +128,7 @@ export const useScanReceiptsNew = (expenseId?: string) => {
     const { uri: compressedUri } = await ImageManipulator.manipulateAsync(
       uri,
       [{ resize: { width: 1280 } }],
-      { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+      { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG },
     );
     return compressedUri;
   };
@@ -105,16 +136,11 @@ export const useScanReceiptsNew = (expenseId?: string) => {
   const uploadPicture = async (uri: string) => {
     return await uploadImageMutation.mutateAsync(uri, {
       onSuccess: async () => {
-        Toast.show({
-          type: "success",
-          text1: "Image uploaded.",
-        });
+        toast.success(t('imageUploaded'));
       },
       onError: (error) => {
-        Toast.show({
-          type: "error",
-          text1: "Error uploading image.",
-          text2: error.response?.data.message || error.message,
+        toast.error(t('errorUploadingImage'), {
+          description: error.response?.data.message || error.message,
         });
       },
     });
@@ -123,10 +149,8 @@ export const useScanReceiptsNew = (expenseId?: string) => {
   const getReceiptValues = async (imageUrl: string) => {
     return await getReceiptValuesMutation.mutateAsync(imageUrl, {
       onError: (error) => {
-        Toast.show({
-          type: "error",
-          text1: "Error getting receipt values.",
-          text2: error.response?.data.message || error.message,
+        toast.error(t('errorGettingReceiptValues'), {
+          description: error.response?.data.message || error.message,
         });
       },
     });

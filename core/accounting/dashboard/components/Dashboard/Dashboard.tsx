@@ -1,21 +1,21 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { router, useFocusEffect } from "expo-router";
-import { StyleSheet, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { router, useFocusEffect } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import Loader from "@/components/Loader";
-import { getExpenses } from "@/core/accounting/expenses/actions";
-import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
-import { EmptyContent } from "@/core/components";
-import { ServerException } from "@/core/interfaces/server-exception.response";
-import { getLogs } from "@/core/logs/actions";
-import { Log } from "@/core/logs/interfaces";
-import { Metrics } from "./Metrics";
-import { QuickActions } from "./QuickActions/QuickActions";
-import { RecentActivity } from "./RecentActivity";
+import Loader from '@/components/Loader';
+import { getExpenses } from '@/core/accounting/expenses/actions';
+import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
+import { EmptyContent } from '@/core/components';
+import { ServerException } from '@/core/interfaces/server-exception.response';
+import { getLogs } from '@/core/logs/actions';
+import { Log } from '@/core/logs/interfaces';
+import { Metrics } from './Metrics';
+import { QuickActions } from './QuickActions/QuickActions';
+import { RecentActivity } from './RecentActivity';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -26,7 +26,7 @@ const ReceiptsDashboard = () => {
     isError: isErrorExpenses,
     error: errorExpenses,
   } = useQuery<ExpenseResponse[], AxiosError<ServerException>>({
-    queryKey: ["totalExpenses"],
+    queryKey: ['totalExpenses'],
     queryFn: () => getExpenses(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -38,7 +38,7 @@ const ReceiptsDashboard = () => {
     isError: isErrorLogs,
     error: errorLogs,
   } = useQuery<Log[], AxiosError<ServerException>>({
-    queryKey: ["logs"],
+    queryKey: ['logs'],
     queryFn: () => getLogs(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -47,14 +47,14 @@ const ReceiptsDashboard = () => {
     useCallback(() => {
       // ComponentDidMount logic (if any) can go here
       refreshLogs(); // Refetch logs when the component is focused
-    }, [refreshLogs])
+    }, [refreshLogs]),
   );
 
   useEffect(() => {
     if (expenses && expenses.length >= 0) {
       const total = expenses.reduce(
         (acc: number, receipt: ExpenseResponse) => acc + +receipt.total,
-        0
+        0,
       );
       setTotalExpenses(total);
     }
@@ -65,7 +65,7 @@ const ReceiptsDashboard = () => {
       <EmptyContent
         title="Error"
         subtitle={
-          errorLogs.response?.data.message || "Failed to load recent activity."
+          errorLogs.response?.data.message || 'Failed to load recent activity.'
         }
       />
     );
@@ -76,7 +76,7 @@ const ReceiptsDashboard = () => {
       <EmptyContent
         title="Error"
         subtitle={
-          errorExpenses.response?.data.message || "Failed to load expenses."
+          errorExpenses.response?.data.message || 'Failed to load expenses.'
         }
       />
     );
@@ -87,13 +87,13 @@ const ReceiptsDashboard = () => {
   const getReport = () => {
     if (expenses.length === 0) {
       Toast.show({
-        type: "info",
-        text1: "Info",
-        text2: "No expenses to generate report",
+        type: 'info',
+        text1: 'Info',
+        text2: 'No expenses to generate report',
       });
       return;
     }
-    router.push("/(app)/(tabs)/expenses");
+    router.push('/(app)/expenses');
   };
 
   const keyMetrics = [
@@ -101,31 +101,31 @@ const ReceiptsDashboard = () => {
     // { label: 'Today', value: `$${totalExpenses}` },
     // { label: 'This Week', value: `$${totalExpenses}` },
     // { label: 'This month', value: `$${totalExpenses}` },
-    { label: "Total Expenses", value: `$${totalExpenses}` },
+    { label: 'Total Expenses', value: `$${totalExpenses}` },
     // { label: 'Net Profit', value: '$4,000' },
   ];
 
   const quickActions = [
     {
-      label: "Add Expense",
+      label: 'Add Expense',
       onPress: () => addExpense(),
     },
     {
-      label: "Scan Expense",
+      label: 'Scan Expense',
       onPress: () => scanExpense(),
     },
     // { label: 'Add Income', onPress: () => addIncome('Add Income') },
-    { label: "View Reports", onPress: () => viewReport() },
+    { label: 'View Reports', onPress: () => viewReport() },
   ];
 
   const addExpense = () => {
-    router.push("/(app)/(tabs)/expenses/new");
+    router.push('/(app)/expenses/create');
   };
 
   const scanExpense = () => {
     router.push({
-      pathname: "/(app)/(tabs)/expenses/scan",
-      params: { id: "new" },
+      pathname: '/(app)/expenses/scan',
+      params: { id: 'new' },
     });
   };
 

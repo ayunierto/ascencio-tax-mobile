@@ -114,7 +114,7 @@ export default function CameraScreen() {
     // Save to media library
     await MediaLibrary.createAssetAsync(selectedImage.uri);
     selectImage(selectedImage);
-    router.push("/(app)/(tabs)/expenses/new");
+    router.push("/(app)/expenses/create");
   };
 
   const onRetakePicture = () => {

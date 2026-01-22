@@ -14,7 +14,7 @@ export default function SelectAvailabilityScreen() {
   const { service } = useBookingStore();
 
   if (!service) {
-    return <Redirect href={'/(app)/(tabs)/home'} />;
+    return <Redirect href={'/(app)/(dashboard)'} />;
   }
 
   if (!servicesResponse) {
@@ -42,7 +42,7 @@ export default function SelectAvailabilityScreen() {
       text1: 'Selection saved',
       text2: 'Please add any additional details',
     });
-    router.push('/(app)/(tabs)/appointments/new/details');
+    router.push('/(app)/appointments/new/details');
   };
 
   return (

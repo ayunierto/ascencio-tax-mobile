@@ -1,17 +1,17 @@
-import { router } from "expo-router";
-import React from "react";
-import { FlatList, RefreshControl, View, StyleSheet } from "react-native";
+import { router } from 'expo-router';
+import React from 'react';
+import { FlatList, RefreshControl, View, StyleSheet } from 'react-native';
 
-import { AppointmentCard } from "@/components/bookings/AppointmentCard";
-import { AppointmentListSkeleton } from "@/components/bookings/AppointmentCardSkeleton";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { theme } from "@/components/ui/theme";
-import { getUserAppointments } from "@/core/appointments/actions/get-user-appointments.action";
-import { Appointment } from "@/core/appointments/interfaces/appointmentResponse";
-import { EmptyContent } from "@/core/components";
-import { ServerException } from "@/core/interfaces/server-exception.response";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { AppointmentCard } from '@/components/bookings/AppointmentCard';
+import { AppointmentListSkeleton } from '@/components/bookings/AppointmentCardSkeleton';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { theme } from '@/components/ui/theme';
+import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
+import { Appointment } from '@/core/appointments/interfaces/appointmentResponse';
+import { EmptyContent } from '@/core/components';
+import { ServerException } from '@/core/interfaces/server-exception.response';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 export default function PastAppointmentsScreen() {
   const {
@@ -22,9 +22,9 @@ export default function PastAppointmentsScreen() {
     refetch,
     isRefetching,
   } = useQuery<Appointment[], AxiosError<ServerException>>({
-    queryKey: ["PastAppts"],
+    queryKey: ['PastAppts'],
     queryFn: async () => {
-      const data = await getUserAppointments("past");
+      const data = await getUserAppointments('past');
       return data;
     },
     retry: 1,
@@ -32,7 +32,7 @@ export default function PastAppointmentsScreen() {
   });
 
   const handleBookNew = () => {
-    router.push("/(app)/(tabs)/home");
+    router.push('/(app)/(dashboard)');
   };
 
   if (isError) {
@@ -40,7 +40,7 @@ export default function PastAppointmentsScreen() {
       <EmptyContent
         title="Error"
         subtitle={
-          error.response?.data.message || error.message || "An error occurred"
+          error.response?.data.message || error.message || 'An error occurred'
         }
         icon="alert-circle-outline"
         onRetry={refetch}
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: 16,
   },
   buttonContainer: {

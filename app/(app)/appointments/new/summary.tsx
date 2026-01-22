@@ -83,9 +83,9 @@ export default function BookingSummaryScreen() {
 
   const handleEdit = (section: string) => {
     if (section === 'service' || section === 'staff' || section === 'time') {
-      router.push('/(app)/(tabs)/appointments/new/availability');
+      router.push('/(app)/appointments/new/availability');
     } else if (section === 'details') {
-      router.push('/(app)/(tabs)/appointments/new/details');
+      router.push('/(app)/appointments/new/details');
     }
   };
 
@@ -96,7 +96,7 @@ export default function BookingSummaryScreen() {
   const handleModalClose = () => {
     setShowSuccessModal(false);
     resetBooking();
-    router.push('/(app)/(tabs)/appointments');
+    router.push('/(app)/appointments');
   };
 
   const startDateTime = DateTime.fromISO(start, { zone: 'utc' }).setZone(

@@ -49,9 +49,9 @@ const VerifyCode = () => {
   const handleEmailVerification = useCallback(
     (data: ResetPasswordRequest) => {
       verifyEmail(data, {
-        onSuccess: (data) => {
+        onSuccess: () => {
           toast.success('Password Reset Successfully', {
-            description: data.message,
+            description: 'Your password has been changed successfully.',
           });
           router.replace('/login');
         },
