@@ -11,6 +11,7 @@ import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import ListItem from '@/core/settings/components/ListItem';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function ProfileIndexScreen() {
   const { logout, user } = useAuthStore();
@@ -22,90 +23,92 @@ export default function ProfileIndexScreen() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { paddingBottom: insets.bottom, paddingTop: insets.top },
-      ]}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+    <ErrorBoundary>
+      <View
+        style={[
+          styles.container,
+          { paddingBottom: insets.bottom, paddingTop: insets.top },
+        ]}
       >
-        {/* User Profile Header */}
-        <Card>
-          <CardContent style={styles.profileCard}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person" size={32} color={theme.primary} />
-            </View>
-            <View style={styles.profileInfo}>
-              <ThemedText style={styles.userName}>
-                {user?.firstName} {user?.lastName}
-              </ThemedText>
-              <ThemedText style={styles.userEmail}>{user?.email}</ThemedText>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={theme.mutedForeground}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Account Section */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* User Profile Header */}
           <Card>
-            <CardContent style={styles.cardContent}>
-              <ListItem
-                icon="diamond-outline"
-                label="Subscriptions"
-                onPress={() => router.push('/(app)/settings/subscriptions')}
+            <CardContent style={styles.profileCard}>
+              <View style={styles.avatarContainer}>
+                <Ionicons name="person" size={32} color={theme.primary} />
+              </View>
+              <View style={styles.profileInfo}>
+                <ThemedText style={styles.userName}>
+                  {user?.firstName} {user?.lastName}
+                </ThemedText>
+                <ThemedText style={styles.userEmail}>{user?.email}</ThemedText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={theme.mutedForeground}
               />
             </CardContent>
           </Card>
-        </View>
 
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Legal</ThemedText>
-          <Card>
-            <CardContent style={styles.cardContent}>
-              <ListItem
-                icon="book-outline"
-                label="Terms of use"
-                external
-                onPress={() =>
-                  Linking.openURL('https://www.ascenciotax.com/termsofuse')
-                }
-              />
-              <View style={styles.divider} />
-              <ListItem
-                icon="shield-checkmark-outline"
-                label="Privacy policy"
-                external
-                onPress={() =>
-                  Linking.openURL('https://www.ascenciotax.com/privacy')
-                }
-              />
-            </CardContent>
-          </Card>
-        </View>
+          {/* Account Section */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+            <Card>
+              <CardContent style={styles.cardContent}>
+                <ListItem
+                  icon="diamond-outline"
+                  label="Subscriptions"
+                  onPress={() => router.push('/(app)/settings/subscriptions')}
+                />
+              </CardContent>
+            </Card>
+          </View>
 
-        {/* App Info */}
-        <View style={styles.appInfo}>
-          <ThemedText style={styles.appInfoText}>Version 1.0.0</ThemedText>
-        </View>
-      </ScrollView>
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>Legal</ThemedText>
+            <Card>
+              <CardContent style={styles.cardContent}>
+                <ListItem
+                  icon="book-outline"
+                  label="Terms of use"
+                  external
+                  onPress={() =>
+                    Linking.openURL('https://www.ascenciotax.com/termsofuse')
+                  }
+                />
+                <View style={styles.divider} />
+                <ListItem
+                  icon="shield-checkmark-outline"
+                  label="Privacy policy"
+                  external
+                  onPress={() =>
+                    Linking.openURL('https://www.ascenciotax.com/privacy')
+                  }
+                />
+              </CardContent>
+            </Card>
+          </View>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Button variant="destructive" fullWidth onPress={handleLogout}>
-          <ButtonIcon name="log-out-outline" />
-          <ButtonText>Log out</ButtonText>
-        </Button>
+          {/* App Info */}
+          <View style={styles.appInfo}>
+            <ThemedText style={styles.appInfoText}>Version 1.0.0</ThemedText>
+          </View>
+        </ScrollView>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Button variant="destructive" fullWidth onPress={handleLogout}>
+            <ButtonIcon name="log-out-outline" />
+            <ButtonText>Log out</ButtonText>
+          </Button>
+        </View>
       </View>
-    </View>
+    </ErrorBoundary>
   );
 }
 

@@ -60,8 +60,7 @@ export default function AccountScreen() {
   });
 
   useEffect(() => {
-    if (location) {
-      if ('error' in location) return;
+    if (location && !('error' in location)) {
       setCallingCode(`+${location.location.calling_code}`);
       setValue('countryCode', `+${location.location.calling_code}`);
     }

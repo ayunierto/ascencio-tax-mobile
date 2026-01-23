@@ -10,11 +10,11 @@ import { useCheckAppVersion } from '@/core/hooks/useCheckAppVersion';
 
 export default function AppLayout() {
   const { user, authStatus } = useAuthStore();
-  const { checking } = useCheckAppVersion();
+  const { checking: isCheckingAppVersion } = useCheckAppVersion();
   const { t } = useTranslation();
 
   // Show loading while checking auth
-  if (authStatus === 'loading' || checking) return <Loader />;
+  if (authStatus === 'loading' || isCheckingAppVersion) return <Loader />;
 
   // Redirect to login if not authenticated
   if (authStatus !== 'authenticated' || !user) {

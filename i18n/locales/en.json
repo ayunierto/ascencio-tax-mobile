@@ -76,6 +76,9 @@
   "signInWithMeta": "Login with Meta",
   "signInSuccess": "Welcome Back!",
   "signInSuccessDescription": "You have successfully logged into your account.",
+  "orContinueWith": "Or continue with",
+  "continueWithGoogle": "Continue with Google",
+  "googleSignInError": "Google sign-in failed. Please try again.",
 
   "signOutSuccess": "Signed out successfully.",
 

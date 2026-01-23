@@ -1,24 +1,31 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { SignInRequest } from '@ascencio/shared';
-import { useSignIn } from '../hooks';
+import { useGoogleSignIn, useSignIn } from '../hooks';
 import { ErrorBox } from './ErrorBox';
 import { Input } from '@/components/ui/Input';
 import { ThemedText } from '@/components/ui/ThemedText';
-import { Button, ButtonText } from '@/components/ui/Button';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import { authStyles } from '../styles/authStyles';
 import { resendCode } from '../actions';
 import { getErrorMessage } from '@/utils/getErrorMessage';
+import { theme } from '@/components/ui/theme';
 
 export const SignInForm = () => {
   const { t } = useTranslation();
   const { control, handleSubmit, formErrors, isPending, setError, signIn } =
     useSignIn();
+  const {
+    signInWithGoogle,
+    isLoading: isGoogleLoading,
+    error: googleError,
+  } = useGoogleSignIn();
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -66,10 +73,41 @@ export const SignInForm = () => {
     });
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      toast.success(t('signInSuccess'));
+      router.replace('/(app)/(dashboard)');
+    } catch (error) {
+      toast.error(t('googleSignInError'));
+      console.error('Google Sign-In Error:', error);
+    }
+  };
+
   return (
     <>
       <View style={authStyles.fieldsContainer}>
         <ErrorBox message={formErrors.root?.message} />
+
+        {/* Google Sign-In Button */}
+        <Button
+          variant="outline"
+          disabled={isGoogleLoading || isPending}
+          isLoading={isGoogleLoading || isPending}
+          onPress={handleGoogleSignIn}
+        >
+          <ButtonIcon name="logo-google" />
+          <ButtonText>{t('continueWithGoogle')}</ButtonText>
+        </Button>
+
+        {/* Divider */}
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <ThemedText style={styles.dividerText}>
+            {t('orContinueWith')}
+          </ThemedText>
+          <View style={styles.dividerLine} />
+        </View>
 
         <Controller
           control={control}
@@ -130,3 +168,21 @@ export const SignInForm = () => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: theme.border,
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    fontSize: 14,
+    color: theme.muted,
+  },
+});

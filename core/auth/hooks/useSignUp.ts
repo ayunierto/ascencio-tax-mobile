@@ -27,8 +27,7 @@ export const useSignUp = () => {
 
   // Set the initial calling code based on the user's location
   useEffect(() => {
-    if (location) {
-      if ('error' in location) return;
+    if (location && !('error' in location)) {
       setCallingCode(`+${location.location.calling_code}`);
       setValue('countryCode', `+${location.location.calling_code}`);
     }

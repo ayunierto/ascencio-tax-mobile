@@ -50,7 +50,7 @@ export function useCheckAppVersion() {
               },
             },
           ],
-          { cancelable: false }
+          { cancelable: false },
         );
         return;
       }
@@ -77,7 +77,7 @@ export function useCheckAppVersion() {
               },
             },
             { text: '"Later"', style: 'cancel' },
-          ]
+          ],
         );
       }
     } catch (err) {
