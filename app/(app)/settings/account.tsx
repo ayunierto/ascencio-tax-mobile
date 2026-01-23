@@ -9,7 +9,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import {
   SafeAreaView,
@@ -32,16 +32,22 @@ import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
 import useIPGeolocation from '@/core/hooks/useIPGeolocation';
 import { useUpdateProfileMutation } from '@/core/user/hooks/useUpdateProfileMutation';
-import Toast from 'react-native-toast-message';
 import { UpdateProfileRequest, updateProfileSchema } from '@ascencio/shared';
+import { toast } from 'sonner-native';
+import { useTranslation } from 'react-i18next';
 
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const { countryCodes } = useCountryCodes();
   const [callingCode, setCallingCode] = useState<string | undefined>();
-
+  const { t } = useTranslation();
   const { location } = useIPGeolocation();
+
+  if (!user) {
+    router.replace('/');
+    return null;
+  }
 
   const {
     control,
@@ -51,10 +57,10 @@ export default function AccountScreen() {
   } = useForm<UpdateProfileRequest>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      phoneNumber: user?.phoneNumber || '',
-      countryCode: user?.countryCode || callingCode || '',
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber || '',
+      countryCode: user.countryCode || callingCode || '',
     },
   });
 
@@ -65,39 +71,33 @@ export default function AccountScreen() {
     }
   }, [location, setValue]);
 
-  const { mutate: updateProfile, isPending } = useUpdateProfileMutation();
+  const { mutateAsync: updateProfile, isPending } = useUpdateProfileMutation();
   const handleUpdateProfile = async (values: UpdateProfileRequest) => {
-    updateProfile(values, {
+    await updateProfile(values, {
       onSuccess: (response) => {
-        Toast.show({
-          type: 'success',
-          text1: 'Profile updated',
-          text2: response.message,
+        toast.success(t('profileUpdateSuccess'), {
+          description: response.message,
         });
       },
       onError: (error) => {
-        Toast.show({
-          type: 'error',
-          text1: 'Profile update failed',
-          text2:
+        toast.error(t('profileUpdateFailed'), {
+          description:
             error.response?.data.message ||
             error.message ||
-            'An error occurred while updating the profile.',
+            t('profileUpdateErrorOccurred'),
         });
       },
     });
   };
 
   if (!user) {
+    router.replace('/');
     return null;
   }
 
   return (
     <SafeAreaView
-      style={[
-        styles.safeArea,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
-      ]}
+      style={[styles.safeArea, { paddingBottom: insets.bottom }]}
       edges={['top', 'bottom']}
     >
       <KeyboardAvoidingView
@@ -106,27 +106,13 @@ export default function AccountScreen() {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom }}
         >
           <View style={styles.content}>
-            {/* Header */}
-            <View style={{ marginBottom: 8 }}>
-              <ThemedText
-                style={{ fontSize: 28, fontWeight: 'bold', marginBottom: 4 }}
-              >
-                Edit Profile
-              </ThemedText>
-              <ThemedText
-                style={{ fontSize: 14, color: theme.mutedForeground }}
-              >
-                Update your personal information
-              </ThemedText>
-            </View>
-
             {/* Personal Information Section */}
             <Card>
               <CardContent>
-                <View style={{ gap: 12 }}>
+                <View style={{ gap: theme.gap }}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -141,7 +127,7 @@ export default function AccountScreen() {
                       color={theme.primary}
                     />
                     <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
-                      Personal Information
+                      {t('personalInformation')}
                     </ThemedText>
                   </View>
 
@@ -150,11 +136,11 @@ export default function AccountScreen() {
                     name="firstName"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
-                        label="First Name"
+                        label={t('firstName')}
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
-                        placeholder="Enter your first name"
+                        placeholder={t('firstNamePlaceholder')}
                         autoCapitalize="words"
                         autoComplete="name"
                         error={!!errors.firstName}
@@ -168,11 +154,11 @@ export default function AccountScreen() {
                     name="lastName"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <Input
-                        label="Last Name"
+                        label={t('lastName')}
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
-                        placeholder="Enter your last name"
+                        placeholder={t('lastNamePlaceholder')}
                         autoCapitalize="words"
                         autoComplete="name-family"
                         error={!!errors.lastName}
@@ -202,14 +188,14 @@ export default function AccountScreen() {
                       color={theme.primary}
                     />
                     <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
-                      Contact Information
+                      {t('contactInformation')}
                     </ThemedText>
                   </View>
 
                   <View>
                     <Input
                       value={user.email}
-                      label="Email"
+                      label={t('email')}
                       keyboardType="email-address"
                       autoCapitalize="none"
                       autoComplete="email"
@@ -238,7 +224,7 @@ export default function AccountScreen() {
                           flex: 1,
                         }}
                       >
-                        Email cannot be changed for security reasons
+                        {t('emailCannotBeChanged')}
                       </ThemedText>
                     </View>
                   </View>
@@ -256,8 +242,8 @@ export default function AccountScreen() {
                             errorMessage={errors.countryCode?.message}
                           >
                             <SelectTrigger
-                              placeholder="Code"
-                              labelText="Country Code"
+                              placeholder={t('country')}
+                              labelText={t('countryCode')}
                             />
                             <SelectContent>
                               {countryCodes.map((opt) => (
@@ -278,7 +264,7 @@ export default function AccountScreen() {
                       name="phoneNumber"
                       render={({ field: { onChange, onBlur, value } }) => (
                         <Input
-                          label="Phone Number"
+                          label={t('phoneNumber')}
                           value={value}
                           onBlur={onBlur}
                           onChangeText={onChange}
@@ -315,7 +301,7 @@ export default function AccountScreen() {
                       color={theme.primary}
                     />
                     <ThemedText style={{ fontSize: 16, fontWeight: '600' }}>
-                      Security
+                      {t('security')}
                     </ThemedText>
                   </View>
 
@@ -325,11 +311,11 @@ export default function AccountScreen() {
                     render={({ field: { onChange, onBlur, value } }) => (
                       <View>
                         <Input
-                          label="New Password"
+                          label={t('newPassword')}
                           value={value}
                           onBlur={onBlur}
                           onChangeText={onChange}
-                          placeholder="Enter new password (optional)"
+                          placeholder={t('enterNewPasswordOptional')}
                           autoCapitalize="none"
                           secureTextEntry
                           autoComplete="password-new"
@@ -361,7 +347,7 @@ export default function AccountScreen() {
                               flex: 1,
                             }}
                           >
-                            Leave blank to keep current password
+                            {t('leaveBlankToKeepCurrentPassword')}
                           </ThemedText>
                         </View>
                       </View>
@@ -379,7 +365,7 @@ export default function AccountScreen() {
               >
                 <ButtonIcon name="save-outline" />
                 <ButtonText>
-                  {isPending ? 'Updating Profile...' : 'Save Changes'}
+                  {isPending ? t('updatingProfile') : t('saveChanges')}
                 </ButtonText>
               </Button>
 
@@ -415,7 +401,7 @@ export default function AccountScreen() {
                       color: theme.destructive,
                     }}
                   >
-                    Danger Zone
+                    {t('dangerZone')}
                   </ThemedText>
                 </View>
                 <ThemedText
@@ -425,7 +411,7 @@ export default function AccountScreen() {
                     marginBottom: 12,
                   }}
                 >
-                  Deleting your account is permanent and cannot be undone
+                  {t('deletingAccountIsPermanent')}
                 </ThemedText>
                 <Link
                   href={'/settings/delete-account'}
@@ -436,7 +422,7 @@ export default function AccountScreen() {
                     size={18}
                     color={theme.destructive}
                   />
-                  {'  '}Delete Account
+                  {t('deleteAccount')}
                 </Link>
               </View>
             </View>
@@ -450,11 +436,9 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.background,
   },
   container: {
     flex: 1,
-    backgroundColor: theme.background,
   },
   content: {
     padding: 10,

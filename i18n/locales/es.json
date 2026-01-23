@@ -168,6 +168,10 @@
   "services": "Servicios",
   "settings": "Configuraciones",
 
+  "myAccount": "Mi cuenta",
+  "subscriptions": "Suscripciones",
+  "deleteAccount": "Eliminar cuenta",
+
   "expense": "Gasto",
   "myExpenses": "Mis gastos",
   "newExpense": "Nuevo gasto",
@@ -485,5 +489,40 @@
   "pleaseSignInToBook": "Por favor, inicia sesión",
   "pleaseSignInDescription": "Debes autenticarte para reservar un servicio.",
   "tryAdjustingSearch": "Intenta ajustar tu búsqueda",
-  "preferenceSaved": "Preferencias guardadas"
+  "preferenceSaved": "Preferencias guardadas",
+
+  "personalInfo": "Información personal",
+  "contactInfo": "Información de contacto",
+  "security": "Seguridad",
+  "emailCannotChange": "El correo no se puede cambiar por razones de seguridad",
+  "leaveBlankKeepPassword": "Déjalo en blanco para mantener la contraseña actual",
+
+  "saveChanges": "Guardar cambios",
+  "updatingProfile": "Actualizando perfil...",
+  "profileUpdated": "Perfil actualizado",
+  "profileUpdateFailed": "Error al actualizar el perfil",
+
+  "dangerZone": "Zona de peligro",
+  "deleteAccountWarning": "Eliminar tu cuenta es permanente y no se puede deshacer",
+
+  "countryCode": "Código del país",
+  "code": "Código",
+  "placeholderPhone": "Introduce el número de teléfono",
+  "placeholderNewPassword": "Introduce nueva contraseña (opcional)",
+
+  "profileUpdateSuccess": "Perfil actualizado con éxito.",
+  "profileUpdateErrorOccurred": "Ocurrió un error al actualizar el perfil.",
+  "personalInformation": "Información personal",
+  "contactInformation": "Información de contacto",
+  "securitySettings": "Configuración de seguridad",
+  "leaveBlankToKeepCurrentPassword": "Déjalo en blanco para mantener la contraseña actual",
+  "dangerZoneSettings": "Zona de peligro",
+  "deletingAccountIsPermanent": "Eliminar tu cuenta es permanente y no se puede deshacer.",
+  "deleteAccountButton": "Eliminar cuenta",
+  "emailCannotBeChanged": "El correo no se puede cambiar por razones de seguridad",
+
+  "version": "Versión",
+  "logOut": "Cerrar sesión",
+  "account": "Cuenta",
+  "termsOfUse": "Términos de uso"
 }

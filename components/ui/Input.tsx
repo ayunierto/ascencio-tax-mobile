@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  Platform,
   StyleSheet,
   Text,
   TextInput,

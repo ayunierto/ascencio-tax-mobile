@@ -182,6 +182,9 @@
   "myServices": "My Services",
   "serviceDetails": "Service Details",
   "settings": "Settings",
+  "myAccount": "My Account",
+  "subscriptions": "Subscriptions",
+  "deleteAccount": "Delete Account",
 
   "expense": "Expense",
   "myExpenses": "My Expenses",
@@ -489,5 +492,40 @@
 
   "newAppointment": "New Appointment",
   "viewHistory": "View History",
-  "preferenceSaved": "Preference saved"
+  "preferenceSaved": "Preference saved",
+
+  "personalInfo": "Personal Information",
+  "contactInfo": "Contact Information",
+  "security": "Security",
+  "emailCannotChange": "Email cannot be changed for security reasons",
+  "leaveBlankKeepPassword": "Leave blank to keep current password",
+
+  "saveChanges": "Save Changes",
+  "updatingProfile": "Updating Profile...",
+  "profileUpdated": "Profile updated",
+  "profileUpdateFailed": "Profile update failed",
+
+  "dangerZone": "Danger Zone",
+  "deleteAccountWarning": "Deleting your account is permanent and cannot be undone",
+
+  "countryCode": "Country Code",
+  "code": "Code",
+  "placeholderPhone": "Enter phone number",
+  "placeholderNewPassword": "Enter new password (optional)",
+
+  "profileUpdateSuccess": "Profile updated successfully.",
+  "profileUpdateErrorOccurred": "An error occurred while updating the profile.",
+  "personalInformation": "Personal Information",
+  "contactInformation": "Contact Information",
+  "securitySettings": "Security Settings",
+  "leaveBlankToKeepCurrentPassword": "Leave blank to keep current password",
+  "dangerZoneSettings": "Danger Zone Settings",
+  "deletingAccountIsPermanent": "Deleting your account is permanent and cannot be undone.",
+  "deleteAccountButton": "Delete Account",
+  "emailCannotBeChanged": "Email cannot be changed for security reasons.",
+
+  "version": "Version",
+  "logOut": "Log out",
+  "account": "Account",
+  "termsOfUse": "Terms of Use"
 }

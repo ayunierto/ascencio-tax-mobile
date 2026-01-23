@@ -1,38 +1,39 @@
-import { Stack } from "expo-router";
-import { theme } from "@/components/ui/theme";
+import { Stack } from 'expo-router';
+import { theme } from '@/components/ui/theme';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileLayout() {
+  const { t } = useTranslation();
   return (
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
-        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          title: t('settings'),
         }}
       />
       <Stack.Screen
         name="account"
         options={{
-          title: "My Account",
+          title: t('myAccount'),
         }}
       />
       <Stack.Screen
         name="subscriptions"
         options={{
-          title: "Subscriptions",
+          title: t('subscriptions'),
         }}
       />
       <Stack.Screen
         name="delete-account"
         options={{
-          title: "Delete Account",
-          presentation: "modal",
+          title: t('deleteAccount'),
+          presentation: 'modal',
         }}
       />
     </Stack>
