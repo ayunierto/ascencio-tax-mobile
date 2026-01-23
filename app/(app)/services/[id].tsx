@@ -57,190 +57,200 @@ export default function ServiceDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        {/* Service Image */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: service.imageUrl }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-          {!service.isActive && (
-            <View style={styles.inactiveBadge}>
-              <Ionicons name="alert-circle" size={16} color="#fff" />
-              <ThemedText style={styles.inactiveBadgeText}>
-                {t('currentlyUnavailable')}
-              </ThemedText>
-            </View>
+    <>
+      <ScrollView style={styles.container}>
+        <View style={styles.content}>
+          {/* Service Image */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: service.imageUrl }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            {!service.isActive && (
+              <View style={styles.inactiveBadge}>
+                <Ionicons name="alert-circle" size={16} color="#fff" />
+                <ThemedText style={styles.inactiveBadgeText}>
+                  {t('currentlyUnavailable')}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+
+          {/* Service Header */}
+          <View style={styles.header}>
+            <ThemedText style={styles.title}>{service.name}</ThemedText>
+          </View>
+
+          {/* Description Section */}
+          {service.description && (
+            <Card style={styles.section}>
+              <CardContent style={styles.sectionContent}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={20}
+                    color={theme.primary}
+                  />
+                  <ThemedText style={styles.sectionTitle}>
+                    {t('serviceDescription')}
+                  </ThemedText>
+                </View>
+                <ThemedText style={styles.description}>
+                  {service.description}
+                </ThemedText>
+              </CardContent>
+            </Card>
           )}
-        </View>
 
-        {/* Service Header */}
-        <View style={styles.header}>
-          <ThemedText style={styles.title}>{service.name}</ThemedText>
-        </View>
+          {/* Staff Section */}
+          {service.staffMembers && service.staffMembers.length > 0 && (
+            <Card style={styles.section}>
+              <CardContent style={styles.sectionContent}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons
+                    name="people-outline"
+                    size={20}
+                    color={theme.primary}
+                  />
+                  <ThemedText style={styles.sectionTitle}>
+                    {t('availableStaff')} ({service.staffMembers.length})
+                  </ThemedText>
+                </View>
 
-        {/* Description Section */}
-        {service.description && (
-          <Card style={styles.section}>
-            <CardContent style={styles.sectionContent}>
-              <View style={styles.sectionHeader}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={20}
-                  color={theme.primary}
-                />
-                <ThemedText style={styles.sectionTitle}>
-                  {t('serviceDescription')}
-                </ThemedText>
-              </View>
-              <ThemedText style={styles.description}>
-                {service.description}
-              </ThemedText>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Staff Section */}
-        {service.staffMembers && service.staffMembers.length > 0 && (
-          <Card style={styles.section}>
-            <CardContent style={styles.sectionContent}>
-              <View style={styles.sectionHeader}>
-                <Ionicons
-                  name="people-outline"
-                  size={20}
-                  color={theme.primary}
-                />
-                <ThemedText style={styles.sectionTitle}>
-                  {t('availableStaff')} ({service.staffMembers.length})
-                </ThemedText>
-              </View>
-
-              <View style={styles.staffList}>
-                {service.staffMembers.map((staffMember: StaffMember) => (
-                  <View key={staffMember.id} style={styles.staffItem}>
-                    <View style={styles.staffAvatar}>
-                      <Ionicons name="person" size={20} color={theme.primary} />
-                    </View>
-                    <View style={styles.staffInfo}>
-                      <ThemedText style={styles.staffName}>
-                        {staffMember.firstName} {staffMember.lastName}
-                      </ThemedText>
-                      <View style={styles.staffStatus}>
-                        <View
-                          style={[
-                            styles.statusDot,
-                            staffMember.isActive && styles.statusDotActive,
-                          ]}
+                <View style={styles.staffList}>
+                  {service.staffMembers.map((staffMember: StaffMember) => (
+                    <View key={staffMember.id} style={styles.staffItem}>
+                      <View style={styles.staffAvatar}>
+                        <Ionicons
+                          name="person"
+                          size={20}
+                          color={theme.primary}
                         />
-                        <ThemedText style={styles.staffStatusText}>
-                          {staffMember.isActive
-                            ? t('available')
-                            : t('unavailable')}
+                      </View>
+                      <View style={styles.staffInfo}>
+                        <ThemedText style={styles.staffName}>
+                          {staffMember.firstName} {staffMember.lastName}
                         </ThemedText>
+                        <View style={styles.staffStatus}>
+                          <View
+                            style={[
+                              styles.statusDot,
+                              staffMember.isActive && styles.statusDotActive,
+                            ]}
+                          />
+                          <ThemedText style={styles.staffStatusText}>
+                            {staffMember.isActive
+                              ? t('available')
+                              : t('unavailable')}
+                          </ThemedText>
+                        </View>
                       </View>
                     </View>
+                  ))}
+                </View>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Service Availability */}
+          <Card style={styles.section}>
+            <CardContent style={styles.sectionContent}>
+              <View style={styles.sectionHeader}>
+                <Ionicons
+                  name="globe-outline"
+                  size={20}
+                  color={theme.primary}
+                />
+                <ThemedText style={styles.sectionTitle}>
+                  {t('serviceAvailability')}
+                </ThemedText>
+              </View>
+
+              <View style={styles.availabilityList}>
+                <View
+                  style={[
+                    styles.availabilityItem,
+                    service.isAvailableOnline && styles.availabilityItemActive,
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.availabilityDot,
+                      service.isAvailableOnline && styles.availabilityDotActive,
+                    ]}
+                  />
+                  <Ionicons
+                    name="laptop-outline"
+                    size={20}
+                    color={
+                      service.isAvailableOnline
+                        ? theme.primary
+                        : theme.mutedForeground
+                    }
+                  />
+                  <View style={styles.availabilityText}>
+                    <ThemedText
+                      style={[
+                        styles.availabilityLabel,
+                        service.isAvailableOnline &&
+                          styles.availabilityLabelActive,
+                      ]}
+                    >
+                      {t('onlineService')}
+                    </ThemedText>
+                    <ThemedText style={styles.availabilityStatus}>
+                      {service.isAvailableOnline
+                        ? t('availableRemotely')
+                        : t('notAvailableOnline')}
+                    </ThemedText>
                   </View>
-                ))}
+                </View>
+
+                <View
+                  style={[
+                    styles.availabilityItem,
+                    !service.isAvailableOnline && styles.availabilityItemActive,
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.availabilityDot,
+                      !service.isAvailableOnline &&
+                        styles.availabilityDotActive,
+                    ]}
+                  />
+                  <Ionicons
+                    name="business-outline"
+                    size={20}
+                    color={
+                      !service.isAvailableOnline
+                        ? theme.primary
+                        : theme.mutedForeground
+                    }
+                  />
+                  <View style={styles.availabilityText}>
+                    <ThemedText
+                      style={[
+                        styles.availabilityLabel,
+                        !service.isAvailableOnline &&
+                          styles.availabilityLabelActive,
+                      ]}
+                    >
+                      {t('inPersonService')}
+                    </ThemedText>
+                    <ThemedText style={styles.availabilityStatus}>
+                      {!service.isAvailableOnline
+                        ? t('visitOurOffice')
+                        : t('alsoAvailableInPerson')}
+                    </ThemedText>
+                  </View>
+                </View>
               </View>
             </CardContent>
           </Card>
-        )}
-
-        {/* Service Availability */}
-        <Card style={styles.section}>
-          <CardContent style={styles.sectionContent}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="globe-outline" size={20} color={theme.primary} />
-              <ThemedText style={styles.sectionTitle}>
-                {t('serviceAvailability')}
-              </ThemedText>
-            </View>
-
-            <View style={styles.availabilityList}>
-              <View
-                style={[
-                  styles.availabilityItem,
-                  service.isAvailableOnline && styles.availabilityItemActive,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.availabilityDot,
-                    service.isAvailableOnline && styles.availabilityDotActive,
-                  ]}
-                />
-                <Ionicons
-                  name="laptop-outline"
-                  size={20}
-                  color={
-                    service.isAvailableOnline
-                      ? theme.primary
-                      : theme.mutedForeground
-                  }
-                />
-                <View style={styles.availabilityText}>
-                  <ThemedText
-                    style={[
-                      styles.availabilityLabel,
-                      service.isAvailableOnline &&
-                        styles.availabilityLabelActive,
-                    ]}
-                  >
-                    {t('onlineService')}
-                  </ThemedText>
-                  <ThemedText style={styles.availabilityStatus}>
-                    {service.isAvailableOnline
-                      ? t('availableRemotely')
-                      : t('notAvailableOnline')}
-                  </ThemedText>
-                </View>
-              </View>
-
-              <View
-                style={[
-                  styles.availabilityItem,
-                  !service.isAvailableOnline && styles.availabilityItemActive,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.availabilityDot,
-                    !service.isAvailableOnline && styles.availabilityDotActive,
-                  ]}
-                />
-                <Ionicons
-                  name="business-outline"
-                  size={20}
-                  color={
-                    !service.isAvailableOnline
-                      ? theme.primary
-                      : theme.mutedForeground
-                  }
-                />
-                <View style={styles.availabilityText}>
-                  <ThemedText
-                    style={[
-                      styles.availabilityLabel,
-                      !service.isAvailableOnline &&
-                        styles.availabilityLabelActive,
-                    ]}
-                  >
-                    {t('inPersonService')}
-                  </ThemedText>
-                  <ThemedText style={styles.availabilityStatus}>
-                    {!service.isAvailableOnline
-                      ? t('visitOurOffice')
-                      : t('alsoAvailableInPerson')}
-                  </ThemedText>
-                </View>
-              </View>
-            </View>
-          </CardContent>
-        </Card>
-      </View>
-
+        </View>
+      </ScrollView>
       {/* Fixed Bottom Button */}
       <View style={styles.bottomBar}>
         <Button
@@ -254,7 +264,7 @@ export default function ServiceDetailScreen() {
           </ButtonText>
         </Button>
       </View>
-    </ScrollView>
+    </>
   );
 }
 

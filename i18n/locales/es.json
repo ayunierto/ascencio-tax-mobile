@@ -418,6 +418,7 @@
   "receiptScannedSuccessfully": "Recibo escaneado exitosamente",
 
   "service": "Servicio",
+  "myServices": "Mis Servicios",
   "serviceDetails": "Detalles del servicio",
   "noServicesTitle": "No hay servicios disponibles",
   "noServicesSubtitle": "Por favor, vuelve más tarde.",

@@ -4,21 +4,18 @@ import { theme } from '@/components/ui/theme';
 
 export default function HomeLayout() {
   const { t } = useTranslation();
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: theme.background,
-        },
-        headerTitleAlign: 'center',
-        headerTintColor: theme.foreground,
-        headerShadowVisible: false,
+        headerStyle: { backgroundColor: theme.background },
+        headerTitleStyle: { color: theme.foreground },
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          title: t('myServices'),
         }}
       />
       <Stack.Screen

@@ -16,8 +16,11 @@ import { theme } from '@/components/ui/theme';
 import { useInvoices } from '@/core/accounting/invoices/hooks/useInvoices';
 import { useQuery } from '@tanstack/react-query';
 import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { ThemedText } from '@/components/ui/ThemedText';
 
 export default function DashboardScreen() {
+  const { authStatus, user } = useAuthStore();
   const navigation = useNavigation();
   const { t } = useTranslation();
   // User-specific data
@@ -34,6 +37,14 @@ export default function DashboardScreen() {
     isLoading: loadingInvoices,
     refetch,
   } = useInvoices('all');
+
+  // Get greeting based on time of day
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t('goodMorning');
+    if (hour < 18) return t('goodAfternoon');
+    return t('goodEvening');
+  };
 
   // Configure header with drawer menu
   useLayoutEffect(() => {
@@ -89,6 +100,19 @@ export default function DashboardScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.contentContainer}
     >
+      {/* Greeting Header */}
+      {authStatus === 'authenticated' && user && (
+        <View style={{ marginBottom: 20 }}>
+          <ThemedText style={{ fontSize: 24, fontWeight: 'bold' }}>
+            {getGreeting()}
+            {user.firstName ? `, ${user.firstName}!` : '!'}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 14, color: theme.mutedForeground }}>
+            {t('bookAppointment')}
+          </ThemedText>
+        </View>
+      )}
+
       {/* Overview Section */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.foreground }]}>

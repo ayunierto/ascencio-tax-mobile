@@ -76,7 +76,6 @@
   "signInWithMeta": "Login with Meta",
   "signInSuccess": "Welcome Back!",
   "signInSuccessDescription": "You have successfully logged into your account.",
-  "orContinueWith": "Or continue with",
   "continueWithGoogle": "Continue with Google",
   "googleSignInError": "Google sign-in failed. Please try again.",
 
@@ -180,6 +179,8 @@
   "expenses": "Expenses",
   "appointments": "Appointments",
   "services": "Services",
+  "myServices": "My Services",
+  "serviceDetails": "Service Details",
   "settings": "Settings",
 
   "expense": "Expense",
@@ -422,7 +423,6 @@
   "receiptScannedSuccessfully": "Receipt scanned successfully",
 
   "service": "Service",
-  "serviceDetails": "Service Details",
   "noServicesTitle": "No services available",
   "noServicesSubtitle": "Please check back later.",
   "serviceNotFound": "Service not found",
@@ -447,12 +447,10 @@
 
   "appointment": "Appointment",
   "myAppointments": "My Appointments",
-  "newAppointment": "New Appointment",
   "bookAppointment": "Book Appointment",
   "appointmentDetails": "Appointment Details",
   "noAppointments": "No Appointments",
   "noAppointmentsDescription": "You don't have any upcoming appointments. Book one now!",
-  "viewHistory": "View History",
   "noPastAppointments": "No Past Appointments",
   "noPastAppointmentsDescription": "Your appointment history will appear here.",
   "appointmentCancelled": "Appointment Cancelled",
@@ -491,7 +489,5 @@
 
   "newAppointment": "New Appointment",
   "viewHistory": "View History",
-  "upcomingAppointments": "Upcoming Appointments",
-  "pastAppointments": "Past Appointments",
   "preferenceSaved": "Preference saved"
 }

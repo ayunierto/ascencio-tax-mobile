@@ -1,23 +1,50 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
+import { FlatList, RefreshControl, TouchableOpacity, View } from 'react-native';
+import { DrawerActions } from '@react-navigation/core';
+import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { FlatList, Image, RefreshControl, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { ServiceCard } from '@/components/home/ServiceCard';
 import { ServiceListSkeleton } from '@/components/home/ServiceCardSkeleton';
 import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { EmptyContent } from '@/core/components';
 import { useServices } from '@/core/services/hooks/useServices';
 import { Service } from '@ascencio/shared/interfaces';
+import { Button, ButtonIcon, Input } from '@/components/ui';
 
 const ServicesScreen = () => {
   const { t } = useTranslation();
-  const { authStatus, user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation();
+
+  // Add an Add button to the parent drawer/header
+  useLayoutEffect(() => {
+    const parentNav = navigation.getParent ? navigation.getParent() : null;
+    const targetNav = parentNav ?? navigation;
+
+    const headerLeft = () => (
+      <TouchableOpacity
+        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+        style={{ marginRight: 30 }}
+      >
+        <Ionicons name="menu" size={24} color={theme.foreground} />
+      </TouchableOpacity>
+    );
+
+    navigation.setOptions({
+      headerLeft,
+    });
+
+    return () => {
+      try {
+        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, [navigation]);
 
   const {
     data: servicesResponse,
@@ -40,14 +67,6 @@ const ServicesScreen = () => {
     service.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // Get greeting based on time of day
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t('goodMorning');
-    if (hour < 18) return t('goodAfternoon');
-    return t('goodEvening');
-  };
-
   if (isError)
     return (
       <EmptyContent
@@ -63,7 +82,12 @@ const ServicesScreen = () => {
       <EmptyContent
         title={t('noServicesTitle')}
         subtitle={t('noServicesSubtitle')}
-        onRetry={refetch}
+        action={
+          <Button onPress={refetch}>
+            <ButtonIcon name="reload" />
+            {t('retry')}
+          </Button>
+        }
       />
     );
   }
@@ -80,96 +104,15 @@ const ServicesScreen = () => {
           />
         )}
         ListHeaderComponent={
-          <>
-            {/* Logo - Scrollable */}
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: 20,
-                marginTop: 10,
-              }}
-            >
-              <Image
-                source={require('@/assets/images/logo.png')}
-                style={{
-                  width: '70%',
-                  maxWidth: 250,
-                  resizeMode: 'contain',
-                  height: 120,
-                }}
-              />
-            </View>
-
-            {/* Greeting Header */}
-            {authStatus === 'authenticated' && user && (
-              <View style={{ marginBottom: 20 }}>
-                <ThemedText style={{ fontSize: 24, fontWeight: 'bold' }}>
-                  {getGreeting()}
-                  {user.firstName ? `, ${user.firstName}!` : '!'}
-                </ThemedText>
-                <ThemedText
-                  style={{ fontSize: 14, color: theme.mutedForeground }}
-                >
-                  {t('bookAppointment')}
-                </ThemedText>
-              </View>
-            )}
-
-            {/* Search Bar */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: theme.card,
-                borderRadius: theme.radius,
-                borderWidth: 1,
-                borderColor: theme.border,
-                paddingHorizontal: 12,
-                marginBottom: 20,
-                height: 48,
-              }}
-            >
-              <Ionicons
-                name="search-outline"
-                size={20}
-                color={theme.mutedForeground}
-              />
-              <TextInput
-                style={{
-                  flex: 1,
-                  marginLeft: 8,
-                  fontSize: 16,
-                  color: theme.foreground,
-                }}
-                placeholder={t('searchServices')}
-                placeholderTextColor={theme.mutedForeground}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              {searchQuery.length > 0 && (
-                <Ionicons
-                  name="close-circle"
-                  size={20}
-                  color={theme.mutedForeground}
-                  onPress={() => setSearchQuery('')}
-                />
-              )}
-            </View>
-
-            {/* Results count */}
-            <ThemedText
-              style={{
-                fontSize: 14,
-                color: theme.mutedForeground,
-                marginBottom: 12,
-              }}
-            >
-              {filteredServices?.length || 0}{' '}
-              {filteredServices?.length === 1 ? t('service') : t('services')}{' '}
-              {t('available')}
-            </ThemedText>
-          </>
+          <Input
+            placeholder={t('searchServices')}
+            placeholderTextColor={theme.mutedForeground}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            leadingIcon="search-outline"
+            clearable
+            rootStyle={{ marginBottom: theme.gap }}
+          />
         }
         ListEmptyComponent={
           <EmptyContent
