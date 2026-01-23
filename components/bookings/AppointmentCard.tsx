@@ -1,15 +1,14 @@
-import { Ionicons } from "@expo/vector-icons";
-import { DateTime } from "luxon";
-import React, { useState } from "react";
-import { Linking, TouchableOpacity, View } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { DateTime } from 'luxon';
+import React, { useState } from 'react';
+import { Linking, TouchableOpacity, View } from 'react-native';
 
-import { CancelAppointmentModal } from "@/components/bookings/CancelAppointmentModal";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { Appointment } from "@/core/appointments/interfaces/appointmentResponse";
+import { CancelAppointmentModal } from '@/components/bookings/CancelAppointmentModal';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { Appointment } from '@/core/appointments/interfaces/appointmentResponse';
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -29,18 +28,18 @@ export const AppointmentCard = ({
   const getRelativeTime = () => {
     const now = DateTime.now();
     const start = DateTime.fromISO(appointment.start);
-    const diff = start.diff(now, ["days", "hours", "minutes"]);
+    const diff = start.diff(now, ['days', 'hours', 'minutes']);
 
-    if (isPast) return "Completed";
+    if (isPast) return 'Completed';
 
     if (diff.days >= 1) {
-      return `In ${Math.floor(diff.days)} ${Math.floor(diff.days) === 1 ? "day" : "days"}`;
+      return `In ${Math.floor(diff.days)} ${Math.floor(diff.days) === 1 ? 'day' : 'days'}`;
     } else if (diff.hours >= 1) {
-      return `In ${Math.floor(diff.hours)} ${Math.floor(diff.hours) === 1 ? "hour" : "hours"}`;
+      return `In ${Math.floor(diff.hours)} ${Math.floor(diff.hours) === 1 ? 'hour' : 'hours'}`;
     } else if (diff.minutes > 0) {
       return `In ${Math.floor(diff.minutes)} minutes`;
     } else {
-      return "Now";
+      return 'Now';
     }
   };
 
@@ -50,11 +49,11 @@ export const AppointmentCard = ({
 
     const status = appointment.status?.toLowerCase();
     switch (status) {
-      case "confirmed":
+      case 'confirmed':
         return theme.success;
-      case "pending":
-        return "#f59e0b"; // Orange color for pending
-      case "cancelled":
+      case 'pending':
+        return '#f59e0b'; // Orange color for pending
+      case 'cancelled':
         return theme.destructive;
       default:
         return theme.primary;
@@ -78,7 +77,7 @@ export const AppointmentCard = ({
         await onCancel(appointment.id, reason);
         setShowCancelModal(false);
       } catch (error) {
-        console.error("Error cancelling appointment:", error);
+        console.error('Error cancelling appointment:', error);
       } finally {
         setIsCancelling(false);
       }
@@ -87,10 +86,10 @@ export const AppointmentCard = ({
 
   const startDate = DateTime.fromISO(appointment.start);
   const endDate = DateTime.fromISO(appointment.end);
-  const duration = endDate.diff(startDate, "minutes").minutes;
+  const duration = endDate.diff(startDate, 'minutes').minutes;
 
   // Check if meeting is today and within time range
-  const isToday = startDate.hasSame(DateTime.now(), "day");
+  const isToday = startDate.hasSame(DateTime.now(), 'day');
   const isUpcoming = startDate > DateTime.now();
   const canJoin = isToday && !isPast;
 
@@ -101,9 +100,9 @@ export const AppointmentCard = ({
           {/* Header with Status Badge */}
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
               marginBottom: 12,
             }}
           >
@@ -111,7 +110,7 @@ export const AppointmentCard = ({
               <ThemedText
                 style={{
                   fontSize: 18,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   marginBottom: 4,
                 }}
               >
@@ -119,8 +118,8 @@ export const AppointmentCard = ({
               </ThemedText>
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   gap: 6,
                 }}
               >
@@ -143,7 +142,7 @@ export const AppointmentCard = ({
             {/* Status Badge */}
             <View
               style={{
-                backgroundColor: getStatusColor() + "20",
+                backgroundColor: getStatusColor() + '20',
                 paddingHorizontal: 10,
                 paddingVertical: 4,
                 borderRadius: 12,
@@ -152,12 +151,12 @@ export const AppointmentCard = ({
               <ThemedText
                 style={{
                   fontSize: 11,
-                  fontWeight: "600",
+                  fontWeight: '600',
                   color: getStatusColor(),
-                  textTransform: "capitalize",
+                  textTransform: 'capitalize',
                 }}
               >
-                {isPast ? "Completed" : appointment.status || "Scheduled"}
+                {isPast ? 'Completed' : appointment.status || 'Scheduled'}
               </ThemedText>
             </View>
           </View>
@@ -166,8 +165,8 @@ export const AppointmentCard = ({
           <View style={{ marginBottom: 12 }}>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: 8,
                 marginBottom: 6,
               }}
@@ -179,18 +178,18 @@ export const AppointmentCard = ({
               />
               <ThemedText style={{ fontSize: 14, color: theme.foreground }}>
                 {startDate.toLocaleString({
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
                 })}
               </ThemedText>
             </View>
 
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: 8,
               }}
             >
@@ -200,7 +199,7 @@ export const AppointmentCard = ({
                 color={theme.mutedForeground}
               />
               <ThemedText style={{ fontSize: 14, color: theme.foreground }}>
-                {startDate.toLocaleString(DateTime.TIME_SIMPLE)} -{" "}
+                {startDate.toLocaleString(DateTime.TIME_SIMPLE)} -{' '}
                 {endDate.toLocaleString(DateTime.TIME_SIMPLE)} ({duration} min)
               </ThemedText>
             </View>
@@ -209,8 +208,8 @@ export const AppointmentCard = ({
           {/* Staff Info */}
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: 'row',
+              alignItems: 'center',
               gap: 8,
               marginBottom: 12,
             }}
@@ -221,7 +220,7 @@ export const AppointmentCard = ({
               color={theme.mutedForeground}
             />
             <ThemedText style={{ fontSize: 14, color: theme.foreground }}>
-              {appointment.staffMember.firstName}{" "}
+              {appointment.staffMember.firstName}{' '}
               {appointment.staffMember.lastName}
             </ThemedText>
           </View>
@@ -230,8 +229,8 @@ export const AppointmentCard = ({
           {appointment.service.isAvailableOnline && (
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: 8,
                 marginBottom: 16,
               }}
@@ -247,7 +246,7 @@ export const AppointmentCard = ({
           {appointment.comments && (
             <View
               style={{
-                backgroundColor: theme.muted + "30",
+                backgroundColor: theme.muted + '30',
                 padding: 10,
                 borderRadius: theme.radius,
                 marginBottom: 12,
@@ -257,7 +256,7 @@ export const AppointmentCard = ({
                 style={{
                   fontSize: 13,
                   color: theme.mutedForeground,
-                  fontStyle: "italic",
+                  fontStyle: 'italic',
                 }}
               >
                 &quot;{appointment.comments}&quot;
@@ -267,7 +266,7 @@ export const AppointmentCard = ({
 
           {/* Action Buttons */}
           {!isPast && (
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               {/* Join Meeting Button - Only show if today and has link */}
               {canJoin && appointment.zoomMeetingLink && (
                 <Button

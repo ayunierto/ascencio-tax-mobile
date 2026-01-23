@@ -7,8 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card/Card';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { Card, CardContent } from '@/components/ui/Card/Card';
 import { Input } from '@/components/ui/Input';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';

@@ -1,8 +1,7 @@
 import { BookingProgressStepper } from '@/components/booking/BookingProgressStepper';
 import { BookingSuccessModal } from '@/components/booking/BookingSuccessModal';
-import { Card } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { CardContent } from '@/components/ui/Card/CardContent';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/themed-text';
 import { bookAppointment } from '@/core/appointments/actions';

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Card } from '../ui/Card';
-import { CardContent } from '../ui/Card/CardContent';
+import { Card, CardContent } from '../ui/Card';
 import { theme } from '../ui/theme';
 
 export const AppointmentCardSkeleton = () => {

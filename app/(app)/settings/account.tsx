@@ -17,8 +17,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Divider } from '@/components/ui/Divider';
 import { Input } from '@/components/ui/Input';
 import {

@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { Card, CardContent } from '@/components/ui/Card';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 
@@ -55,12 +54,12 @@ const SubscriptionManager = () => {
               console.error('Error opening subscription management:', error);
               Alert.alert(
                 'Error',
-                'Could not open subscription management. Please do it manually from your app store.'
+                'Could not open subscription management. Please do it manually from your app store.',
               );
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -74,7 +73,7 @@ const SubscriptionManager = () => {
       Alert.alert(
         'Success!',
         'You are now a Pro user. Enjoy all premium features!',
-        [{ text: 'Great!', style: 'default' }]
+        [{ text: 'Great!', style: 'default' }],
       );
     } catch (error) {
       console.error('Error upgrading:', error);
@@ -158,9 +157,7 @@ const SubscriptionManager = () => {
                   size={24}
                   color={theme.mutedForeground}
                 />
-                <ThemedText
-                  style={[styles.statusText, styles.inactiveStatus]}
-                >
+                <ThemedText style={[styles.statusText, styles.inactiveStatus]}>
                   Free Plan
                 </ThemedText>
               </View>

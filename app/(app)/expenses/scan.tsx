@@ -8,9 +8,8 @@ import 'react-native-get-random-values';
 import { Buffer } from 'buffer';
 
 import Loader from '@/components/Loader';
-import { Card } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui';
 import { Button, ButtonText } from '@/components/ui/Button';
-import { CardContent } from '@/components/ui/Card/CardContent';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import {

@@ -5,8 +5,7 @@ import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card/Card';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { Card, CardContent } from '@/components/ui/Card/Card';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
