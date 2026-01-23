@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,7 +9,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router } from 'expo-router';
+import { Link, router, useNavigation } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import {
   SafeAreaView,
@@ -43,6 +43,7 @@ export default function AccountScreen() {
   const [callingCode, setCallingCode] = useState<string | undefined>();
   const { t } = useTranslation();
   const { location } = useIPGeolocation();
+  const navigation = useNavigation();
 
   if (!user) {
     router.replace('/');
@@ -71,24 +72,39 @@ export default function AccountScreen() {
     }
   }, [location, setValue]);
 
-  const { mutateAsync: updateProfile, isPending } = useUpdateProfileMutation();
+  const updateProfile = useUpdateProfileMutation();
   const handleUpdateProfile = async (values: UpdateProfileRequest) => {
-    await updateProfile(values, {
-      onSuccess: (response) => {
-        toast.success(t('profileUpdateSuccess'), {
-          description: response.message,
-        });
+    console.log('Updating profile with values:', values);
+    await updateProfile.mutateAsync(values, {
+      onSuccess: () => {
+        toast.success(t('profileUpdateSuccess'));
       },
       onError: (error) => {
         toast.error(t('profileUpdateFailed'), {
           description:
-            error.response?.data.message ||
-            error.message ||
-            t('profileUpdateErrorOccurred'),
+            error.response?.data.message || t('profileUpdateErrorOccurred'),
         });
       },
     });
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            isLoading={updateProfile.isPending}
+            onPress={handleSubmit(handleUpdateProfile)}
+            disabled={updateProfile.isPending}
+          >
+            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
+          </Button>
+        </View>
+      ),
+    });
+  }, [t, handleSubmit]);
 
   if (!user) {
     router.replace('/');
@@ -360,12 +376,15 @@ export default function AccountScreen() {
             {/* Action Buttons */}
             <View style={{ gap: 12, marginTop: 8 }}>
               <Button
-                disabled={isPending}
+                disabled={updateProfile.isPending}
                 onPress={handleSubmit(handleUpdateProfile)}
+                isLoading={updateProfile.isPending}
               >
-                <ButtonIcon name="save-outline" />
+                {!updateProfile.isPending && <ButtonIcon name="save-outline" />}
                 <ButtonText>
-                  {isPending ? t('updatingProfile') : t('saveChanges')}
+                  {updateProfile.isPending
+                    ? t('updatingProfile')
+                    : t('saveChanges')}
                 </ButtonText>
               </Button>
 

@@ -520,6 +520,7 @@
   "deletingAccountIsPermanent": "Eliminar tu cuenta es permanente y no se puede deshacer.",
   "deleteAccountButton": "Eliminar cuenta",
   "emailCannotBeChanged": "El correo no se puede cambiar por razones de seguridad",
+  "phoneNumber": "Número de teléfono",
 
   "version": "Versión",
   "logOut": "Cerrar sesión",

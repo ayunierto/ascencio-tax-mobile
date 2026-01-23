@@ -523,6 +523,7 @@
   "deletingAccountIsPermanent": "Deleting your account is permanent and cannot be undone.",
   "deleteAccountButton": "Delete Account",
   "emailCannotBeChanged": "Email cannot be changed for security reasons.",
+  "phoneNumber": "Phone Number",
 
   "version": "Version",
   "logOut": "Log out",

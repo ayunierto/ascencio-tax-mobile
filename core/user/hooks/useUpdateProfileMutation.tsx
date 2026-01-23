@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { ServerException } from '@/core/interfaces/server-exception.response';
 import { AxiosError } from 'axios';
+import { ServerException } from '@/core/interfaces/server-exception.response';
 import { updateProfileAction } from '../actions/update-profile.action';
-import { UpdateProfileResponse } from '../interfaces/update-profile.interface';
-import { UpdateProfileRequest } from '@ascencio/shared';
+import { UpdateProfileRequest, UpdateProfileResponse } from '@ascencio/shared';
 
 export const useUpdateProfileMutation = () => {
   return useMutation<
