@@ -1,5 +1,4 @@
 import { View, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
 import FeatureCard from '@/components/features/home/FeatureCard';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +29,7 @@ export function FeaturesSection() {
 
   return (
     <View style={styles.featuresSection}>
-      <ThemedText style={styles.sectionTitle}>Why Choose Us?</ThemedText>
+      {/* <ThemedText style={styles.sectionTitle}>Why Choose Us?</ThemedText> */}
 
       <View style={styles.featuresList}>
         {FEATURES.map((feature) => (
@@ -51,12 +50,12 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
   },
-  sectionTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 32,
-    textAlign: 'center',
-  },
+  // sectionTitle: {
+  //   fontSize: 28,
+  //   fontWeight: 'bold',
+  //   marginBottom: 32,
+  //   textAlign: 'center',
+  // },
   featuresList: {
     gap: 16,
   },

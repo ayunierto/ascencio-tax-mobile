@@ -1,24 +1,15 @@
 import React from 'react';
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Linking,
-} from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { theme } from '../../components/ui';
 
 export default function ServicesScreen() {
   const { t } = useTranslation();
+  const clients = t('servicesClientsList', { returnObjects: true }) as string[];
 
   const openBooking = () => {
     router.push('/services');
-    Linking.openURL('https://www.ascenciotax.com/book-online').catch((err) =>
-      console.error('Failed to open booking', err),
-    );
   };
 
   return (
@@ -55,16 +46,14 @@ export default function ServicesScreen() {
           {t('servicesWeService')}
         </Text>
         <View style={styles.list}>
-          {t('servicesClientsList', { returnObjects: true }).map(
-            (item: string) => (
-              <Text
-                key={item}
-                style={[styles.listItem, { color: theme.foreground }]}
-              >
-                • {item}
-              </Text>
-            ),
-          )}
+          {clients.map((item: string) => (
+            <Text
+              key={item}
+              style={[styles.listItem, { color: theme.foreground }]}
+            >
+              • {item}
+            </Text>
+          ))}
         </View>
       </View>
 
