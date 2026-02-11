@@ -1,10 +1,9 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { TextInput, View, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useRef } from 'react';
+import { TextInput, View, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner-native';
-import Svg, { Path } from 'react-native-svg';
 
 import { SignInRequest } from '@ascencio/shared';
 import { useGoogleSignIn, useSignIn } from '../hooks';
@@ -24,7 +23,7 @@ export const SignInForm = () => {
   const {
     signInWithGoogle,
     isLoading: isGoogleLoading,
-    error: googleError,
+    // error: googleError,
   } = useGoogleSignIn();
 
   const passwordInputRef = useRef<TextInput>(null);
@@ -124,7 +123,6 @@ export const SignInForm = () => {
               autoComplete="email"
               returnKeyType="next"
               onSubmitEditing={() => passwordInputRef.current?.focus()}
-              blurOnSubmit={false}
               error={!!formErrors.email}
               errorMessage={getErrorMessage(formErrors.email)}
             />

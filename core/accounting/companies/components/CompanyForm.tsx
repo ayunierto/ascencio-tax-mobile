@@ -81,7 +81,7 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data.message || 'unknownErrorOccurred')
+            t(error.response?.data.message || 'unknownErrorOccurred'),
           );
         },
       });
@@ -111,7 +111,7 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
         },
         onError: (error) => {
           toast.error(
-            t(error.response?.data?.message || error.message || 'canNotDelete')
+            t(error.response?.data?.message || error.message || 'canNotDelete'),
           );
           setIsDeleting(false);
         },
@@ -164,6 +164,9 @@ export const CompanyForm = ({ company }: CompanyFormProps) => {
     handleDeleteCompany,
     createCompany.isPending,
     isDeleting,
+    updateCompany.isPending,
+    deleteCompany.isPending,
+    navigation,
   ]);
 
   return (

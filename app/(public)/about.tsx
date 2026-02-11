@@ -1,48 +1,108 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { theme } from '../../components/ui';
 
 export default function AboutScreen() {
+  const { t } = useTranslation();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>About Ascencio Tax Inc</Text>
-      <Text style={styles.description}>
-        Professional tax services helping individuals and businesses with their
-        financial needs.
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: theme.background },
+      ]}
+    >
+      <Text style={[styles.title, { color: theme.foreground }]}>
+        {t('aboutPageTitle')}
       </Text>
 
-      {/* TODO: Add more content */}
+      <Text style={[styles.lead, { color: theme.foreground }]}>
+        {t('aboutIntro')}
+      </Text>
 
-      <Link href="/" style={styles.link}>
-        <Text style={styles.linkText}>← Back to Home</Text>
-      </Link>
-    </View>
+      <Image
+        source={{
+          uri: 'https://static.wixstatic.com/media/c837a6_2a112783570b4cd994206741c4e0a1b9~mv2.png',
+        }}
+        style={styles.heroImage}
+        resizeMode="contain"
+      />
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          {t('aboutChatAudioTitle')}
+        </Text>
+        <Text style={[styles.sectionText, { color: theme.foreground }]}>
+          {t('aboutChatAudioDesc')}
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          {t('aboutPersonalizedTitle')}
+        </Text>
+        <Text style={[styles.sectionText, { color: theme.foreground }]}>
+          {t('aboutPersonalizedDesc')}
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          {t('aboutWorkspaceTitle')}
+        </Text>
+        <Text style={[styles.sectionText, { color: theme.foreground }]}>
+          {t('aboutWorkspaceDesc')}
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+          {t('aboutRealtimeTitle')}
+        </Text>
+        <Text style={[styles.sectionText, { color: theme.foreground }]}>
+          {t('aboutRealtimeDesc')}
+        </Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
+    padding: 10,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
   },
-  description: {
+  lead: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-    textAlign: "center",
+    marginBottom: 16,
   },
-  link: {
-    marginTop: 20,
+  heroImage: {
+    width: '100%',
+    height: 180,
+    marginBottom: 18,
   },
-  linkText: {
-    color: "#007AFF",
+  section: {
+    width: '100%',
+    marginBottom: 14,
+  },
+  sectionTitle: {
     fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  sectionText: {
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  backLink: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
   },
 });

@@ -10,6 +10,7 @@ import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStor
 import { EmptyContent } from '@/core/components';
 import Loader from '@/components/Loader';
 import { theme } from '@/components/ui';
+import { Expense } from '@ascencio/shared';
 
 export default function CreateExpenseScreen() {
   const navigation: any = useNavigation();
@@ -115,7 +116,7 @@ export default function CreateExpenseScreen() {
   }
 
   // Create a new expense with scanned details if available
-  const newExpense = {
+  const newExpense: Expense = {
     id: 'new',
     imageUrl: imageUrl || '',
     merchant: merchant || '',
@@ -130,6 +131,8 @@ export default function CreateExpenseScreen() {
     notes: '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    categoryId: '',
+    userId: '',
   };
 
   return <ExpenseForm expense={newExpense} categories={categories} />;

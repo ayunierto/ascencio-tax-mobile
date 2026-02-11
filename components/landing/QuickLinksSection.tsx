@@ -10,8 +10,8 @@ export function QuickLinksSection() {
   const QUICK_LINKS = [
     {
       icon: 'star-outline' as const,
-      text: t('features'),
-      route: '/(public)/features' as const,
+      text: t('services'),
+      route: '/(public)/services' as const,
     },
     {
       icon: 'information-circle-outline' as const,

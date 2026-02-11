@@ -29,11 +29,9 @@ export default function AppointmentsLayout() {
       />
       <Stack.Screen
         name="new"
-        options={
-          {
-            // headerShown: false,
-          }
-        }
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );

@@ -8,8 +8,7 @@ import { toast } from 'sonner-native';
 import Loader from '@/components/Loader';
 import { router } from 'expo-router';
 import ExpenseCard from './ExpenseCard';
-import { useExpenses } from '../hooks/useExpenses';
-import { useDeleteExpense } from '../hooks/useDeleteExpense';
+import { deleteExpenseMutation, useExpenses } from '../hooks/useExpenses';
 
 const ExpensesList = () => {
   const inset = useSafeAreaInsets();
@@ -21,11 +20,11 @@ const ExpensesList = () => {
   const { data, isPending, isError, error, refetch, isRefetching } =
     expensesQuery;
 
-  const { mutateAsync: deleteExpense } = useDeleteExpense();
+  const deleteExpense = deleteExpenseMutation();
 
   const onDelete = async (expenseId: string) => {
     setDeletingId(expenseId);
-    await deleteExpense(expenseId, {
+    await deleteExpense.mutateAsync(expenseId, {
       onSuccess: () => {
         toast.success(t('deleteSuccess'));
         setDeletingId(null);

@@ -5,7 +5,7 @@ export const theme = {
 
   // Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />
   muted: '#ccc',
-  mutedForeground: '#64748b',
+  mutedForeground: '#dddddd',
 
   // Background color for <Card />
   card: '#3b82f622',

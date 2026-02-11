@@ -1,13 +1,12 @@
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { Card, CardContent } from '@/components/ui';
 import { theme } from '@/components/ui/theme';
 import { useServices } from '@/core/services/hooks/useServices';
 import { useBookingStore } from '@/core/services/store/useBookingStore';
 import { Ionicons } from '@expo/vector-icons';
-import { ScrollView, TouchableOpacity } from 'react-native';
 
 export default function SelectServiceScreen() {
   const { data: servicesResponse, isLoading } = useServices();

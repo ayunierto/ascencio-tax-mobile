@@ -1,12 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router, useNavigation } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner-native';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Controller, useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/Input';
 import {
   Select,
@@ -14,44 +13,41 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/Select';
-import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
-import {
-  ExpenseFormFields,
-  ExpenseFormInput,
-  expenseFormSchema,
-} from '@/core/accounting/expenses/schemas';
 import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 import { Category } from '@/core/accounting/categories/interfaces/category.interface';
-import { useExpenseMutation } from '@/core/accounting/expenses/hooks/useExpenseMutation';
 import {
   Button,
   ButtonIcon,
-  ButtonText,
   theme,
   ImageUploader,
   ImageUploaderRef,
 } from '@/components/ui';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Subcategory } from '@/core/accounting/subcategories/interfaces';
-import ErrorMessage from '@/core/components/ErrorMessage';
-import { DeleteConfirmationDialog } from '@/core/components';
-import { useDeleteExpense } from '@/core/accounting/expenses/hooks/useDeleteExpense';
+import { DeleteConfirmationDialog, FormViewContainer } from '@/core/components';
 import { useReceiptImageMutation } from '@/core/accounting/expenses/hooks/useReceiptImageMutation';
+import {
+  CreateExpenseRequest,
+  createExpenseSchema,
+  Expense,
+  Subcategory,
+} from '@ascencio/shared';
+import {
+  createExpenseMutation,
+  deleteExpenseMutation,
+  updateExpenseMutation,
+} from '../../hooks';
 
 interface ExpenseFormProps {
-  expense: ExpenseResponse;
+  expense: Expense;
   categories: Category[];
 }
 
 export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const imageUploaderRef = useRef<ImageUploaderRef>(null);
   const lastScannedImageRef = useRef<string | undefined>(undefined);
   const hasAutoScannedRef = useRef<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
   const [subcategories, setSubcategories] = useState<Subcategory[]>(
     categories.find((cat) => cat.id === expense.category?.id)?.subcategories ||
       [],
@@ -65,14 +61,14 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     setValue,
     reset,
     watch,
-  } = useForm<ExpenseFormInput>({
-    resolver: zodResolver(expenseFormSchema),
+  } = useForm<CreateExpenseRequest>({
+    resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       id: expense.id,
-      date: expense.date,
+      date: expense.date.toString(),
       merchant: expense.merchant,
-      total: expense.total.toString(),
-      tax: expense.tax.toString(),
+      total: expense.total,
+      tax: expense.tax,
       imageUrl: expense.imageUrl || undefined,
       notes: expense.notes || undefined,
       categoryId: expense.category?.id || undefined,
@@ -84,10 +80,10 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   React.useEffect(() => {
     reset({
       id: expense.id,
-      date: expense.date,
+      date: expense.date.toString(),
       merchant: expense.merchant,
-      total: expense.total.toString(),
-      tax: expense.tax.toString(),
+      total: expense.total,
+      tax: expense.tax,
       imageUrl: expense.imageUrl || undefined,
       notes: expense.notes || undefined,
       categoryId: expense.category?.id || undefined,
@@ -95,8 +91,9 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     });
   }, [expense, reset]);
 
-  const expenseMutation = useExpenseMutation();
-  const deleteExpense = useDeleteExpense();
+  const createMutation = createExpenseMutation();
+  const updateMutation = updateExpenseMutation();
+  const deleteMutation = deleteExpenseMutation();
 
   const watchedImageUrl = watch('imageUrl');
   const previousImageUrlRef = useRef<string | undefined>(watchedImageUrl);
@@ -141,15 +138,22 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     handleScanReceipt(fullImageUrl);
   }, [watchedImageUrl, expense.imageUrl]);
 
-  const onSubmit = async (values: ExpenseFormInput) => {
-    // Convert string values to numbers for API
-    const expenseData: ExpenseFormFields = {
-      ...values,
-      total: parseFloat(values.total),
-      tax: parseFloat(values.tax),
-    };
+  const onSubmit = async (data: CreateExpenseRequest) => {
+    if (data.id && data.id !== 'new') {
+      await updateMutation.mutateAsync(data, {
+        onSuccess: () => {
+          // Mark image as saved to prevent cleanup
+          imageUploaderRef.current?.markAsSaved();
+          toast.success(t('expenseUpdatedSuccessfully'));
+        },
+        onError: (error) => {
+          toast.error(error.response?.data.message || error.message);
+        },
+      });
+      return;
+    }
 
-    await expenseMutation.mutateAsync(expenseData, {
+    await createMutation.mutateAsync(data, {
       onSuccess: () => {
         // Mark image as saved to prevent cleanup
         imageUploaderRef.current?.markAsSaved();
@@ -170,10 +174,9 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     });
   };
 
-  const handleDeleteExpense = async () => {
-    setIsDeleting(true);
+  const handleDelete = async () => {
     try {
-      await deleteExpense.mutateAsync(expense.id, {
+      await deleteMutation.mutateAsync(expense.id, {
         onSuccess: () => {
           toast.success(t('deleteSuccess'));
           setTimeout(() => router.back(), 500);
@@ -182,13 +185,11 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
           toast.error(
             t(error.response?.data?.message || error.message || 'canNotDelete'),
           );
-          setIsDeleting(false);
         },
       });
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error(t('unknownError'));
-      setIsDeleting(false);
     }
   };
 
@@ -196,7 +197,6 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
    * Handle OCR scanning of receipt after image upload
    */
   const handleScanReceipt = async (imageUrl: string) => {
-    setIsScanning(true);
     let toastId: string | number | undefined;
     try {
       toastId = toast.loading(t('extractingReceiptValues'));
@@ -220,10 +220,10 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
         setValue('date', extractedValues.date);
       }
       if (extractedValues.total) {
-        setValue('total', extractedValues.total.toString());
+        setValue('total', extractedValues.total);
       }
       if (extractedValues.tax) {
-        setValue('tax', extractedValues.tax.toString());
+        setValue('tax', extractedValues.tax);
       }
 
       toast.success(t('receiptScannedSuccessfully'));
@@ -232,11 +232,10 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
       console.error('Error scanning receipt:', error);
       toast.error(t('errorGettingReceiptValues'));
       if (toastId) toast.dismiss(toastId);
-    } finally {
-      setIsScanning(false);
     }
   };
 
+  // Header buttons
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: expense.id === 'new' ? t('newExpense') : t('expenseDetails'),
@@ -245,20 +244,20 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
           <Button
             variant="ghost"
             size="icon"
-            isLoading={expenseMutation.isPending}
+            isLoading={createMutation.isPending}
             onPress={handleSubmit(onSubmit)}
-            disabled={expenseMutation.isPending}
+            disabled={createMutation.isPending}
           >
             <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
           </Button>
 
           {expense.id !== 'new' && (
-            <DeleteConfirmationDialog onDelete={handleDeleteExpense}>
+            <DeleteConfirmationDialog onDelete={handleDelete}>
               <Button
                 size="icon"
                 variant="ghost"
-                disabled={deleteExpense.isPending}
-                isLoading={deleteExpense.isPending}
+                disabled={deleteMutation.isPending}
+                isLoading={deleteMutation.isPending}
               >
                 <ButtonIcon
                   name="trash-outline"
@@ -275,197 +274,175 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     t,
     handleSubmit,
     onSubmit,
-    handleDeleteExpense,
-    expenseMutation.isPending,
-    isDeleting,
+    handleDelete,
+    createMutation.isPending,
+    navigation,
+    deleteMutation.isPending,
   ]);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
-    >
-      <ScrollView
-        style={{ padding: 16, paddingTop: 8 }}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={{ flex: 1, gap: 16 }}>
-          <Controller
-            control={control}
-            name="imageUrl"
-            render={({ field: { onChange, value } }) => (
-              <View style={{ gap: 8 }}>
-                <ImageUploader
-                  ref={imageUploaderRef}
-                  value={value}
-                  onChange={onChange}
-                  folder="temp_receipts"
-                  label={t('receiptImage')}
-                  allowCamera={true}
-                  allowGallery={true}
-                />
-              </View>
-            )}
-          />
-          {errors.id && <ErrorMessage message={errors.id.message} />}
-          {errors.imageUrl && (
-            <ErrorMessage message={errors.imageUrl.message} />
-          )}
-          {errors.notes && <ErrorMessage message={errors.notes.message} />}
-
-          <Controller
-            control={control}
-            name={'merchant'}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label={t('merchant')}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!errors.merchant}
-                errorMessage={getErrorMessage(errors.merchant)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="date"
-            render={({ field: { onChange, value } }) => (
-              <DateTimePicker
-                labelText={t('date')}
-                error={!!errors.date}
-                errorMessage={getErrorMessage(errors.date)}
-                value={value ?? null}
-                mode="date"
-                onChange={onChange}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="total"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label={t('total')}
-                value={value?.toString() || ''}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                keyboardType="decimal-pad"
-                error={!!errors.total}
-                errorMessage={getErrorMessage(errors.total)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="tax"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label={t('tax')}
-                value={value?.toString() || ''}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                keyboardType="decimal-pad"
-                error={!!errors.tax}
-                errorMessage={getErrorMessage(errors.tax)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name={'categoryId'}
-            render={({ field: { onChange, value } }) => (
-              <Select
-                value={value}
-                onValueChange={(id) => {
-                  onChange(id); // setValue("categoryId", id);
-                  const sub =
-                    categories.find((cat) => cat.id === id)?.subcategories ||
-                    [];
-                  setSubcategories(sub);
-                  setValue('subcategoryId', undefined);
-                }}
-                error={!!errors.categoryId}
-                errorMessage={getErrorMessage(errors.categoryId)}
-                options={categories.map((cat) => ({
-                  label: cat.name,
-                  value: cat.id,
-                }))}
-              >
-                <SelectTrigger
-                  placeholder={t('selectACategory')}
-                  labelText={t('category')}
-                />
-                <SelectContent>
-                  <ScrollView>
-                    {categories.map((cat) => (
-                      <SelectItem
-                        key={cat.id}
-                        label={cat.name}
-                        value={cat.id}
-                      />
-                    ))}
-                  </ScrollView>
-                </SelectContent>
-              </Select>
-            )}
-          />
-
-          {subcategories && subcategories.length > 0 && (
-            <Controller
-              control={control}
-              name={'subcategoryId'}
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  value={value}
-                  onValueChange={onChange}
-                  options={subcategories.map((sub) => ({
-                    label: sub.name,
-                    value: sub.id,
-                  }))}
-                >
-                  <SelectTrigger
-                    placeholder={t('selectASubcategory')}
-                    labelText={t('subcategory')}
-                  />
-                  <SelectContent>
-                    <ScrollView>
-                      {subcategories.map((sub) => (
-                        <SelectItem
-                          key={sub.id}
-                          label={sub.name}
-                          value={sub.id}
-                        />
-                      ))}
-                    </ScrollView>
-                  </SelectContent>
-                </Select>
-              )}
+    <FormViewContainer>
+      <Controller
+        control={control}
+        name="imageUrl"
+        render={({ field: { onChange, value } }) => (
+          <View style={{ gap: 8 }}>
+            <ImageUploader
+              ref={imageUploaderRef}
+              value={value}
+              onChange={onChange}
+              folder="temp_receipts"
+              label={t('receiptImage')}
+              allowCamera={true}
+              allowGallery={true}
+              // error={!!errors.imageUrl}
+              // errorMessage={getErrorMessage(errors.imageUrl)}
+              // isScanning={isScanning}
             />
-          )}
+          </View>
+        )}
+      />
 
-          <Controller
-            control={control}
-            name="notes"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label={t('notes')}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!errors.notes}
-                errorMessage={getErrorMessage(errors.notes)}
-              />
-            )}
+      <Controller
+        control={control}
+        name={'merchant'}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label={t('merchant')}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={!!errors.merchant}
+            errorMessage={getErrorMessage(errors.merchant)}
           />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="date"
+        render={({ field: { onChange, value } }) => (
+          <DateTimePicker
+            labelText={t('date')}
+            error={!!errors.date}
+            errorMessage={getErrorMessage(errors.date)}
+            value={value ?? null}
+            mode="date"
+            onChange={onChange}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="total"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label={t('total')}
+            value={value?.toString() || ''}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            keyboardType="decimal-pad"
+            error={!!errors.total}
+            errorMessage={getErrorMessage(errors.total)}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="tax"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label={t('tax')}
+            value={value?.toString() || ''}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            keyboardType="decimal-pad"
+            error={!!errors.tax}
+            errorMessage={getErrorMessage(errors.tax)}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name={'categoryId'}
+        render={({ field: { onChange, value } }) => (
+          <Select
+            value={value}
+            onValueChange={(id) => {
+              onChange(id); // setValue("categoryId", id);
+              const sub =
+                categories.find((cat) => cat.id === id)?.subcategories || [];
+              setSubcategories(sub);
+              setValue('subcategoryId', undefined);
+            }}
+            error={!!errors.categoryId}
+            errorMessage={getErrorMessage(errors.categoryId)}
+            options={categories.map((cat) => ({
+              label: cat.name,
+              value: cat.id,
+            }))}
+          >
+            <SelectTrigger
+              placeholder={t('selectACategory')}
+              labelText={t('category')}
+            />
+            <SelectContent>
+              <ScrollView>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} label={cat.name} value={cat.id} />
+                ))}
+              </ScrollView>
+            </SelectContent>
+          </Select>
+        )}
+      />
+
+      {subcategories && subcategories.length > 0 && (
+        <Controller
+          control={control}
+          name={'subcategoryId'}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              value={value}
+              onValueChange={onChange}
+              options={subcategories.map((sub) => ({
+                label: sub.name,
+                value: sub.id,
+              }))}
+            >
+              <SelectTrigger
+                placeholder={t('selectASubcategory')}
+                labelText={t('subcategory')}
+              />
+              <SelectContent>
+                <ScrollView>
+                  {subcategories.map((sub) => (
+                    <SelectItem key={sub.id} label={sub.name} value={sub.id} />
+                  ))}
+                </ScrollView>
+              </SelectContent>
+            </Select>
+          )}
+        />
+      )}
+
+      <Controller
+        control={control}
+        name="notes"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label={t('notes')}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={!!errors.notes}
+            errorMessage={getErrorMessage(errors.notes)}
+          />
+        )}
+      />
+    </FormViewContainer>
   );
 }

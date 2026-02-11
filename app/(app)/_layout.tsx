@@ -29,6 +29,7 @@ export default function AppLayout() {
         headerStyle: { backgroundColor: theme.background },
         headerTitleStyle: { color: theme.foreground },
         headerShown: false,
+        drawerLabelStyle: { color: theme.foreground },
       }}
     >
       <Drawer.Screen
@@ -40,7 +41,7 @@ export default function AppLayout() {
             <Ionicons
               name={props.focused ? 'grid' : 'grid-outline'}
               size={props.size}
-              color={props.color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -55,7 +56,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'business' : 'business-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -70,7 +71,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'people' : 'people-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -85,7 +86,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'cash' : 'cash-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -100,7 +101,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'document' : 'document-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -116,7 +117,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -131,7 +132,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'briefcase' : 'briefcase-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}
@@ -146,7 +147,7 @@ export default function AppLayout() {
             <Ionicons
               name={focused ? 'settings' : 'settings-outline'}
               size={size}
-              color={color}
+              color={theme.foreground}
             />
           ),
         }}

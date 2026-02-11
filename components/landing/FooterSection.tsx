@@ -1,18 +1,35 @@
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { ContactCard } from './ContactCard';
-import { FooterLink } from './FooterLink';
+import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { useTranslation } from 'react-i18next';
-
-interface ContactInfo {
-  icon: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
-  label: string;
-  text: string;
-  secondaryText?: string;
-  fullWidth?: boolean;
-}
+import { theme } from '../ui';
+import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 export function FooterSection() {
   const { t } = useTranslation();
+
+  const openMaps = (address: string) => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      address,
+    )}`;
+    Linking.openURL(url).catch((err) =>
+      console.error('Failed to open maps', err),
+    );
+  };
+
+  const openPhone = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    const url = `tel:${digits}`;
+    Linking.openURL(url).catch((err) =>
+      console.error('Failed to open dialer', err),
+    );
+  };
+
+  const openEmail = (email: string) => {
+    const url = `mailto:${email}`;
+    Linking.openURL(url).catch((err) =>
+      console.error('Failed to open email', err),
+    );
+  };
 
   const CONTACT_INFO = [
     {
@@ -42,60 +59,162 @@ export function FooterSection() {
     },
   ];
 
-  const RESOURCES = [
-    t('canadaRevenueAgency'),
-    t('questionsAnswers'),
-    t('informationIntake'),
-  ];
-
-  const LEGAL = [t('termsOfUse'), t('privacyPolicy')];
-
   return (
     <View style={styles.footer}>
-      {/* Logo */}
-      <View style={styles.footerLogoContainer}>
-        <Image
-          source={require('@/assets/images/logo.png')}
-          style={styles.footerLogo}
-        />
-      </View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <View style={styles.footerDivider} />
 
-      {/* Contact Cards */}
-      <View style={styles.contactCardsContainer}>
-        {CONTACT_INFO.map((contact) => (
-          <ContactCard
-            key={contact.label}
-            icon={contact.icon}
-            label={contact.label}
-            text={contact.text}
-            secondaryText={contact.secondaryText}
-            fullWidth={contact.fullWidth}
-          />
-        ))}
-      </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: theme.gap,
+            alignItems: 'center',
+            backgroundColor: 'black',
+            paddingVertical: 4,
+            paddingHorizontal: 18,
+            borderRadius: theme.radius,
+          }}
+        >
+          <Ionicons name="logo-apple" size={48} color={theme.foreground} />
 
-      {/* Resources & Legal */}
-      <View style={styles.footerLinksGrid}>
-        <View style={styles.footerLinksColumn}>
-          <Text style={styles.footerColumnTitle}>{t('resources')}</Text>
-          {RESOURCES.map((resource) => (
-            <FooterLink key={resource} text={resource} />
-          ))}
+          <View style={{ flexDirection: 'column' }}>
+            <Text style={{ color: theme.foreground }}>
+              {t('availableOnThe')}
+            </Text>
+            <Text
+              style={{
+                color: theme.foreground,
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+            >
+              {t('appStore')}
+            </Text>
+          </View>
         </View>
+      </View>
 
-        <View style={styles.footerLinksColumn}>
-          <Text style={styles.footerColumnTitle}>{t('legal')}</Text>
-          {LEGAL.map((legal) => (
-            <FooterLink key={legal} text={legal} />
-          ))}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          gap: theme.gap,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: theme.gap,
+            alignItems: 'center',
+            backgroundColor: 'black',
+            paddingVertical: 4,
+            paddingHorizontal: 18,
+            borderRadius: theme.radius,
+          }}
+        >
+          <Ionicons name="logo-google-playstore" size={48} color="white" />
+
+          <View style={{ flexDirection: 'column' }}>
+            <Text style={{ color: theme.foreground }}>
+              {t('availableOnThe')}
+            </Text>
+            <Text
+              style={{
+                color: theme.foreground,
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+            >
+              {t('googlePlay')}
+            </Text>
+          </View>
         </View>
       </View>
 
-      {/* Copyright */}
-      <View style={styles.footerBottom}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: theme.gap,
+          justifyContent: 'center',
+        }}
+      >
+        <Link href="https://www.facebook.com/ascenciotax" target="_blank">
+          <Ionicons name="logo-facebook" size={30} color={theme.foreground} />
+        </Link>
+        <Link href="https://twitter.com/ascenciotax" target="_blank">
+          <Ionicons name="logo-twitter" size={30} color={theme.foreground} />
+        </Link>
+        <Link href="https://www.instagram.com/ascenciotax/" target="_blank">
+          <Ionicons name="logo-instagram" size={30} color={theme.foreground} />
+        </Link>
+      </View>
+
+      <View style={{ paddingHorizontal: 24, paddingVertical: 10, gap: 8 }}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() =>
+            openMaps('1219 St Clair Ave West Suite G15, Toronto, ON M6E 1B5')
+          }
+          style={{ alignItems: 'center' }}
+        >
+          <Text
+            style={{
+              color: theme.foreground,
+              textAlign: 'center',
+              textDecorationLine: 'underline',
+            }}
+          >
+            1219 St Clair Ave West Suite G15, Toronto, ON M6E 1B5
+          </Text>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => openEmail('ascenciotaxinc@gmail.com')}
+          style={{ alignItems: 'center' }}
+        >
+          <Text
+            style={{
+              color: theme.foreground,
+              textAlign: 'center',
+              textDecorationLine: 'underline',
+            }}
+          >
+            ascenciotaxinc@gmail.com
+          </Text>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => openPhone('(416) 658-1208')}
+          style={{ alignItems: 'center' }}
+        >
+          <Text
+            style={{
+              color: theme.foreground,
+              textAlign: 'center',
+              textDecorationLine: 'underline',
+            }}
+          >
+            (416) 658-1208
+          </Text>
+        </Pressable>
+      </View>
+
+      <View>
         <View style={styles.footerDivider} />
         <Text style={styles.footerCopyright}>
-          © 2025 Ascencio Tax Inc. {t('allRightsReserved')}
+          © {new Date().getFullYear()} Ascencio Tax Inc.{' '}
+          {t('allRightsReserved')}
         </Text>
       </View>
     </View>
@@ -107,48 +226,16 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 32,
     paddingHorizontal: 24,
-    backgroundColor: '#1a1a2e',
-  },
-  footerLogoContainer: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  footerLogo: {
-    width: 200,
-    height: 85,
-    resizeMode: 'contain',
-    tintColor: '#fff',
-  },
-  contactCardsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    borderTopWidth: 1,
+    borderTopColor: theme.primary,
     gap: 12,
-    marginBottom: 32,
-  },
-  footerLinksGrid: {
-    flexDirection: 'row',
-    gap: 32,
-    marginBottom: 32,
-  },
-  footerLinksColumn: {
-    flex: 1,
-  },
-  footerColumnTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 16,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  footerBottom: {
-    marginTop: 16,
   },
   footerDivider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginBottom: 24,
+    backgroundColor: theme.primary,
+    marginVertical: 16,
   },
+
   footerCopyright: {
     fontSize: 12,
     color: '#6b7280',

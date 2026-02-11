@@ -10,7 +10,7 @@ function NoResultsFound() {
   return (
     <View style={{ padding: 20, alignItems: 'center' }}>
       <Ionicons name="search-outline" size={48} color={theme.muted} />
-      <ThemedText style={{ marginTop: 12, color: theme.muted }}>
+      <ThemedText style={{ marginTop: theme.gap, color: theme.muted }}>
         {t('noResultsFound')}
       </ThemedText>
     </View>

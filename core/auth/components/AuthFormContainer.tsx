@@ -16,7 +16,6 @@ interface AuthFormContainerProps {
 }
 
 const FORM_MAX_WIDTH = 380;
-const LOGO_TOP_SPACING = 100;
 const SMALL_TOP_SPACING = 20;
 
 export const AuthFormContainer: React.FC<AuthFormContainerProps> = ({

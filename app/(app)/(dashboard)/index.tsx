@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { DateTime } from 'luxon';
 
 export default function DashboardScreen() {
   const { authStatus, user } = useAuthStore();
@@ -48,20 +49,11 @@ export default function DashboardScreen() {
 
   // Configure header with drawer menu
   useLayoutEffect(() => {
-    const headerLeft = () => (
-      <TouchableOpacity
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        style={{ marginRight: 30 }}
-      >
-        <Ionicons name="menu" size={24} color={theme.foreground} />
-      </TouchableOpacity>
-    );
-
     navigation.setOptions({
-      // headerLeft,
       headerShown: true,
+      title: t('panel'),
     });
-  }, [navigation]);
+  });
 
   if (loadingUpcoming || loadingPast || loadingInvoices) {
     return (
@@ -108,7 +100,9 @@ export default function DashboardScreen() {
             {user.firstName ? `, ${user.firstName}!` : '!'}
           </ThemedText>
           <ThemedText style={{ fontSize: 14, color: theme.mutedForeground }}>
-            {t('bookAppointment')}
+            {DateTime.now().toFormat('dd LLLL, yyyy', {
+              locale: user.locale,
+            })}
           </ThemedText>
         </View>
       )}
