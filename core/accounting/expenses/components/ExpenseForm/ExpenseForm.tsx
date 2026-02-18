@@ -1,10 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Linking, Platform } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner-native';
 import { useTranslation } from 'react-i18next';
+import { fetch } from 'expo/fetch';
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 import { Input } from '@/components/ui/Input';
 import {
@@ -212,18 +215,41 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
         },
       );
 
-      // Update form with extracted values (convert numbers to strings)
+      // Update form with extracted values
       if (extractedValues.merchant) {
         setValue('merchant', extractedValues.merchant);
       }
       if (extractedValues.date) {
-        setValue('date', extractedValues.date);
+        // Convert YYYY-MM-DD to ISO datetime (add time component)
+        const dateStr = extractedValues.date;
+        // Check if it's just a date or already has time
+        const isoDateTime = dateStr.includes('T') 
+          ? dateStr 
+          : `${dateStr}T00:00:00.000Z`;
+        setValue('date', isoDateTime);
       }
-      if (extractedValues.total) {
-        setValue('total', extractedValues.total);
+      if (extractedValues.total !== undefined && extractedValues.total !== null) {
+        // Ensure it's a number or string, handle empty strings
+        const totalValue = extractedValues.total === '' ? 0 : extractedValues.total;
+        setValue('total', totalValue);
       }
-      if (extractedValues.tax) {
-        setValue('tax', extractedValues.tax);
+      if (extractedValues.tax !== undefined && extractedValues.tax !== null) {
+        // Ensure it's a number or string, handle empty strings
+        const taxValue = extractedValues.tax === '' ? 0 : extractedValues.tax;
+        setValue('tax', taxValue);
+      }
+      if (extractedValues.categoryId) {
+        setValue('categoryId', extractedValues.categoryId);
+        // Update subcategories list when category is set
+        const category = categories.find(
+          (cat) => cat.id === extractedValues.categoryId,
+        );
+        if (category) {
+          setSubcategories(category.subcategories || []);
+        }
+      }
+      if (extractedValues.subcategoryId) {
+        setValue('subcategoryId', extractedValues.subcategoryId);
       }
 
       toast.success(t('receiptScannedSuccessfully'));
@@ -235,12 +261,95 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     }
   };
 
+  /**
+   * Handle downloading receipt image
+   */
+  const handleDownloadReceipt = async () => {
+    const imageUrl = watch('imageUrl');
+    if (!imageUrl) {
+      toast.error(t('noReceiptImageToDownload'));
+      return;
+    }
+
+    try {
+      const cloudinaryCloudName = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      let fullImageUrl = imageUrl;
+
+      // Convert relative path to full Cloudinary URL if needed
+      if (!imageUrl.startsWith('http')) {
+        if (!cloudinaryCloudName) {
+          toast.error('Cloudinary configuration error');
+          return;
+        }
+        fullImageUrl = `https://res.cloudinary.com/${cloudinaryCloudName}/image/upload/${imageUrl}`;
+      }
+
+      if (Platform.OS === 'web') {
+        // On web, open in new tab
+        Linking.openURL(fullImageUrl);
+        toast.success(t('receiptImageOpened'));
+      } else {
+        // On mobile, download and share using expo/fetch
+        const loadingToast = toast.loading(t('downloadingReceipt'));
+        const filename = imageUrl.split('/').pop() || 'receipt.jpg';
+        const file = new File(Paths.cache, filename);
+
+        try {
+          // Delete existing file if it exists to avoid errors
+          if (file.exists) {
+            file.delete();
+          }
+
+          // Download using expo/fetch which returns bytes directly
+          const response = await fetch(fullImageUrl);
+          const bytes = await response.bytes();
+
+          // Create and write the bytes to file
+          await file.create();
+          await file.write(bytes);
+
+          toast.dismiss(loadingToast);
+
+          const canShare = await Sharing.isAvailableAsync();
+          if (canShare) {
+            await Sharing.shareAsync(file.uri, {
+              mimeType: 'image/jpeg',
+              dialogTitle: t('receiptImage'),
+            });
+            toast.success(t('receiptDownloaded'));
+          } else {
+            toast.success(t('receiptSaved'));
+          }
+        } catch (error) {
+          toast.dismiss(loadingToast);
+          throw error;
+        }
+      }
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+      toast.error(t('errorDownloadingReceipt'));
+    }
+  };
+
   // Header buttons
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: expense.id === 'new' ? t('newExpense') : t('expenseDetails'),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
+          {watch('imageUrl') && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onPress={handleDownloadReceipt}
+            >
+              <ButtonIcon
+                name="download-outline"
+                style={{ color: theme.primary }}
+              />
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
