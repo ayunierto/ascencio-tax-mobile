@@ -223,14 +223,18 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
         // Convert YYYY-MM-DD to ISO datetime (add time component)
         const dateStr = extractedValues.date;
         // Check if it's just a date or already has time
-        const isoDateTime = dateStr.includes('T') 
-          ? dateStr 
+        const isoDateTime = dateStr.includes('T')
+          ? dateStr
           : `${dateStr}T00:00:00.000Z`;
         setValue('date', isoDateTime);
       }
-      if (extractedValues.total !== undefined && extractedValues.total !== null) {
+      if (
+        extractedValues.total !== undefined &&
+        extractedValues.total !== null
+      ) {
         // Ensure it's a number or string, handle empty strings
-        const totalValue = extractedValues.total === '' ? 0 : extractedValues.total;
+        const totalValue =
+          extractedValues.total === '' ? 0 : extractedValues.total;
         setValue('total', totalValue);
       }
       if (extractedValues.tax !== undefined && extractedValues.tax !== null) {
@@ -338,11 +342,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
           {watch('imageUrl') && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onPress={handleDownloadReceipt}
-            >
+            <Button variant="ghost" size="icon" onPress={handleDownloadReceipt}>
               <ButtonIcon
                 name="download-outline"
                 style={{ color: theme.primary }}
