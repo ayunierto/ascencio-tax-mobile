@@ -26,23 +26,11 @@ const ExpensesScreen = () => {
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <TouchableOpacity
-          onPress={() => router.push('/(app)/expenses/create')}
-        >
-          <Ionicons
-            name="add-circle-outline"
-            size={24}
-            color={theme.primary}
-          />
+        <TouchableOpacity onPress={() => router.push('/(app)/expenses/create')}>
+          <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.push('/(app)/expenses/scan')}
-        >
-          <Ionicons
-            name="camera-outline"
-            size={24}
-            color={theme.primary}
-          />
+        <TouchableOpacity onPress={() => router.push('/(app)/expenses/scan')}>
+          <Ionicons name="camera-outline" size={24} color={theme.primary} />
         </TouchableOpacity>
       </View>
     );

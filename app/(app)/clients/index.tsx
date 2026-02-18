@@ -26,14 +26,8 @@ const ClientsScreen = () => {
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <TouchableOpacity
-          onPress={() => router.push('/(app)/clients/create')}
-        >
-          <Ionicons
-            name="add-circle-outline"
-            size={24}
-            color={theme.primary}
-          />
+        <TouchableOpacity onPress={() => router.push('/(app)/clients/create')}>
+          <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
         </TouchableOpacity>
       </View>
     );

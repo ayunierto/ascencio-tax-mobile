@@ -29,11 +29,7 @@ const CompaniesScreen = () => {
         <TouchableOpacity
           onPress={() => router.push('/(app)/companies/create')}
         >
-          <Ionicons
-            name="add-circle-outline"
-            size={24}
-            color={theme.primary}
-          />
+          <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
         </TouchableOpacity>
       </View>
     );
