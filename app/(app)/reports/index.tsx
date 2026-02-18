@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonIcon, ButtonText, theme } from '@/components/ui';
+import { theme } from '@/components/ui';
 import { DateRangePicker } from '@/components/reports/DateRangePicker';
 import { useGenerateReport } from '@/core/reports/hooks/useGenerateReport';
 import { toast } from 'sonner-native';
@@ -60,21 +60,20 @@ const ReportsScreen = () => {
       ),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 10 }}>
-          <Button
-            size="icon"
-            variant="ghost"
+          <TouchableOpacity
             onPress={() => handleGenerate(startDate, endDate)}
             disabled={generateMutation.isPending}
           >
-            <ButtonIcon
+            <Ionicons
               name={
                 generateMutation.isPending
                   ? 'hourglass-outline'
                   : 'download-outline'
               }
-              style={{ color: theme.primary }}
+              size={24}
+              color={theme.primary}
             />
-          </Button>
+          </TouchableOpacity>
         </View>
       ),
     });

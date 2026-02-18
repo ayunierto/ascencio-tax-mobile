@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -95,15 +96,12 @@ export default function AccountScreen() {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 16 }}>
-          <Button
-            variant="ghost"
-            size="icon"
-            isLoading={updateProfile.isPending}
+          <TouchableOpacity
             onPress={handleSubmit(handleUpdateProfile)}
             disabled={updateProfile.isPending}
           >
-            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
-          </Button>
+            <Ionicons name="save-outline" size={24} color={theme.primary} />
+          </TouchableOpacity>
         </View>
       ),
     });

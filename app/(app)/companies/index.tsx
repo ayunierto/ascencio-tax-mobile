@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
 import { CompaniesList } from '@/core/accounting/companies/components';
-import { Button, ButtonIcon } from '@/components/ui';
 
 const CompaniesScreen = () => {
   const navigation = useNavigation();
@@ -27,16 +26,15 @@ const CompaniesScreen = () => {
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <Button
-          size="icon"
-          variant="ghost"
+        <TouchableOpacity
           onPress={() => router.push('/(app)/companies/create')}
         >
-          <ButtonIcon
+          <Ionicons
             name="add-circle-outline"
-            style={{ color: theme.primary, fontSize: 24 }}
+            size={24}
+            color={theme.primary}
           />
-        </Button>
+        </TouchableOpacity>
       </View>
     );
 

@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
 import { InvoicesList } from '@/core/accounting/invoices';
-import { Button, ButtonIcon } from '@/components/ui';
 
 export default function InvoicesIndexScreen() {
   const navigation = useNavigation();
@@ -27,16 +26,15 @@ export default function InvoicesIndexScreen() {
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <Button
-          size="icon"
-          variant="ghost"
+        <TouchableOpacity
           onPress={() => router.push('/(app)/invoices/create')}
         >
-          <ButtonIcon
+          <Ionicons
             name="add-circle-outline"
-            style={{ color: theme.primary, fontSize: 24 }}
+            size={24}
+            color={theme.primary}
           />
-        </Button>
+        </TouchableOpacity>
       </View>
     );
 

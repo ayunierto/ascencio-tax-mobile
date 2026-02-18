@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
 import ExpensesList from '@/core/accounting/expenses/components/ExpensesList';
-import { Button, ButtonIcon } from '@/components/ui';
 
 const ExpensesScreen = () => {
   const navigation = useNavigation();
@@ -27,26 +26,24 @@ const ExpensesScreen = () => {
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <Button
-          size="icon"
-          variant="ghost"
+        <TouchableOpacity
           onPress={() => router.push('/(app)/expenses/create')}
         >
-          <ButtonIcon
+          <Ionicons
             name="add-circle-outline"
-            style={{ color: theme.primary, fontSize: 24 }}
+            size={24}
+            color={theme.primary}
           />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => router.push('/(app)/expenses/scan')}
         >
-          <ButtonIcon
+          <Ionicons
             name="camera-outline"
-            style={{ color: theme.primary, fontSize: 24 }}
+            size={24}
+            color={theme.primary}
           />
-        </Button>
+        </TouchableOpacity>
       </View>
     );
 
