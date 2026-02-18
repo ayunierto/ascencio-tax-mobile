@@ -34,7 +34,9 @@ const ReportsScreen = () => {
           onError: (err: any) => {
             console.error('Error generating report:', err);
             toast.error(
-              err?.response?.data?.message || err?.message || t('errorGeneratingReport'),
+              err?.response?.data?.message ||
+                err?.message ||
+                t('errorGeneratingReport'),
             );
           },
         },
@@ -65,7 +67,11 @@ const ReportsScreen = () => {
             disabled={generateMutation.isPending}
           >
             <ButtonIcon
-              name={generateMutation.isPending ? 'hourglass-outline' : 'download-outline'}
+              name={
+                generateMutation.isPending
+                  ? 'hourglass-outline'
+                  : 'download-outline'
+              }
               style={{ color: theme.primary }}
             />
           </Button>

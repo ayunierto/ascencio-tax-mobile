@@ -141,7 +141,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   const onSubmit = async (data: CreateExpenseInput) => {
     // Validate and transform data through schema (converts strings to numbers)
     const validatedData = createExpenseSchema.parse(data);
-    
+
     if (validatedData.id && validatedData.id !== 'new') {
       await updateMutation.mutateAsync(validatedData, {
         onSuccess: () => {

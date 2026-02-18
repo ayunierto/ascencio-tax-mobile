@@ -8,7 +8,7 @@ import {
 /**
  * Hook to generate and download a PDF report.
  * Uses the new generateReportFile action that downloads, saves, and shares the PDF.
- * 
+ *
  * @returns Mutation object with mutate, mutateAsync, isPending, isSuccess, isError, etc.
  */
 export const useGenerateReport = () => {
@@ -18,8 +18,7 @@ export const useGenerateReport = () => {
     GenerateReportPayload,
     unknown
   >({
-    mutationFn: (payload: GenerateReportPayload) =>
-      generateReportFile(payload),
+    mutationFn: (payload: GenerateReportPayload) => generateReportFile(payload),
   });
 };
 

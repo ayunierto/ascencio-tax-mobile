@@ -16,7 +16,7 @@ export interface GenerateReportResponse {
 /**
  * Generate a PDF report for the specified date range.
  * Downloads the PDF, saves it to cache, and opens sharing dialog.
- * 
+ *
  * @param payload - Report generation parameters (startDate, endDate, reportType)
  * @returns Promise with success status and file path
  */
