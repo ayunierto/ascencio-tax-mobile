@@ -14,7 +14,6 @@ import ExpenseForm from '@/core/accounting/expenses/components/ExpenseForm/Expen
 import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStore';
 import { EmptyContent } from '@/core/components';
 import { useExpense } from '@/core/accounting/expenses/hooks';
-import { DateTime } from 'luxon';
 
 export default function EditExpenseScreen() {
   const { t } = useTranslation();

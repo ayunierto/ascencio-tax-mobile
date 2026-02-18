@@ -152,6 +152,21 @@ export default function AppLayout() {
           ),
         }}
       />
+
+      <Drawer.Screen
+        name="reports"
+        options={{
+          drawerLabel: t('reports'),
+          title: t('reports'),
+          drawerIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'bar-chart' : 'bar-chart-outline'}
+              size={size}
+              color={theme.foreground}
+            />
+          ),
+        }}
+      />
     </Drawer>
   );
 }

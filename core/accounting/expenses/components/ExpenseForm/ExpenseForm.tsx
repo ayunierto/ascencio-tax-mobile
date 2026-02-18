@@ -26,7 +26,7 @@ import { getErrorMessage } from '@/utils/getErrorMessage';
 import { DeleteConfirmationDialog, FormViewContainer } from '@/core/components';
 import { useReceiptImageMutation } from '@/core/accounting/expenses/hooks/useReceiptImageMutation';
 import {
-  CreateExpenseRequest,
+  CreateExpenseInput,
   createExpenseSchema,
   Expense,
   Subcategory,
@@ -61,7 +61,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     setValue,
     reset,
     watch,
-  } = useForm<CreateExpenseRequest>({
+  } = useForm<CreateExpenseInput>({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       id: expense.id,
@@ -138,9 +138,12 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
     handleScanReceipt(fullImageUrl);
   }, [watchedImageUrl, expense.imageUrl]);
 
-  const onSubmit = async (data: CreateExpenseRequest) => {
-    if (data.id && data.id !== 'new') {
-      await updateMutation.mutateAsync(data, {
+  const onSubmit = async (data: CreateExpenseInput) => {
+    // Validate and transform data through schema (converts strings to numbers)
+    const validatedData = createExpenseSchema.parse(data);
+    
+    if (validatedData.id && validatedData.id !== 'new') {
+      await updateMutation.mutateAsync(validatedData, {
         onSuccess: () => {
           // Mark image as saved to prevent cleanup
           imageUploaderRef.current?.markAsSaved();
@@ -153,7 +156,7 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
       return;
     }
 
-    await createMutation.mutateAsync(data, {
+    await createMutation.mutateAsync(validatedData, {
       onSuccess: () => {
         // Mark image as saved to prevent cleanup
         imageUploaderRef.current?.markAsSaved();
@@ -162,11 +165,8 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
             ? t('expenseCreatedSuccessfully')
             : t('expenseUpdatedSuccessfully'),
         );
-        reset();
-        // Navigation handled by useExpenseMutation for new expenses
-        if (expense.id !== 'new') {
-          setTimeout(() => router.back(), 500);
-        }
+        // Navigate back to expenses list after successful creation
+        setTimeout(() => router.back(), 500);
       },
       onError: (error) => {
         toast.error(error.response?.data.message || error.message);

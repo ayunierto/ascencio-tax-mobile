@@ -577,4 +577,18 @@
   "getItOn": "Get it on",
 
   "ourTeam": "Our Team"
+,
+  "reports": "Reports",
+  "report": "Report",
+  "myReports": "My Reports",
+  "newReport": "New Report",
+  "reportDetails": "Report Details",
+  "selectDateRange": "Select date range",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "generateReport": "Generate Report",
+  "reportRequested": "Report requested",
+  "reportGeneratedSuccessfully": "Report generated successfully",
+  "errorGeneratingReport": "Error generating report",
+  "invalidDateRange": "Invalid date range"
 }
