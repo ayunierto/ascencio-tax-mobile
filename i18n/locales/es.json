@@ -593,5 +593,8 @@
   "availableOnThe": "Disponible en",
   "getItOn": "Consíguelo en",
 
-  "ourTeam": "Nuestro equipo"
+  "ourTeam": "Nuestro equipo",
+  "recentReports": "Informes recientes",
+  "noReportsYet": "No hay informes aún",
+  "generateFirstReport": "Genera tu primer informe para verlo aquí"
 }

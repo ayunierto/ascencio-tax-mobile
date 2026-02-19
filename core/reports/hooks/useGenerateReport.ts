@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   generateReportFile,
   GenerateReportPayload,
@@ -12,6 +12,8 @@ import {
  * @returns Mutation object with mutate, mutateAsync, isPending, isSuccess, isError, etc.
  */
 export const useGenerateReport = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<
     GenerateReportResponse,
     Error,
@@ -19,6 +21,10 @@ export const useGenerateReport = () => {
     unknown
   >({
     mutationFn: (payload: GenerateReportPayload) => generateReportFile(payload),
+    onSuccess: () => {
+      // Invalidate reports query to refetch the list
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+    },
   });
 };
 

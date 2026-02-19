@@ -595,5 +595,8 @@
   "reportRequested": "Report requested",
   "reportGeneratedSuccessfully": "Report generated successfully",
   "errorGeneratingReport": "Error generating report",
-  "invalidDateRange": "Invalid date range"
+  "invalidDateRange": "Invalid date range",
+  "recentReports": "Recent Reports",
+  "noReportsYet": "No reports yet",
+  "generateFirstReport": "Generate your first report to see it here"
 }
