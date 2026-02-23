@@ -7,6 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/components/ui/theme';
 import { InvoicesList } from '@/core/accounting/invoices';
 import { HeaderButton } from '@react-navigation/elements';
+import { PremiumGuard } from '@/core/subscription';
+import { PremiumFeature } from '@ascencio/shared';
+import { TrialBanner } from '@/components/subscription/TrialBanner';
 
 export default function InvoicesIndexScreen() {
   const navigation = useNavigation();
@@ -47,5 +50,15 @@ export default function InvoicesIndexScreen() {
     };
   }, [navigation]);
 
-  return <InvoicesList />;
+  return (
+    <PremiumGuard feature={PremiumFeature.INVOICES}>
+      <View style={{ flex: 1 }}>
+        <TrialBanner 
+          feature={PremiumFeature.INVOICES} 
+          style={{ marginHorizontal: 16, marginTop: 8 }}
+        />
+        <InvoicesList />
+      </View>
+    </PremiumGuard>
+  );
 }

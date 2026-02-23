@@ -3,11 +3,15 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import Purchases from 'react-native-purchases';
 
 import { CustomTheme } from '@/theme/CustomTheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Toaster } from 'sonner-native';
+import { SubscriptionProvider } from '@/core/subscription/SubscriptionContext';
 
 import '../i18n';
 
@@ -26,34 +30,52 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
+// TODO: Replace with your actual RevenueCat API keys from the dashboard
+const REVENUE_CAT_IOS_KEY = 'appl_YOUR_IOS_KEY_HERE';
+const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_ANDROID_KEY_HERE';
+
 export default function RootLayout() {
+  useEffect(() => {
+    // Initialize RevenueCat
+    if (Platform.OS === 'ios') {
+      Purchases.configure({ apiKey: REVENUE_CAT_IOS_KEY });
+    } else if (Platform.OS === 'android') {
+      Purchases.configure({ apiKey: REVENUE_CAT_ANDROID_KEY });
+    }
+
+    // Optional: Set log level for debugging
+    // Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={CustomTheme}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            {/* Root index - handles initial routing logic */}
-            <Stack.Screen name="index" options={{ headerShown: false }} />
+        <SubscriptionProvider>
+          <ThemeProvider value={CustomTheme}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              {/* Root index - handles initial routing logic */}
+              <Stack.Screen name="index" options={{ headerShown: false }} />
 
-            {/* Auth routes - accessible without authentication */}
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              {/* Auth routes - accessible without authentication */}
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
 
-            {/* Public routes - accessible without authentication */}
-            <Stack.Screen name="(public)" options={{ headerShown: false }} />
+              {/* Public routes - accessible without authentication */}
+              <Stack.Screen name="(public)" options={{ headerShown: false }} />
 
-            {/* Protected routes - requires authentication */}
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack>
+              {/* Protected routes - requires authentication */}
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack>
 
-          <StatusBar style="light" />
+            <StatusBar style="light" />
 
-          <Toast />
-          <Toaster />
-        </ThemeProvider>
+            <Toast />
+            <Toaster />
+          </ThemeProvider>
+        </SubscriptionProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

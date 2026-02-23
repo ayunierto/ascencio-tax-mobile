@@ -10,6 +10,8 @@ import { ReportCardSkeletonList } from '@/components/reports/ReportCardSkeleton'
 import { useGenerateReport, useGetReports } from '@/core/reports';
 import { toast } from 'sonner-native';
 import { Ionicons } from '@expo/vector-icons';
+import { PremiumGuard } from '@/components/subscription/PremiumGuard';
+import { PremiumFeature } from '@ascencio/shared';
 
 const ReportsScreen = () => {
   const navigation: any = useNavigation();
@@ -62,42 +64,43 @@ const ReportsScreen = () => {
   }, [navigation, t]);
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Date Range Picker */}
-      <View style={styles.pickerSection}>
-        <DateRangePicker
-          startISO={startDate}
-          endISO={endDate}
-          onChange={(s, e) => {
-            setStartDate(s);
-            setEndDate(e);
-          }}
-          onGenerate={(s, e) => handleGenerate(s, e)}
-        />
-      </View>
-
-      {/* Divider */}
-      <View style={styles.divider} />
-
-      {/* History Section */}
-      <View style={styles.historySection}>
-        <View style={styles.historyHeader}>
-          <ThemedText style={styles.historyTitle}>
-            {t('recentReports')}
-          </ThemedText>
-          <TouchableOpacity onPress={() => refetch()} disabled={isRefetching}>
-            <Ionicons
-              name={isRefetching ? 'sync' : 'refresh'}
-              size={20}
-              color={theme.primary}
-            />
-          </TouchableOpacity>
+    <PremiumGuard feature={PremiumFeature.REPORTS}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Date Range Picker */}
+        <View style={styles.pickerSection}>
+          <DateRangePicker
+            startISO={startDate}
+            endISO={endDate}
+            onChange={(s, e) => {
+              setStartDate(s);
+              setEndDate(e);
+            }}
+            onGenerate={(s, e) => handleGenerate(s, e)}
+          />
         </View>
 
-        {isLoading && !isRefetching ? (
-          <ReportCardSkeletonList count={3} />
-        ) : reports && reports.length > 0 ? (
-          <View style={styles.reportsList}>
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* History Section */}
+        <View style={styles.historySection}>
+          <View style={styles.historyHeader}>
+            <ThemedText style={styles.historyTitle}>
+              {t('recentReports')}
+            </ThemedText>
+            <TouchableOpacity onPress={() => refetch()} disabled={isRefetching}>
+              <Ionicons
+                name={isRefetching ? 'sync' : 'refresh'}
+                size={20}
+                color={theme.primary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {isLoading && !isRefetching ? (
+            <ReportCardSkeletonList count={3} />
+          ) : reports && reports.length > 0 ? (
+            <View style={styles.reportsList}>
             {reports.map((item) => (
               <ReportCard key={item.id} report={item} />
             ))}
@@ -119,6 +122,7 @@ const ReportsScreen = () => {
         )}
       </View>
     </ScrollView>
+    </PremiumGuard>
   );
 };
 
