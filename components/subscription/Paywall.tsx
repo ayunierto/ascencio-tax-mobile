@@ -6,18 +6,18 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { PremiumFeature, TRIAL_LIMITS } from '@ascencio/shared';
-import { theme } from '@/components/ui';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
 
 interface PaywallProps {
   feature?: PremiumFeature;
@@ -85,80 +85,77 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
     },
   ];
 
-  const Content = (
+  return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
+      {/* Header */}
       <View style={styles.header}>
         {isModal && onClose && (
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={28} color={theme.foreground} />
+            <Ionicons name="close" size={24} color={theme.foreground} />
           </TouchableOpacity>
         )}
 
-        <View style={styles.lockIconContainer}>
-          <LinearGradient
-            colors={[theme.primary, theme.secondary]}
-            style={styles.lockIconGradient}
-          >
-            <Ionicons name="lock-closed" size={40} color="white" />
-          </LinearGradient>
-        </View>
-
-        <Text style={styles.title}>
+        <Ionicons name="diamond" size={48} color={theme.primary} />
+        <ThemedText style={styles.title}>
           {feature ? t('unlockFeature', { feature: getFeatureName(feature) }) : t('unlockPremiumFeatures')}
-        </Text>
-        <Text style={styles.subtitle}>{t('upgradeToAccessAllFeatures')}</Text>
+        </ThemedText>
+        <ThemedText style={styles.subtitle}>{t('upgradeToAccessAllFeatures')}</ThemedText>
       </View>
 
-      <View style={styles.trialBanner}>
-        <Ionicons name="gift" size={24} color={theme.primary} />
-        <View style={styles.trialTextContainer}>
-          <Text style={styles.trialTitle}>{t('startFreeTrial')}</Text>
-          <Text style={styles.trialSubtitle}>
-            {t('trialDaysOffer', { days: TRIAL_LIMITS.TRIAL_DAYS })}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.benefitsContainer}>
-        <Text style={styles.benefitsTitle}>{t('whatYouGet')}</Text>
-
-        {benefits.map((benefit, index) => (
-          <View key={index} style={styles.benefitItem}>
-            <View style={styles.benefitIconContainer}>
-              <Ionicons name={benefit.icon} size={24} color={theme.primary} />
-            </View>
-            <View style={styles.benefitTextContainer}>
-              <Text style={styles.benefitTitle}>{benefit.title}</Text>
-              <Text style={styles.benefitDescription}>{benefit.description}</Text>
+      {/* Trial Banner */}
+      <Card style={styles.trialCard}>
+        <CardContent>
+          <View style={styles.trialBanner}>
+            <Ionicons name="gift" size={28} color={theme.primary} />
+            <View style={styles.trialTextContainer}>
+              <ThemedText style={styles.trialTitle}>{t('startFreeTrial')}</ThemedText>
+              <ThemedText style={styles.trialSubtitle}>
+                {t('trialDaysOffer', { days: TRIAL_LIMITS.TRIAL_DAYS })}
+              </ThemedText>
             </View>
           </View>
-        ))}
-      </View>
+        </CardContent>
+      </Card>
 
-      <TouchableOpacity style={styles.ctaButton} onPress={handleViewPlans} activeOpacity={0.8}>
-        <LinearGradient
-          colors={[theme.primary, theme.secondary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.ctaGradient}
-        >
-          <Ionicons name="sparkles" size={20} color="white" />
-          <Text style={styles.ctaText}>{t('viewPlans')}</Text>
-          <Ionicons name="arrow-forward" size={20} color="white" />
-        </LinearGradient>
-      </TouchableOpacity>
+      {/* Benefits */}
+      <ThemedText style={styles.sectionTitle}>{t('whatYouGet')}</ThemedText>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>{t('cancelAnytime')} • {t('securePayment')}</Text>
-      </View>
+      <Card style={styles.card}>
+        <CardContent>
+          {benefits.map((benefit, index) => (
+            <View key={index} style={styles.benefitItem}>
+              <View style={styles.benefitIconContainer}>
+                <Ionicons name={benefit.icon} size={24} color={theme.primary} />
+              </View>
+              <View style={styles.benefitTextContainer}>
+                <ThemedText style={styles.benefitTitle}>{benefit.title}</ThemedText>
+                <ThemedText style={styles.benefitDescription}>{benefit.description}</ThemedText>
+              </View>
+            </View>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* CTA Button */}
+      <Button
+        fullWidth
+        onPress={handleViewPlans}
+        style={styles.ctaButton}
+      >
+        <ButtonIcon name="sparkles" />
+        <ButtonText>{t('viewPlans')}</ButtonText>
+      </Button>
+
+      {/* Footer */}
+      <ThemedText style={styles.footerText}>
+        {t('cancelAnytime')} • {t('securePayment')}
+      </ThemedText>
     </ScrollView>
   );
-
-  return Content;
 }
 
 const styles = StyleSheet.create({
@@ -167,12 +164,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   contentContainer: {
-    padding: 20,
+    padding: 16,
     paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
   closeButton: {
     position: 'absolute',
@@ -181,58 +178,45 @@ const styles = StyleSheet.create({
     padding: 8,
     zIndex: 1,
   },
-  lockIconContainer: {
-    marginBottom: 20,
-  },
-  lockIconGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: theme.foreground,
     textAlign: 'center',
-    marginBottom: 10,
+    marginTop: 16,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: theme.mutedForeground,
     textAlign: 'center',
   },
+  trialCard: {
+    marginBottom: 24,
+  },
   trialBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.accent,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 30,
+    gap: 16,
   },
   trialTextContainer: {
-    marginLeft: 12,
     flex: 1,
   },
   trialTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: theme.foreground,
     marginBottom: 4,
   },
   trialSubtitle: {
     fontSize: 14,
     color: theme.mutedForeground,
   },
-  benefitsContainer: {
-    marginBottom: 30,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
   },
-  benefitsTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.foreground,
-    marginBottom: 20,
+  card: {
+    marginBottom: 24,
   },
   benefitItem: {
     flexDirection: 'row',
@@ -254,7 +238,6 @@ const styles = StyleSheet.create({
   benefitTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: theme.foreground,
     marginBottom: 4,
   },
   benefitDescription: {
@@ -262,29 +245,13 @@ const styles = StyleSheet.create({
     color: theme.mutedForeground,
   },
   ctaButton: {
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  ctaGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    gap: 10,
-  },
-  ctaText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  footer: {
-    alignItems: 'center',
-    paddingTop: 20,
+    marginBottom: 24,
   },
   footerText: {
-    fontSize: 12,
+    fontSize: 13,
     color: theme.mutedForeground,
     textAlign: 'center',
+    lineHeight: 20,
+    fontStyle: 'italic',
   },
 });

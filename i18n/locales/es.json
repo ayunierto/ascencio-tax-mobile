@@ -632,5 +632,6 @@
   "noSubscriptionFound": "No se encontró suscripción",
   "noActiveSubscriptionToRestore": "No hay suscripción activa para restaurar",
   "couldNotCompletePurchase": "No se pudo completar la compra",
-  "couldNotRestorePurchases": "No se pudieron restaurar las compras"
+  "couldNotRestorePurchases": "No se pudieron restaurar las compras",
+  "subscription": "Suscripción"
 }

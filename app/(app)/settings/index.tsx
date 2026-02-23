@@ -111,7 +111,7 @@ export default function ProfileIndexScreen() {
               <ListItem
                 icon="diamond-outline"
                 label={t('subscriptions')}
-                onPress={() => router.push('/(app)/settings/subscriptions')}
+                onPress={() => router.push('/(app)/subscription')}
               />
             </CardContent>
           </Card>

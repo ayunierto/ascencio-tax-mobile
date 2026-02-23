@@ -4,13 +4,14 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSubscription } from '@/core/subscription/SubscriptionContext';
-import { theme } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui/Card';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
 import { PremiumFeature, getRemainingItems } from '@ascencio/shared';
 
 interface TrialBannerProps {
@@ -75,59 +76,47 @@ export function TrialBanner({ feature, style }: TrialBannerProps) {
   };
 
   return (
-    <TouchableOpacity
-      onPress={handleUpgrade}
-      activeOpacity={0.8}
-      style={[styles.container, style]}
-    >
-      <LinearGradient
-        colors={[theme.primary + '20', theme.secondary + '20']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.gradient}
-      >
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name={subscriptionStatus.isInTrial ? 'time-outline' : 'lock-closed'}
-              size={24}
-              color={theme.primary}
-            />
-          </View>
+    <Card style={[styles.container, style]}>
+      <CardContent>
+        <TouchableOpacity
+          onPress={handleUpgrade}
+          activeOpacity={0.8}
+        >
+          <View style={styles.content}>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name={subscriptionStatus.isInTrial ? 'time-outline' : 'lock-closed'}
+                size={24}
+                color={theme.primary}
+              />
+            </View>
 
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>
-              {subscriptionStatus.isInTrial ? t('freeTrial') : t('limitedAccess')}
-            </Text>
-            <Text style={styles.subtitle}>
-              {subscriptionStatus.isInTrial
-                ? `${getDaysRemainingText()} • ${feature ? getRemainingText() : ''}`
-                : t('upgradeForUnlimitedAccess')}
-            </Text>
-          </View>
+            <View style={styles.textContainer}>
+              <ThemedText style={styles.title}>
+                {subscriptionStatus.isInTrial ? t('freeTrial') : t('limitedAccess')}
+              </ThemedText>
+              <ThemedText style={styles.subtitle}>
+                {subscriptionStatus.isInTrial
+                  ? `${getDaysRemainingText()} • ${feature ? getRemainingText() : ''}`
+                  : t('upgradeForUnlimitedAccess')}
+              </ThemedText>
+            </View>
 
-          <Ionicons name="chevron-forward" size={20} color={theme.primary} />
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
+            <Ionicons name="chevron-forward" size={20} color={theme.primary} />
+          </View>
+        </TouchableOpacity>
+      </CardContent>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
-    overflow: 'hidden',
     marginVertical: 8,
-  },
-  gradient: {
-    padding: 1,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.card,
-    padding: 12,
-    borderRadius: 11,
   },
   iconContainer: {
     width: 40,
@@ -144,7 +133,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: theme.foreground,
     marginBottom: 2,
   },
   subtitle: {

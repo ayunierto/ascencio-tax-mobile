@@ -6,89 +6,26 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { PurchasesPackage } from 'react-native-purchases';
 import { useSubscription } from '@/core/subscription/SubscriptionContext';
-import { theme } from '@/components/ui';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
 import { TRIAL_LIMITS } from '@ascencio/shared';
-
-interface PlanCardProps {
-  title: string;
-  price: string;
-  period: string;
-  features: string[];
-  isPopular?: boolean;
-  onPress: () => void;
-  isLoading?: boolean;
-}
-
-function PlanCard({
-  title,
-  price,
-  period,
-  features,
-  isPopular,
-  onPress,
-  isLoading,
-}: PlanCardProps) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      disabled={isLoading}
-      style={[styles.planCard, isPopular && styles.popularCard]}
-    >
-      {isPopular && (
-        <View style={styles.popularBadge}>
-          <Text style={styles.popularText}>MÁS POPULAR</Text>
-        </View>
-      )}
-
-      <Text style={styles.planTitle}>{title}</Text>
-
-      <View style={styles.priceContainer}>
-        <Text style={styles.price}>{price}</Text>
-        <Text style={styles.period}>/{period}</Text>
-      </View>
-
-      <View style={styles.featuresContainer}>
-        {features.map((feature, index) => (
-          <View key={index} style={styles.featureRow}>
-            <Ionicons name="checkmark-circle" size={20} color="#4ade80" />
-            <Text style={styles.featureText}>{feature}</Text>
-          </View>
-        ))}
-      </View>
-
-      <LinearGradient
-        colors={isPopular ? [theme.primary, theme.secondary] : ['#4a5568', '#2d3748']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.selectButton}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.selectButtonText}>Seleccionar Plan</Text>
-        )}
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-}
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
-  const { offerings, purchasePackage, restorePurchases, subscriptionStatus } = useSubscription();
+  const { offerings, purchasePackage, restorePurchases } = useSubscription();
   const [purchasingPackageId, setPurchasingPackageId] = useState<string | null>(null);
   const [isRestoring, setIsRestoring] = useState(false);
 
@@ -109,7 +46,7 @@ export default function SubscriptionScreen() {
           ]
         );
       }
-    } catch (error) {
+    } catch {
       Alert.alert(t('error'), t('couldNotCompletePurchase'));
     } finally {
       setPurchasingPackageId(null);
@@ -134,7 +71,7 @@ export default function SubscriptionScreen() {
   };
 
   const benefits = [
-    { icon: 'infinite' as const, text: t('unlimitedCompanies') },
+    { icon: 'business' as const, text: t('unlimitedCompanies') },
     { icon: 'people' as const, text: t('unlimitedClients') },
     { icon: 'cash' as const, text: t('unlimitedExpenses') },
     { icon: 'document' as const, text: t('unlimitedInvoices') },
@@ -143,186 +80,201 @@ export default function SubscriptionScreen() {
   ];
 
   return (
-    <LinearGradient colors={[theme.background, theme.card]} style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={28} color={theme.foreground} />
-          </TouchableOpacity>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Header */}
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color={theme.foreground} />
+      </TouchableOpacity>
 
-          <Text style={styles.title}>Desbloquea Todo el Potencial</Text>
-          <Text style={styles.subtitle}>
-            Elige el plan perfecto para tu negocio
-          </Text>
-        </View>
+      <View style={styles.header}>
+        <Ionicons name="diamond" size={48} color={theme.primary} />
+        <ThemedText style={styles.title}>{t('unlockPremiumFeatures')}</ThemedText>
+        <ThemedText style={styles.subtitle}>
+          {t('upgradeToAccessAllFeatures')}
+        </ThemedText>
+      </View>
 
-        {/* Trial Banner */}
-        <View style={styles.trialBanner}>
-          <Ionicons name="gift" size={32} color={theme.primary} />
-          <View style={styles.trialTextContainer}>
-            <Text style={styles.trialTitle}>
-              {TRIAL_LIMITS.TRIAL_DAYS} Días de Prueba Gratis
-            </Text>
-            <Text style={styles.trialSubtitle}>
-              Prueba todas las funciones premium sin compromiso
-            </Text>
-          </View>
-        </View>
-
-        {/* Benefits */}
-        <View style={styles.benefitsContainer}>
-          <Text style={styles.benefitsTitle}>Lo que obtendrás:</Text>
-          <View style={styles.benefitsList}>
-            {benefits.map((benefit, index) => (
-              <View key={index} style={styles.benefitItem}>
-                <Ionicons name={benefit.icon} size={24} color="#4ade80" />
-                <Text style={styles.benefitText}>{benefit.text}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Plans */}
-        <View style={styles.plansContainer}>
-          {offerings?.current?.availablePackages.map((pkg, index) => {
-            const isPopular = pkg.packageType === 'ANNUAL';
-            const isLoading = purchasingPackageId === pkg.identifier;
-
-            return (
-              <PlanCard
-                key={pkg.identifier}
-                title={pkg.product.title}
-                price={pkg.product.priceString}
-                period={pkg.packageType === 'ANNUAL' ? 'año' : 'mes'}
-                features={[
-                  'Empresas ilimitadas',
-                  'Clientes ilimitados',
-                  'Gastos ilimitados',
-                  'Facturas ilimitadas',
-                  'Reportes avanzados',
-                  'Soporte prioritario',
-                ]}
-                isPopular={isPopular}
-                onPress={() => handlePurchase(pkg)}
-                isLoading={isLoading}
-              />
-            );
-          })}
-
-          {!offerings?.current && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={theme.primary} />
-              <Text style={styles.loadingText}>Cargando planes...</Text>
+      {/* Trial Banner */}
+      <Card style={styles.trialCard}>
+        <CardContent>
+          <View style={styles.trialBanner}>
+            <Ionicons name="gift" size={28} color={theme.primary} />
+            <View style={styles.trialTextContainer}>
+              <ThemedText style={styles.trialTitle}>
+                {TRIAL_LIMITS.TRIAL_DAYS} {t('freeTrial')}
+              </ThemedText>
+              <ThemedText style={styles.trialSubtitle}>
+                {t('trialDaysOffer', { days: TRIAL_LIMITS.TRIAL_DAYS })}
+              </ThemedText>
             </View>
-          )}
-        </View>
+          </View>
+        </CardContent>
+      </Card>
 
-        {/* Restore Purchases */}
-        <TouchableOpacity
-          style={styles.restoreButton}
-          onPress={handleRestore}
-          disabled={isRestoring}
-        >
-          {isRestoring ? (
-            <ActivityIndicator color={theme.primary} />
-          ) : (
-            <Text style={styles.restoreText}>Restaurar Compras</Text>
-          )}
-        </TouchableOpacity>
+      {/* Benefits Section */}
+      <ThemedText style={styles.sectionTitle}>{t('whatYouGet')}</ThemedText>
+      
+      <Card style={styles.card}>
+        <CardContent>
+          {benefits.map((benefit, index) => (
+            <View key={index} style={styles.featureItem}>
+              <Ionicons name={benefit.icon} size={24} color={theme.primary} />
+              <ThemedText style={styles.featureText}>{benefit.text}</ThemedText>
+            </View>
+          ))}
+        </CardContent>
+      </Card>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Cancela en cualquier momento • Pago seguro • Acceso inmediato
-          </Text>
+      {/* Plans */}
+      {offerings?.current?.availablePackages.map((pkg, index) => {
+        const isPopular = pkg.packageType === 'ANNUAL';
+        const isLoading = purchasingPackageId === pkg.identifier;
+        
+        return (
+          <Card key={pkg.identifier} style={[styles.planCard, isPopular && styles.popularCard]}>
+            <CardContent>
+              {isPopular && (
+                <View style={styles.popularBadge}>
+                  <ThemedText style={styles.popularText}>{t('mostPopular').toUpperCase()}</ThemedText>
+                </View>
+              )}
+
+              <View style={styles.planHeader}>
+                <ThemedText style={styles.planTitle}>{pkg.product.title}</ThemedText>
+                <View style={styles.priceContainer}>
+                  <ThemedText style={styles.price}>{pkg.product.priceString}</ThemedText>
+                  <ThemedText style={styles.period}>
+                    /{pkg.packageType === 'ANNUAL' ? t('perYear') : t('perMonth')}
+                  </ThemedText>
+                </View>
+              </View>
+
+              <Button
+                fullWidth
+                onPress={() => handlePurchase(pkg)}
+                disabled={isLoading}
+                style={styles.selectButton}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <>
+                    <ButtonIcon name="checkmark-circle" />
+                    <ButtonText>{t('selectPlan')}</ButtonText>
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {!offerings?.current && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <ThemedText style={styles.loadingText}>Cargando planes...</ThemedText>
         </View>
-      </ScrollView>
-    </LinearGradient>
+      )}
+
+      {/* Restore Purchases */}
+      <Button
+        variant="outline"
+        fullWidth
+        onPress={handleRestore}
+        disabled={isRestoring}
+        style={styles.restoreButton}
+      >
+        {isRestoring ? (
+          <ActivityIndicator color={theme.primary} />
+        ) : (
+          <>
+            <ButtonIcon name="refresh" />
+            <ButtonText>{t('restorePurchases')}</ButtonText>
+          </>
+        )}
+      </Button>
+
+      {/* Footer */}
+      <ThemedText style={styles.footerText}>
+        {t('cancelAnytime')} • {t('securePayment')} • {t('instantAccess')}
+      </ThemedText>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.background,
   },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+  content: {
+    padding: 16,
+    paddingBottom: 40,
   },
   backButton: {
-    marginBottom: 20,
+    marginBottom: 16,
+    alignSelf: 'flex-start',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: theme.foreground,
-    marginBottom: 10,
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: theme.mutedForeground,
+    textAlign: 'center',
+  },
+  trialCard: {
+    marginBottom: 24,
   },
   trialBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.accent,
-    marginHorizontal: 20,
-    marginBottom: 30,
-    padding: 20,
-    borderRadius: 16,
+    gap: 16,
   },
   trialTextContainer: {
-    marginLeft: 16,
     flex: 1,
   },
   trialTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: theme.foreground,
     marginBottom: 4,
   },
   trialSubtitle: {
     fontSize: 14,
     color: theme.mutedForeground,
   },
-  benefitsContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 30,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
   },
-  benefitsTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.foreground,
-    marginBottom: 15,
+  card: {
+    marginBottom: 24,
   },
-  benefitsList: {
-    gap: 12,
-  },
-  benefitItem: {
+  featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    marginBottom: 16,
   },
-  benefitText: {
-    fontSize: 16,
-    color: theme.foreground,
-  },
-  plansContainer: {
-    paddingHorizontal: 20,
-    gap: 20,
-    marginBottom: 20,
+  featureText: {
+    fontSize: 15,
+    flex: 1,
   },
   planCard: {
-    backgroundColor: theme.card,
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: theme.border,
+    marginBottom: 16,
   },
   popularCard: {
     borderColor: theme.primary,
     borderWidth: 2,
-    transform: [{ scale: 1.02 }],
   },
   popularBadge: {
     position: 'absolute',
@@ -332,56 +284,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
+    zIndex: 1,
   },
   popularText: {
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
   },
+  planHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   planTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: theme.foreground,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 20,
   },
   price: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: theme.foreground,
   },
   period: {
-    fontSize: 18,
+    fontSize: 16,
     color: theme.mutedForeground,
-    marginLeft: 5,
-  },
-  featuresContainer: {
-    gap: 10,
-    marginBottom: 20,
-  },
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  featureText: {
-    fontSize: 14,
-    color: theme.foreground,
-    flex: 1,
+    marginLeft: 4,
   },
   selectButton: {
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  selectButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    marginTop: 8,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -393,24 +326,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   restoreButton: {
-    alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginBottom: 20,
-  },
-  restoreText: {
-    color: theme.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    paddingVertical: 30,
-    alignItems: 'center',
-    paddingHorizontal: 20,
+    marginBottom: 24,
   },
   footerText: {
-    fontSize: 12,
+    fontSize: 13,
     color: theme.mutedForeground,
     textAlign: 'center',
+    lineHeight: 20,
+    fontStyle: 'italic',
   },
 });

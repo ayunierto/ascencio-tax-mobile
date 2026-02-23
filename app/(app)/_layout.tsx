@@ -139,13 +139,13 @@ export default function AppLayout() {
       />
 
       <Drawer.Screen
-        name="settings"
+        name="reports"
         options={{
-          drawerLabel: t('settings'),
-          title: t('settings'),
+          drawerLabel: t('reports'),
+          title: t('reports'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'settings' : 'settings-outline'}
+              name={focused ? 'bar-chart' : 'bar-chart-outline'}
               size={size}
               color={theme.foreground}
             />
@@ -154,13 +154,28 @@ export default function AppLayout() {
       />
 
       <Drawer.Screen
-        name="reports"
+        name="subscription"
         options={{
-          drawerLabel: t('reports'),
-          title: t('reports'),
+          drawerLabel: t('subscription'),
+          title: t('subscription'),
           drawerIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'bar-chart' : 'bar-chart-outline'}
+              name={focused ? 'card' : 'card-outline'}
+              size={size}
+              color={theme.foreground}
+            />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="settings"
+        options={{
+          drawerLabel: t('settings'),
+          title: t('settings'),
+          drawerIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'settings' : 'settings-outline'}
               size={size}
               color={theme.foreground}
             />

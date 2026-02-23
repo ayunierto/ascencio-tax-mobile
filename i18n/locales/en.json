@@ -634,5 +634,6 @@
   "noSubscriptionFound": "No subscription found",
   "noActiveSubscriptionToRestore": "No active subscription to restore",
   "couldNotCompletePurchase": "Could not complete purchase",
-  "couldNotRestorePurchases": "Could not restore purchases"
+  "couldNotRestorePurchases": "Could not restore purchases",
+  "subscription": "Subscription"
 }
