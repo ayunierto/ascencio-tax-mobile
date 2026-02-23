@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
 import { InvoicesList } from '@/core/accounting/invoices';
+import { HeaderButton } from '@react-navigation/elements';
 
 export default function InvoicesIndexScreen() {
   const navigation = useNavigation();
@@ -16,19 +17,19 @@ export default function InvoicesIndexScreen() {
     const targetNav = parentNav ?? navigation;
 
     const headerLeft = () => (
-      <TouchableOpacity
+      <HeaderButton
         onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
         style={{ marginRight: 30 }}
       >
         <Ionicons name="menu" size={24} color={theme.foreground} />
-      </TouchableOpacity>
+      </HeaderButton>
     );
 
     const headerRight = () => (
       <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <TouchableOpacity onPress={() => router.push('/(app)/invoices/create')}>
+        <HeaderButton onPress={() => router.push('/(app)/invoices/create')}>
           <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
-        </TouchableOpacity>
+        </HeaderButton>
       </View>
     );
 
