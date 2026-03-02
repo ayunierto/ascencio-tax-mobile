@@ -4,12 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +30,7 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
 
   const getFeatureName = (feature?: PremiumFeature): string => {
     if (!feature) return t('premiumFeatures');
-    
+
     switch (feature) {
       case PremiumFeature.COMPANIES:
         return t('companies');
@@ -101,9 +96,13 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
 
         <Ionicons name="diamond" size={48} color={theme.primary} />
         <ThemedText style={styles.title}>
-          {feature ? t('unlockFeature', { feature: getFeatureName(feature) }) : t('unlockPremiumFeatures')}
+          {feature
+            ? t('unlockFeature', { feature: getFeatureName(feature) })
+            : t('unlockPremiumFeatures')}
         </ThemedText>
-        <ThemedText style={styles.subtitle}>{t('upgradeToAccessAllFeatures')}</ThemedText>
+        <ThemedText style={styles.subtitle}>
+          {t('upgradeToAccessAllFeatures')}
+        </ThemedText>
       </View>
 
       {/* Trial Banner */}
@@ -112,7 +111,9 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
           <View style={styles.trialBanner}>
             <Ionicons name="gift" size={28} color={theme.primary} />
             <View style={styles.trialTextContainer}>
-              <ThemedText style={styles.trialTitle}>{t('startFreeTrial')}</ThemedText>
+              <ThemedText style={styles.trialTitle}>
+                {t('startFreeTrial')}
+              </ThemedText>
               <ThemedText style={styles.trialSubtitle}>
                 {t('trialDaysOffer', { days: TRIAL_LIMITS.TRIAL_DAYS })}
               </ThemedText>
@@ -132,8 +133,12 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
                 <Ionicons name={benefit.icon} size={24} color={theme.primary} />
               </View>
               <View style={styles.benefitTextContainer}>
-                <ThemedText style={styles.benefitTitle}>{benefit.title}</ThemedText>
-                <ThemedText style={styles.benefitDescription}>{benefit.description}</ThemedText>
+                <ThemedText style={styles.benefitTitle}>
+                  {benefit.title}
+                </ThemedText>
+                <ThemedText style={styles.benefitDescription}>
+                  {benefit.description}
+                </ThemedText>
               </View>
             </View>
           ))}
@@ -141,11 +146,7 @@ export function Paywall({ feature, onClose, isModal = false }: PaywallProps) {
       </Card>
 
       {/* CTA Button */}
-      <Button
-        fullWidth
-        onPress={handleViewPlans}
-        style={styles.ctaButton}
-      >
+      <Button fullWidth onPress={handleViewPlans} style={styles.ctaButton}>
         <ButtonIcon name="sparkles" />
         <ButtonText>{t('viewPlans')}</ButtonText>
       </Button>

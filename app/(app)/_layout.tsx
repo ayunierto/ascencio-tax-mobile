@@ -156,6 +156,7 @@ export default function AppLayout() {
       <Drawer.Screen
         name="subscription"
         options={{
+          headerShown: true,
           drawerLabel: t('subscription'),
           title: t('subscription'),
           drawerIcon: ({ color, size, focused }) => (

@@ -22,12 +22,16 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { TRIAL_LIMITS } from '@ascencio/shared';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
   const { offerings, purchasePackage, restorePurchases } = useSubscription();
-  const [purchasingPackageId, setPurchasingPackageId] = useState<string | null>(null);
+  const [purchasingPackageId, setPurchasingPackageId] = useState<string | null>(
+    null,
+  );
   const [isRestoring, setIsRestoring] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handlePurchase = async (pkg: PurchasesPackage) => {
     try {
@@ -43,7 +47,7 @@ export default function SubscriptionScreen() {
               text: t('ok'),
               onPress: () => router.back(),
             },
-          ]
+          ],
         );
       }
     } catch {
@@ -59,9 +63,15 @@ export default function SubscriptionScreen() {
       const success = await restorePurchases();
 
       if (success) {
-        Alert.alert(t('subscriptionRestored'), t('yourSubscriptionHasBeenRestored'));
+        Alert.alert(
+          t('subscriptionRestored'),
+          t('yourSubscriptionHasBeenRestored'),
+        );
       } else {
-        Alert.alert(t('noSubscriptionFound'), t('noActiveSubscriptionToRestore'));
+        Alert.alert(
+          t('noSubscriptionFound'),
+          t('noActiveSubscriptionToRestore'),
+        );
       }
     } catch (error) {
       Alert.alert(t('error'), t('couldNotRestorePurchases'));
@@ -81,14 +91,11 @@ export default function SubscriptionScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color={theme.foreground} />
-      </TouchableOpacity>
-
       <View style={styles.header}>
         <Ionicons name="diamond" size={48} color={theme.primary} />
-        <ThemedText style={styles.title}>{t('unlockPremiumFeatures')}</ThemedText>
+        <ThemedText style={styles.title}>
+          {t('unlockPremiumFeatures')}
+        </ThemedText>
         <ThemedText style={styles.subtitle}>
           {t('upgradeToAccessAllFeatures')}
         </ThemedText>
@@ -113,7 +120,7 @@ export default function SubscriptionScreen() {
 
       {/* Benefits Section */}
       <ThemedText style={styles.sectionTitle}>{t('whatYouGet')}</ThemedText>
-      
+
       <Card style={styles.card}>
         <CardContent>
           {benefits.map((benefit, index) => (
@@ -129,22 +136,34 @@ export default function SubscriptionScreen() {
       {offerings?.current?.availablePackages.map((pkg, index) => {
         const isPopular = pkg.packageType === 'ANNUAL';
         const isLoading = purchasingPackageId === pkg.identifier;
-        
+
         return (
-          <Card key={pkg.identifier} style={[styles.planCard, isPopular && styles.popularCard]}>
+          <Card
+            key={pkg.identifier}
+            style={[styles.planCard, isPopular && styles.popularCard]}
+          >
             <CardContent>
               {isPopular && (
                 <View style={styles.popularBadge}>
-                  <ThemedText style={styles.popularText}>{t('mostPopular').toUpperCase()}</ThemedText>
+                  <ThemedText style={styles.popularText}>
+                    {t('mostPopular').toUpperCase()}
+                  </ThemedText>
                 </View>
               )}
 
               <View style={styles.planHeader}>
-                <ThemedText style={styles.planTitle}>{pkg.product.title}</ThemedText>
+                <ThemedText style={styles.planTitle}>
+                  {pkg.product.title}
+                </ThemedText>
                 <View style={styles.priceContainer}>
-                  <ThemedText style={styles.price}>{pkg.product.priceString}</ThemedText>
+                  <ThemedText style={styles.price}>
+                    {pkg.product.priceString}
+                  </ThemedText>
                   <ThemedText style={styles.period}>
-                    /{pkg.packageType === 'ANNUAL' ? t('perYear') : t('perMonth')}
+                    /
+                    {pkg.packageType === 'ANNUAL'
+                      ? t('perYear')
+                      : t('perMonth')}
                   </ThemedText>
                 </View>
               </View>

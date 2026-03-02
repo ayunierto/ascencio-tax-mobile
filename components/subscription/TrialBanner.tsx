@@ -21,7 +21,8 @@ interface TrialBannerProps {
 
 export function TrialBanner({ feature, style }: TrialBannerProps) {
   const { t } = useTranslation();
-  const { subscriptionStatus, usageLimits, canAccessFeature } = useSubscription();
+  const { subscriptionStatus, usageLimits, canAccessFeature } =
+    useSubscription();
 
   // Don't show banner if user has active subscription
   if (subscriptionStatus.isActive) {
@@ -56,7 +57,11 @@ export function TrialBanner({ feature, style }: TrialBannerProps) {
         break;
     }
 
-    const remaining = getRemainingItems(feature, currentUsage, subscriptionStatus.isInTrial);
+    const remaining = getRemainingItems(
+      feature,
+      currentUsage,
+      subscriptionStatus.isInTrial,
+    );
     return t('remainingItems', { count: remaining });
   };
 
@@ -78,14 +83,13 @@ export function TrialBanner({ feature, style }: TrialBannerProps) {
   return (
     <Card style={[styles.container, style]}>
       <CardContent>
-        <TouchableOpacity
-          onPress={handleUpgrade}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={handleUpgrade} activeOpacity={0.8}>
           <View style={styles.content}>
             <View style={styles.iconContainer}>
               <Ionicons
-                name={subscriptionStatus.isInTrial ? 'time-outline' : 'lock-closed'}
+                name={
+                  subscriptionStatus.isInTrial ? 'time-outline' : 'lock-closed'
+                }
                 size={24}
                 color={theme.primary}
               />
@@ -93,7 +97,9 @@ export function TrialBanner({ feature, style }: TrialBannerProps) {
 
             <View style={styles.textContainer}>
               <ThemedText style={styles.title}>
-                {subscriptionStatus.isInTrial ? t('freeTrial') : t('limitedAccess')}
+                {subscriptionStatus.isInTrial
+                  ? t('freeTrial')
+                  : t('limitedAccess')}
               </ThemedText>
               <ThemedText style={styles.subtitle}>
                 {subscriptionStatus.isInTrial
