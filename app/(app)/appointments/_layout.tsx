@@ -18,12 +18,14 @@ export default function AppointmentsLayout() {
       <Stack.Screen
         name="index"
         options={{
+          headerShown: false,
           title: t('myAppointments'),
         }}
       />
       <Stack.Screen
         name="past"
         options={{
+          headerShown: false,
           title: t('pastAppointments'),
         }}
       />
