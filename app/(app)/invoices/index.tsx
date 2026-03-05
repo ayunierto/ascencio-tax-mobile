@@ -29,11 +29,9 @@ export default function InvoicesIndexScreen() {
     );
 
     const headerRight = () => (
-      <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <HeaderButton onPress={() => router.push('/(app)/invoices/create')}>
-          <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
-        </HeaderButton>
-      </View>
+      <HeaderButton onPress={() => router.push('/(app)/invoices/create')}>
+        <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
+      </HeaderButton>
     );
 
     navigation.setOptions({
