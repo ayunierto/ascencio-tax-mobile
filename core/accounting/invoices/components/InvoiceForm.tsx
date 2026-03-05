@@ -472,767 +472,778 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
         right={headerRightButtons}
       />
       <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
-    >
-      <ScrollView
-        style={{ padding: 10, flex: 1 }}
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingBottom: insets.bottom + 40,
-        }}
-        keyboardShouldPersistTaps="handled"
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
       >
-        <View style={{ flex: 1, gap: 16 }}>
-          {/* Error Box for general form errors */}
-          {Object.keys(errors).length > 0 && (
-            <ErrorBox message={t('pleaseFixFormErrors')} />
-          )}
-          {/* Invoice Number (read-only for existing) */}
-          {!isNew && (
-            <View
-              style={{
-                padding: 12,
-                backgroundColor: theme.card,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: theme.border,
-              }}
-            >
-              <ThemedText style={{ color: theme.muted, fontSize: 12 }}>
-                {t('invoiceNumber')}
-              </ThemedText>
-              <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>
-                {invoice.invoiceNumber}
-              </ThemedText>
-            </View>
-          )}
-
-          {/* Section: From Company */}
-          <View>
-            {companies.length === 0 && (
+        <ScrollView
+          style={{ padding: 10, flex: 1 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: insets.bottom + 40,
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ flex: 1, gap: 16 }}>
+            {/* Error Box for general form errors */}
+            {Object.keys(errors).length > 0 && (
+              <ErrorBox message={t('pleaseFixFormErrors')} />
+            )}
+            {/* Invoice Number (read-only for existing) */}
+            {!isNew && (
               <View
                 style={{
                   padding: 12,
-                  backgroundColor: '#eff6ff',
+                  backgroundColor: theme.card,
                   borderRadius: 8,
-                  borderLeftWidth: 4,
-                  borderLeftColor: '#3b82f6',
-                  marginBottom: 12,
-                  flexDirection: 'row',
-                  gap: 8,
+                  borderWidth: 1,
+                  borderColor: theme.border,
                 }}
               >
-                <Ionicons name="information-circle" size={20} color="#3b82f6" />
-                <ThemedText style={{ flex: 1, fontSize: 14, color: '#1e40af' }}>
-                  {t('soleProprietorAutoCreate')}
+                <ThemedText style={{ color: theme.muted, fontSize: 12 }}>
+                  {t('invoiceNumber')}
+                </ThemedText>
+                <ThemedText style={{ fontWeight: 'bold', fontSize: 18 }}>
+                  {invoice.invoiceNumber}
                 </ThemedText>
               </View>
             )}
 
-            <Controller
-              control={control}
-              name="fromCompanyId"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  value={value || ''}
-                  onValueChange={(val) => onChange(val || undefined)}
-                  options={[
-                    {
-                      label:
-                        companies.length === 0
-                          ? t('soleProprietor')
-                          : t('selectCompany'),
-                      value: '',
-                    },
-                    ...companies.map((company) => ({
-                      label: company.name,
-                      value: company.id,
-                    })),
-                  ]}
-                  disabled={companies.length === 0}
-                  error={!!errors.fromCompanyId}
-                  errorMessage={getErrorMessage(errors.fromCompanyId)}
-                >
-                  <SelectTrigger
-                    placeholder={
-                      companies.length === 0
-                        ? t('soleProprietor')
-                        : t('selectCompany')
-                    }
-                    labelText={t('fromCompany')}
-                  />
-                  <SelectContent>
-                    <SelectItem label={t('selectCompany')} value="" />
-                    {companies.map((company) => (
-                      <SelectItem
-                        key={company.id}
-                        label={company.name}
-                        value={company.id}
-                      />
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </View>
-
-          {/* Section: Bill To (Client Selector) */}
-          <View>
-            <Controller
-              control={control}
-              name="billToClientId"
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <ClientSelector
-                    clients={clients}
-                    selectedClientId={value || undefined}
-                    onClientSelect={(clientId) => {
-                      onChange(clientId || '');
-                      if (clientId) {
-                        // Clear manual fields when client is selected
-                        setValue('billToFullName', '');
-                        setValue('billToEmail', '');
-                        setValue('billToPhone', '');
-                      }
-                    }}
-                    onManualMode={(enabled) => {
-                      setIsManualClientEntry(enabled);
-                      // When switching to manual mode, clear the selected client
-                      if (enabled) {
-                        onChange('');
-                      } else {
-                        // When switching to search mode, clear manual fields
-                        setValue('billToFullName', '');
-                        setValue('billToEmail', '');
-                        setValue('billToPhone', '');
-                      }
-                    }}
-                    isManualMode={isManualClientEntry}
-                    hasClientError={!!errors.billToClientId}
-                    hasManualFieldsError={
-                      !!(
-                        errors.billToFullName ||
-                        errors.billToEmail ||
-                        errors.billToPhone
-                      )
-                    }
-                    clientErrorMessage={getErrorMessage(errors.billToClientId)}
-                    manualFieldsErrorMessage={
-                      errors.billToFullName
-                        ? getErrorMessage(errors.billToFullName)
-                        : errors.billToEmail
-                          ? getErrorMessage(errors.billToEmail)
-                          : errors.billToPhone
-                            ? getErrorMessage(errors.billToPhone)
-                            : undefined
-                    }
-                  />
-                </View>
-              )}
-            />
-
-            {/* Manual Client Entry Fields */}
-            {isManualClientEntry && (
-              <View style={{ gap: 12, marginTop: 12 }}>
-                <Controller
-                  control={control}
-                  name="billToFullName"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={`${t('clientName')} *`}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterClientName')}
-                      editable={canEdit}
-                      error={!!errors.billToFullName}
-                      errorMessage={getErrorMessage(errors.billToFullName)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToEmail"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('email')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterEmail')}
-                      keyboardType="email-address"
-                      editable={canEdit}
-                      error={!!errors.billToEmail}
-                      errorMessage={getErrorMessage(errors.billToEmail)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToPhone"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('phone')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterPhone')}
-                      keyboardType="phone-pad"
-                      editable={canEdit}
-                      error={!!errors.billToPhone}
-                      errorMessage={getErrorMessage(errors.billToPhone)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToAddress"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('address')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterAddress')}
-                      multiline
-                      numberOfLines={3}
-                      editable={canEdit}
-                      error={!!errors.billToAddress}
-                      errorMessage={getErrorMessage(errors.billToAddress)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToCity"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('city')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterCity')}
-                      editable={canEdit}
-                      error={!!errors.billToCity}
-                      errorMessage={getErrorMessage(errors.billToCity)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToProvince"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('province')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterProvince')}
-                      editable={canEdit}
-                      error={!!errors.billToProvince}
-                      errorMessage={getErrorMessage(errors.billToProvince)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToPostalCode"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('postalCode')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterPostalCode')}
-                      editable={canEdit}
-                      error={!!errors.billToPostalCode}
-                      errorMessage={getErrorMessage(errors.billToPostalCode)}
-                    />
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="billToCountry"
-                  render={({ field: { onChange, value } }) => (
-                    <Input
-                      label={t('country')}
-                      value={value}
-                      onChangeText={onChange}
-                      placeholder={t('enterCountry')}
-                      editable={canEdit}
-                      error={!!errors.billToCountry}
-                      errorMessage={getErrorMessage(errors.billToCountry)}
-                    />
-                  )}
-                />
-              </View>
-            )}
-          </View>
-
-          {/* Section: Dates */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('dates')}</CardTitle>
-            </CardHeader>
-            <CardContent style={{ gap: theme.gap, flexDirection: 'row' }}>
-              <View style={{ flex: 1 }}>
-                <Controller
-                  control={control}
-                  name="issueDate"
-                  render={({ field: { onChange, value } }) => (
-                    <DateTimePicker
-                      labelText={t('issueDate')}
-                      value={value}
-                      mode="date"
-                      onChange={onChange}
-                      error={!!errors.issueDate}
-                      errorMessage={errors.issueDate?.message}
-                    />
-                  )}
-                />
-              </View>
-
-              <View style={{ flex: 1 }}>
-                <Controller
-                  control={control}
-                  name="dueDate"
-                  render={({ field: { onChange, value } }) => (
-                    <DateTimePicker
-                      labelText={t('dueDate')}
-                      value={value}
-                      mode="date"
-                      onChange={onChange}
-                      error={!!errors.dueDate}
-                      errorMessage={errors.dueDate?.message}
-                    />
-                  )}
-                />
-              </View>
-            </CardContent>
-          </Card>
-
-          {/* Section: Line Items */}
-          <View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
-            >
-              <ThemedText style={{ fontWeight: '600', fontSize: 16 }}>
-                {t('lineItems')}
-              </ThemedText>
-
-              <Button size="sm" onPress={addLineItem} disabled={!canEdit}>
-                <ButtonIcon name="add-circle-outline" />
-                <ButtonText size="sm">{t('addItem')}</ButtonText>
-              </Button>
-            </View>
-
-            {/* Error Message for Line Items */}
-            {errors.lineItems &&
-              !Array.isArray(errors.lineItems) &&
-              errors.lineItems.message && (
+            {/* Section: From Company */}
+            <View>
+              {companies.length === 0 && (
                 <View
                   style={{
-                    marginBottom: 8,
-                    padding: 8,
-                    backgroundColor: theme.destructive + '11',
+                    padding: 12,
+                    backgroundColor: '#eff6ff',
                     borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: theme.destructive + '33',
+                    borderLeftWidth: 4,
+                    borderLeftColor: '#3b82f6',
+                    marginBottom: 12,
+                    flexDirection: 'row',
+                    gap: 8,
                   }}
                 >
+                  <Ionicons
+                    name="information-circle"
+                    size={20}
+                    color="#3b82f6"
+                  />
                   <ThemedText
-                    style={{ color: theme.destructive, fontSize: 14 }}
+                    style={{ flex: 1, fontSize: 14, color: '#1e40af' }}
                   >
-                    {t(errors.lineItems.message as string)}
+                    {t('soleProprietorAutoCreate')}
                   </ThemedText>
                 </View>
               )}
 
-            {lineItems.map((item, index) => (
-              <Card
-                key={item.id}
-                style={{
-                  marginBottom: 8,
-                  borderWidth: 1,
-                  borderColor: theme.border,
-                  position: 'relative',
-                }}
-              >
-                <CardContent style={{ gap: theme.gap }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginHorizontal: 4,
-                      position: 'static',
-                    }}
+              <Controller
+                control={control}
+                name="fromCompanyId"
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    value={value || ''}
+                    onValueChange={(val) => onChange(val || undefined)}
+                    options={[
+                      {
+                        label:
+                          companies.length === 0
+                            ? t('soleProprietor')
+                            : t('selectCompany'),
+                        value: '',
+                      },
+                      ...companies.map((company) => ({
+                        label: company.name,
+                        value: company.id,
+                      })),
+                    ]}
+                    disabled={companies.length === 0}
+                    error={!!errors.fromCompanyId}
+                    errorMessage={getErrorMessage(errors.fromCompanyId)}
                   >
-                    <ThemedText style={{ color: theme.mutedForeground }}>
-                      {t('item')} #{index + 1}
-                    </ThemedText>
+                    <SelectTrigger
+                      placeholder={
+                        companies.length === 0
+                          ? t('soleProprietor')
+                          : t('selectCompany')
+                      }
+                      labelText={t('fromCompany')}
+                    />
+                    <SelectContent>
+                      <SelectItem label={t('selectCompany')} value="" />
+                      {companies.map((company) => (
+                        <SelectItem
+                          key={company.id}
+                          label={company.name}
+                          value={company.id}
+                        />
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </View>
 
-                    <Button
-                      style={{ position: 'absolute', top: 0, right: 4 }}
-                      size="sm"
-                      variant="ghost"
-                      onPress={() => removeLineItem(item.id)}
-                      disabled={lineItems.length <= 1}
-                    >
-                      <ButtonIcon
-                        name="trash-outline"
-                        style={{ color: theme.destructive }}
-                      />
-                    </Button>
+            {/* Section: Bill To (Client Selector) */}
+            <View>
+              <Controller
+                control={control}
+                name="billToClientId"
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <ClientSelector
+                      clients={clients}
+                      selectedClientId={value || undefined}
+                      onClientSelect={(clientId) => {
+                        onChange(clientId || '');
+                        if (clientId) {
+                          // Clear manual fields when client is selected
+                          setValue('billToFullName', '');
+                          setValue('billToEmail', '');
+                          setValue('billToPhone', '');
+                        }
+                      }}
+                      onManualMode={(enabled) => {
+                        setIsManualClientEntry(enabled);
+                        // When switching to manual mode, clear the selected client
+                        if (enabled) {
+                          onChange('');
+                        } else {
+                          // When switching to search mode, clear manual fields
+                          setValue('billToFullName', '');
+                          setValue('billToEmail', '');
+                          setValue('billToPhone', '');
+                        }
+                      }}
+                      isManualMode={isManualClientEntry}
+                      hasClientError={!!errors.billToClientId}
+                      hasManualFieldsError={
+                        !!(
+                          errors.billToFullName ||
+                          errors.billToEmail ||
+                          errors.billToPhone
+                        )
+                      }
+                      clientErrorMessage={getErrorMessage(
+                        errors.billToClientId,
+                      )}
+                      manualFieldsErrorMessage={
+                        errors.billToFullName
+                          ? getErrorMessage(errors.billToFullName)
+                          : errors.billToEmail
+                            ? getErrorMessage(errors.billToEmail)
+                            : errors.billToPhone
+                              ? getErrorMessage(errors.billToPhone)
+                              : undefined
+                      }
+                    />
                   </View>
+                )}
+              />
 
-                  <Input
-                    label={t('description')}
-                    value={item.description}
-                    onChangeText={(text) =>
-                      updateLineItem(item.id, 'description', text)
-                    }
-                    style={{ marginBottom: 8 }}
-                    error={!!errors.lineItems?.[index]?.description}
-                    errorMessage={getErrorMessage(
-                      errors.lineItems?.[index]?.description,
+              {/* Manual Client Entry Fields */}
+              {isManualClientEntry && (
+                <View style={{ gap: 12, marginTop: 12 }}>
+                  <Controller
+                    control={control}
+                    name="billToFullName"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={`${t('clientName')} *`}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterClientName')}
+                        editable={canEdit}
+                        error={!!errors.billToFullName}
+                        errorMessage={getErrorMessage(errors.billToFullName)}
+                      />
                     )}
                   />
 
-                  {/* quantity, price and total */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      gap: 12,
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Input
-                      label={t('quantity')}
-                      value={item.quantity.toString()}
-                      onChangeText={(text) => {
-                        if (text === '') {
-                          updateLineItem(item.id, 'quantity', 0);
-                          return;
-                        }
-                        const num = parseInt(text);
-                        if (!isNaN(num)) {
-                          updateLineItem(item.id, 'quantity', num);
-                        }
-                      }}
-                      keyboardType="numeric"
-                      style={{ flex: 1 }}
-                      error={!!errors.lineItems?.[index]?.quantity}
-                      errorMessage={getErrorMessage(
-                        errors.lineItems?.[index]?.quantity,
-                      )}
-                    />
+                  <Controller
+                    control={control}
+                    name="billToEmail"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('email')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterEmail')}
+                        keyboardType="email-address"
+                        editable={canEdit}
+                        error={!!errors.billToEmail}
+                        errorMessage={getErrorMessage(errors.billToEmail)}
+                      />
+                    )}
+                  />
 
-                    <Input
-                      label={t('price')}
-                      value={priceTexts[item.id] ?? item.price.toString()}
-                      onChangeText={(text) => {
-                        // Store the text as-is for display
-                        setPriceTexts((prev) => ({ ...prev, [item.id]: text }));
+                  <Controller
+                    control={control}
+                    name="billToPhone"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('phone')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterPhone')}
+                        keyboardType="phone-pad"
+                        editable={canEdit}
+                        error={!!errors.billToPhone}
+                        errorMessage={getErrorMessage(errors.billToPhone)}
+                      />
+                    )}
+                  />
 
-                        // Allow empty string
-                        if (text === '') {
-                          updateLineItem(item.id, 'price', 0);
-                          return;
-                        }
-                        // Allow decimal format: digits and one decimal point
-                        if (/^\d*\.?\d*$/.test(text)) {
-                          const num = parseFloat(text) || 0;
-                          updateLineItem(item.id, 'price', num);
-                        }
-                      }}
-                      onBlur={() => {
-                        // Clear the text state on blur so it syncs with the actual number value
-                        setPriceTexts((prev) => {
-                          const newState = { ...prev };
-                          delete newState[item.id];
-                          return newState;
-                        });
-                      }}
-                      keyboardType="decimal-pad"
-                      style={{ flex: 1 }}
-                      error={!!errors.lineItems?.[index]?.price}
-                      errorMessage={getErrorMessage(
-                        errors.lineItems?.[index]?.price,
-                      )}
-                    />
+                  <Controller
+                    control={control}
+                    name="billToAddress"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('address')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterAddress')}
+                        multiline
+                        numberOfLines={3}
+                        editable={canEdit}
+                        error={!!errors.billToAddress}
+                        errorMessage={getErrorMessage(errors.billToAddress)}
+                      />
+                    )}
+                  />
 
-                    <Input
-                      label={t('total')}
-                      value={`$${(item.quantity * item.price).toFixed(2)}`}
-                      editable={false}
-                      style={{ flex: 1 }}
-                    />
-                  </View>
-                </CardContent>
-              </Card>
-            ))}
-          </View>
+                  <Controller
+                    control={control}
+                    name="billToCity"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('city')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterCity')}
+                        editable={canEdit}
+                        error={!!errors.billToCity}
+                        errorMessage={getErrorMessage(errors.billToCity)}
+                      />
+                    )}
+                  />
 
-          {/* Section: Tax Rate */}
-          <Controller
-            control={control}
-            name="taxRate"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={`${t('taxRate')} (%)`}
-                value={(value ?? 13).toString()}
-                onChangeText={onChange}
-                keyboardType="decimal-pad"
-                editable={canEdit}
-                error={!!errors.taxRate}
-                errorMessage={getErrorMessage(errors.taxRate)}
-              />
-            )}
-          />
+                  <Controller
+                    control={control}
+                    name="billToProvince"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('province')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterProvince')}
+                        editable={canEdit}
+                        error={!!errors.billToProvince}
+                        errorMessage={getErrorMessage(errors.billToProvince)}
+                      />
+                    )}
+                  />
 
-          {/* Section: Financial Summary */}
-          <View
-            style={{
-              backgroundColor: theme.card,
-              borderRadius: 8,
-              padding: 16,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <ThemedText
-              style={{ fontWeight: '600', fontSize: 16, marginBottom: 12 }}
-            >
-              {t('summary')}
-            </ThemedText>
+                  <Controller
+                    control={control}
+                    name="billToPostalCode"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('postalCode')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterPostalCode')}
+                        editable={canEdit}
+                        error={!!errors.billToPostalCode}
+                        errorMessage={getErrorMessage(errors.billToPostalCode)}
+                      />
+                    )}
+                  />
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
-            >
-              <ThemedText style={{ color: theme.muted }}>
-                {t('subtotal')}
-              </ThemedText>
-              <ThemedText style={{ fontFamily: 'monospace' }}>
-                ${subtotal.toFixed(2)}
-              </ThemedText>
+                  <Controller
+                    control={control}
+                    name="billToCountry"
+                    render={({ field: { onChange, value } }) => (
+                      <Input
+                        label={t('country')}
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder={t('enterCountry')}
+                        editable={canEdit}
+                        error={!!errors.billToCountry}
+                        errorMessage={getErrorMessage(errors.billToCountry)}
+                      />
+                    )}
+                  />
+                </View>
+              )}
             </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
-            >
-              <ThemedText style={{ color: theme.muted }}>
-                {t('tax')} ({watchedTaxRate}%)
-              </ThemedText>
-              <ThemedText style={{ fontFamily: 'monospace' }}>
-                ${taxAmount.toFixed(2)}
-              </ThemedText>
-            </View>
+            {/* Section: Dates */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('dates')}</CardTitle>
+              </CardHeader>
+              <CardContent style={{ gap: theme.gap, flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <Controller
+                    control={control}
+                    name="issueDate"
+                    render={({ field: { onChange, value } }) => (
+                      <DateTimePicker
+                        labelText={t('issueDate')}
+                        value={value}
+                        mode="date"
+                        onChange={onChange}
+                        error={!!errors.issueDate}
+                        errorMessage={errors.issueDate?.message}
+                      />
+                    )}
+                  />
+                </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingTop: 8,
-                borderTopWidth: 1,
-                borderTopColor: theme.border,
-              }}
-            >
-              <ThemedText style={{ fontWeight: 'bold', fontSize: 16 }}>
-                {t('total')}
-              </ThemedText>
-              <ThemedText
+                <View style={{ flex: 1 }}>
+                  <Controller
+                    control={control}
+                    name="dueDate"
+                    render={({ field: { onChange, value } }) => (
+                      <DateTimePicker
+                        labelText={t('dueDate')}
+                        value={value}
+                        mode="date"
+                        onChange={onChange}
+                        error={!!errors.dueDate}
+                        errorMessage={errors.dueDate?.message}
+                      />
+                    )}
+                  />
+                </View>
+              </CardContent>
+            </Card>
+
+            {/* Section: Line Items */}
+            <View>
+              <View
                 style={{
-                  fontWeight: 'bold',
-                  fontSize: 16,
-                  fontFamily: 'monospace',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 8,
                 }}
               >
-                ${total.toFixed(2)}
-              </ThemedText>
+                <ThemedText style={{ fontWeight: '600', fontSize: 16 }}>
+                  {t('lineItems')}
+                </ThemedText>
+
+                <Button size="sm" onPress={addLineItem} disabled={!canEdit}>
+                  <ButtonIcon name="add-circle-outline" />
+                  <ButtonText size="sm">{t('addItem')}</ButtonText>
+                </Button>
+              </View>
+
+              {/* Error Message for Line Items */}
+              {errors.lineItems &&
+                !Array.isArray(errors.lineItems) &&
+                errors.lineItems.message && (
+                  <View
+                    style={{
+                      marginBottom: 8,
+                      padding: 8,
+                      backgroundColor: theme.destructive + '11',
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: theme.destructive + '33',
+                    }}
+                  >
+                    <ThemedText
+                      style={{ color: theme.destructive, fontSize: 14 }}
+                    >
+                      {t(errors.lineItems.message as string)}
+                    </ThemedText>
+                  </View>
+                )}
+
+              {lineItems.map((item, index) => (
+                <Card
+                  key={item.id}
+                  style={{
+                    marginBottom: 8,
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                    position: 'relative',
+                  }}
+                >
+                  <CardContent style={{ gap: theme.gap }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginHorizontal: 4,
+                        position: 'static',
+                      }}
+                    >
+                      <ThemedText style={{ color: theme.mutedForeground }}>
+                        {t('item')} #{index + 1}
+                      </ThemedText>
+
+                      <Button
+                        style={{ position: 'absolute', top: 0, right: 4 }}
+                        size="sm"
+                        variant="ghost"
+                        onPress={() => removeLineItem(item.id)}
+                        disabled={lineItems.length <= 1}
+                      >
+                        <ButtonIcon
+                          name="trash-outline"
+                          style={{ color: theme.destructive }}
+                        />
+                      </Button>
+                    </View>
+
+                    <Input
+                      label={t('description')}
+                      value={item.description}
+                      onChangeText={(text) =>
+                        updateLineItem(item.id, 'description', text)
+                      }
+                      style={{ marginBottom: 8 }}
+                      error={!!errors.lineItems?.[index]?.description}
+                      errorMessage={getErrorMessage(
+                        errors.lineItems?.[index]?.description,
+                      )}
+                    />
+
+                    {/* quantity, price and total */}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        gap: 12,
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Input
+                        label={t('quantity')}
+                        value={item.quantity.toString()}
+                        onChangeText={(text) => {
+                          if (text === '') {
+                            updateLineItem(item.id, 'quantity', 0);
+                            return;
+                          }
+                          const num = parseInt(text);
+                          if (!isNaN(num)) {
+                            updateLineItem(item.id, 'quantity', num);
+                          }
+                        }}
+                        keyboardType="numeric"
+                        style={{ flex: 1 }}
+                        error={!!errors.lineItems?.[index]?.quantity}
+                        errorMessage={getErrorMessage(
+                          errors.lineItems?.[index]?.quantity,
+                        )}
+                      />
+
+                      <Input
+                        label={t('price')}
+                        value={priceTexts[item.id] ?? item.price.toString()}
+                        onChangeText={(text) => {
+                          // Store the text as-is for display
+                          setPriceTexts((prev) => ({
+                            ...prev,
+                            [item.id]: text,
+                          }));
+
+                          // Allow empty string
+                          if (text === '') {
+                            updateLineItem(item.id, 'price', 0);
+                            return;
+                          }
+                          // Allow decimal format: digits and one decimal point
+                          if (/^\d*\.?\d*$/.test(text)) {
+                            const num = parseFloat(text) || 0;
+                            updateLineItem(item.id, 'price', num);
+                          }
+                        }}
+                        onBlur={() => {
+                          // Clear the text state on blur so it syncs with the actual number value
+                          setPriceTexts((prev) => {
+                            const newState = { ...prev };
+                            delete newState[item.id];
+                            return newState;
+                          });
+                        }}
+                        keyboardType="decimal-pad"
+                        style={{ flex: 1 }}
+                        error={!!errors.lineItems?.[index]?.price}
+                        errorMessage={getErrorMessage(
+                          errors.lineItems?.[index]?.price,
+                        )}
+                      />
+
+                      <Input
+                        label={t('total')}
+                        value={`$${(item.quantity * item.price).toFixed(2)}`}
+                        editable={false}
+                        style={{ flex: 1 }}
+                      />
+                    </View>
+                  </CardContent>
+                </Card>
+              ))}
             </View>
-          </View>
 
-          {/* Section: Notes */}
-          <Controller
-            control={control}
-            name="notes"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('notes')}
-                onChangeText={onChange}
-                value={value || ''}
-                multiline
-                numberOfLines={3}
-                editable={canEdit}
-                error={!!errors.notes}
-                errorMessage={getErrorMessage(errors.notes)}
-                helperText={t('notesHelperText')}
-              />
-            )}
-          />
-
-          {/* Section: Logo */}
-          <View>
-            <ThemedText
-              style={{ marginBottom: 8, fontWeight: '600', fontSize: 16 }}
-            >
-              {t('logo')} ({t('optional')})
-            </ThemedText>
+            {/* Section: Tax Rate */}
             <Controller
               control={control}
-              name="logoUrl"
+              name="taxRate"
               render={({ field: { onChange, value } }) => (
-                <ImageUploader
-                  value={value}
-                  onChange={onChange}
-                  folder="invoices"
+                <Input
+                  label={`${t('taxRate')} (%)`}
+                  value={(value ?? 13).toString()}
+                  onChangeText={onChange}
+                  keyboardType="decimal-pad"
+                  editable={canEdit}
+                  error={!!errors.taxRate}
+                  errorMessage={getErrorMessage(errors.taxRate)}
                 />
               )}
             />
-          </View>
 
-          {/* PDF Actions */}
-          {!isNew && (
-            <View style={{ gap: 12 }}>
-              <Button
-                onPress={handleGeneratePdf}
-                disabled={isGeneratingPdf}
-                variant="outline"
-                style={{ flexDirection: 'row', gap: 8 }}
+            {/* Section: Financial Summary */}
+            <View
+              style={{
+                backgroundColor: theme.card,
+                borderRadius: 8,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: theme.border,
+              }}
+            >
+              <ThemedText
+                style={{ fontWeight: '600', fontSize: 16, marginBottom: 12 }}
               >
-                {isGeneratingPdf ? (
-                  <ActivityIndicator size="small" color={theme.primary} />
-                ) : (
-                  <ButtonIcon name="document-text-outline" />
-                )}
-                <ButtonText>{t('generatePdf')}</ButtonText>
-              </Button>
+                {t('summary')}
+              </ThemedText>
 
-              {/* Issue Invoice Button */}
-              {canIssue && (
-                <Button
-                  onPress={handleIssueInvoice}
-                  disabled={issueInvoice.isPending}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 8,
+                }}
+              >
+                <ThemedText style={{ color: theme.muted }}>
+                  {t('subtotal')}
+                </ThemedText>
+                <ThemedText style={{ fontFamily: 'monospace' }}>
+                  ${subtotal.toFixed(2)}
+                </ThemedText>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 8,
+                }}
+              >
+                <ThemedText style={{ color: theme.muted }}>
+                  {t('tax')} ({watchedTaxRate}%)
+                </ThemedText>
+                <ThemedText style={{ fontFamily: 'monospace' }}>
+                  ${taxAmount.toFixed(2)}
+                </ThemedText>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingTop: 8,
+                  borderTopWidth: 1,
+                  borderTopColor: theme.border,
+                }}
+              >
+                <ThemedText style={{ fontWeight: 'bold', fontSize: 16 }}>
+                  {t('total')}
+                </ThemedText>
+                <ThemedText
                   style={{
-                    flexDirection: 'row',
-                    gap: 8,
-                    backgroundColor: theme.success,
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                    fontFamily: 'monospace',
                   }}
                 >
-                  {issueInvoice.isPending ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <ButtonIcon name="checkmark-circle-outline" />
-                  )}
-                  <ButtonText>{t('issueInvoice')}</ButtonText>
-                </Button>
+                  ${total.toFixed(2)}
+                </ThemedText>
+              </View>
+            </View>
+
+            {/* Section: Notes */}
+            <Controller
+              control={control}
+              name="notes"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('notes')}
+                  onChangeText={onChange}
+                  value={value || ''}
+                  multiline
+                  numberOfLines={3}
+                  editable={canEdit}
+                  error={!!errors.notes}
+                  errorMessage={getErrorMessage(errors.notes)}
+                  helperText={t('notesHelperText')}
+                />
               )}
+            />
 
-              {/* Payment Info for issued invoices */}
-              {!isDraft && invoice.status !== 'canceled' && (
-                <View
-                  style={{
-                    padding: 12,
-                    backgroundColor: theme.card,
-                    borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: theme.border,
-                    gap: 8,
-                  }}
+            {/* Section: Logo */}
+            <View>
+              <ThemedText
+                style={{ marginBottom: 8, fontWeight: '600', fontSize: 16 }}
+              >
+                {t('logo')} ({t('optional')})
+              </ThemedText>
+              <Controller
+                control={control}
+                name="logoUrl"
+                render={({ field: { onChange, value } }) => (
+                  <ImageUploader
+                    value={value}
+                    onChange={onChange}
+                    folder="invoices"
+                  />
+                )}
+              />
+            </View>
+
+            {/* PDF Actions */}
+            {!isNew && (
+              <View style={{ gap: 12 }}>
+                <Button
+                  onPress={handleGeneratePdf}
+                  disabled={isGeneratingPdf}
+                  variant="outline"
+                  style={{ flexDirection: 'row', gap: 8 }}
                 >
-                  <ThemedText style={{ fontWeight: 'bold' }}>
-                    {t('paymentStatus')}
-                  </ThemedText>
-                  <View
+                  {isGeneratingPdf ? (
+                    <ActivityIndicator size="small" color={theme.primary} />
+                  ) : (
+                    <ButtonIcon name="document-text-outline" />
+                  )}
+                  <ButtonText>{t('generatePdf')}</ButtonText>
+                </Button>
+
+                {/* Issue Invoice Button */}
+                {canIssue && (
+                  <Button
+                    onPress={handleIssueInvoice}
+                    disabled={issueInvoice.isPending}
                     style={{
                       flexDirection: 'row',
-                      justifyContent: 'space-between',
+                      gap: 8,
+                      backgroundColor: theme.success,
                     }}
                   >
-                    <ThemedText>{t('amountPaid')}:</ThemedText>
-                    <ThemedText style={{ fontWeight: '600' }}>
-                      CA${Number(invoice.amountPaid).toFixed(2)}
+                    {issueInvoice.isPending ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <ButtonIcon name="checkmark-circle-outline" />
+                    )}
+                    <ButtonText>{t('issueInvoice')}</ButtonText>
+                  </Button>
+                )}
+
+                {/* Payment Info for issued invoices */}
+                {!isDraft && invoice.status !== 'canceled' && (
+                  <View
+                    style={{
+                      padding: 12,
+                      backgroundColor: theme.card,
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: theme.border,
+                      gap: 8,
+                    }}
+                  >
+                    <ThemedText style={{ fontWeight: 'bold' }}>
+                      {t('paymentStatus')}
                     </ThemedText>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <ThemedText>{t('balanceDue')}:</ThemedText>
-                    <ThemedText
+                    <View
                       style={{
-                        fontWeight: '600',
-                        color:
-                          invoice.balanceDue > 0
-                            ? theme.destructive
-                            : theme.success,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      CA${Number(invoice.balanceDue).toFixed(2)}
+                      <ThemedText>{t('amountPaid')}:</ThemedText>
+                      <ThemedText style={{ fontWeight: '600' }}>
+                        CA${Number(invoice.amountPaid).toFixed(2)}
+                      </ThemedText>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <ThemedText>{t('balanceDue')}:</ThemedText>
+                      <ThemedText
+                        style={{
+                          fontWeight: '600',
+                          color:
+                            invoice.balanceDue > 0
+                              ? theme.destructive
+                              : theme.success,
+                        }}
+                      >
+                        CA${Number(invoice.balanceDue).toFixed(2)}
+                      </ThemedText>
+                    </View>
+                    {invoice.balanceDue > 0 && (
+                      <Button
+                        onPress={() => setIsPaymentModalVisible(true)}
+                        variant="default"
+                        style={{ marginTop: 8 }}
+                      >
+                        <ButtonText>{t('recordPayment')}</ButtonText>
+                      </Button>
+                    )}
+                  </View>
+                )}
+
+                {/* Draft Note */}
+                {isDraft && !isNew && (
+                  <View
+                    style={{
+                      padding: 12,
+                      backgroundColor: '#f59e0b20',
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: '#f59e0b',
+                    }}
+                  >
+                    <ThemedText style={{ color: '#f59e0b', fontSize: 12 }}>
+                      {t('draftInvoiceNote')}
                     </ThemedText>
                   </View>
-                  {invoice.balanceDue > 0 && (
-                    <Button
-                      onPress={() => setIsPaymentModalVisible(true)}
-                      variant="default"
-                      style={{ marginTop: 8 }}
-                    >
-                      <ButtonText>{t('recordPayment')}</ButtonText>
-                    </Button>
-                  )}
-                </View>
-              )}
+                )}
+              </View>
+            )}
+          </View>
+        </ScrollView>
 
-              {/* Draft Note */}
-              {isDraft && !isNew && (
-                <View
-                  style={{
-                    padding: 12,
-                    backgroundColor: '#f59e0b20',
-                    borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: '#f59e0b',
-                  }}
-                >
-                  <ThemedText style={{ color: '#f59e0b', fontSize: 12 }}>
-                    {t('draftInvoiceNote')}
-                  </ThemedText>
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-      </ScrollView>
-
-      {/* Record Payment Modal */}
-      <RecordPaymentModal
-        visible={isPaymentModalVisible}
-        onClose={() => setIsPaymentModalVisible(false)}
-        onSubmit={handleRecordPayment}
-        remainingBalance={Number(invoice.balanceDue) || 0}
-        invoiceNumber={invoice.invoiceNumber}
-        isSubmitting={recordPayment.isPending}
-      />
-    </KeyboardAvoidingView>
+        {/* Record Payment Modal */}
+        <RecordPaymentModal
+          visible={isPaymentModalVisible}
+          onClose={() => setIsPaymentModalVisible(false)}
+          onSubmit={handleRecordPayment}
+          remainingBalance={Number(invoice.balanceDue) || 0}
+          invoiceNumber={invoice.invoiceNumber}
+          isSubmitting={recordPayment.isPending}
+        />
+      </KeyboardAvoidingView>
     </>
   );
 };

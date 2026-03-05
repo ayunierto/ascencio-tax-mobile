@@ -14,7 +14,7 @@ interface CustomHeaderProps {
 /**
  * Header personalizado que resuelve problemas de renderizado en iOS
  * y maneja correctamente los safe areas.
- * 
+ *
  * @example
  * <CustomHeader
  *   title="Mis Facturas"
@@ -49,7 +49,9 @@ export function CustomHeader({
     >
       {/* Barra de estado */}
       <StatusBar
-        barStyle={theme.background === '#000000' ? 'light-content' : 'dark-content'}
+        barStyle={
+          theme.background === '#000000' ? 'light-content' : 'dark-content'
+        }
         backgroundColor={theme.background}
       />
 
