@@ -1,12 +1,12 @@
 import React, { useLayoutEffect } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { theme } from '@/components/ui/theme';
+import { HeaderButton } from '@/components/ui/HeaderButton';
 import { InvoicesList } from '@/core/accounting/invoices';
-import { HeaderButton } from '@react-navigation/elements';
 import { PremiumGuard } from '@/core/subscription';
 import { PremiumFeature } from '@ascencio/shared';
 import { TrialBanner } from '@/components/subscription/TrialBanner';
@@ -53,8 +53,8 @@ export default function InvoicesIndexScreen() {
   return (
     <PremiumGuard feature={PremiumFeature.INVOICES}>
       <View style={{ flex: 1 }}>
-        <TrialBanner 
-          feature={PremiumFeature.INVOICES} 
+        <TrialBanner
+          feature={PremiumFeature.INVOICES}
           style={{ marginHorizontal: 16, marginTop: 8 }}
         />
         <InvoicesList />
