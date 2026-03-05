@@ -5,3 +5,4 @@ export * from './AlertDialog';
 export * from './Input';
 export * from './ImageUploader';
 export * from './HeaderButton';
+export * from './CustomHeader';

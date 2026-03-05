@@ -21,7 +21,7 @@ export function HeaderButton({
   hitSlop = 10,
 }: HeaderButtonProps) {
   const [isPressed, setIsPressed] = useState(false);
-  
+
   const hitSlopValue =
     typeof hitSlop === 'number'
       ? { top: hitSlop, bottom: hitSlop, left: hitSlop, right: hitSlop }
@@ -34,9 +34,7 @@ export function HeaderButton({
       onPressOut={() => setIsPressed(false)}
       hitSlop={hitSlopValue}
     >
-      <View style={[style, { opacity: isPressed ? 0.5 : 1 }]}>
-        {children}
-      </View>
+      <View style={[style, { opacity: isPressed ? 0.5 : 1 }]}>{children}</View>
     </TouchableWithoutFeedback>
   );
 }

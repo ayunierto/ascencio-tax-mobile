@@ -57,9 +57,11 @@ import { useCompanies } from '../../companies/hooks';
 import { useClients } from '../../clients/hooks';
 import { ClientSelector } from './ClientSelector/';
 import { RecordPaymentModal } from './RecordPaymentModal';
+import { CustomHeader, HeaderButton } from '@/components/ui';
 
 interface InvoiceFormProps {
   invoice: Invoice;
+  headerLeft?: React.ReactNode;
 }
 
 interface LineItemLocal {
@@ -77,7 +79,7 @@ const toNumber = (value: unknown, fallback = 0) => {
   return Number.isFinite(num) ? num : fallback;
 };
 
-export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
+export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -425,57 +427,51 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
       title: isNew
         ? t('newInvoice')
         : `${t('invoice')} #${invoice.invoiceNumber}`,
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          {canEdit && (
-            <TouchableOpacity
-              onPress={handleSubmit(onSubmit, onValidationError)}
-              disabled={
-                createInvoice.isPending || updateInvoice.isPending || isDeleting
-              }
-            >
-              {createInvoice.isPending || updateInvoice.isPending ? (
-                <ActivityIndicator size="small" color={theme.primary} />
-              ) : (
-                <Ionicons name="save-outline" size={24} color={theme.primary} />
-              )}
-            </TouchableOpacity>
-          )}
-
-          {!isNew && canEdit && (
-            <TouchableOpacity
-              onPress={handleDeleteInvoice}
-              disabled={
-                createInvoice.isPending || updateInvoice.isPending || isDeleting
-              }
-            >
-              {isDeleting ? (
-                <ActivityIndicator size="small" color={theme.destructive} />
-              ) : (
-                <Ionicons
-                  name="trash-outline"
-                  size={24}
-                  color={theme.destructive}
-                />
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
-      ),
     });
-  }, [
-    isNew,
-    t,
-    invoice.invoiceNumber,
-    handleSubmit,
-    createInvoice.isPending,
-    updateInvoice.isPending,
-    isDeleting,
-    onValidationError,
-  ]);
+  }, [isNew, t, invoice.invoiceNumber]);
+
+  // Botones del header derecho
+  const headerRightButtons = (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      {canEdit && (
+        <HeaderButton
+          onPress={handleSubmit(onSubmit, onValidationError)}
+          hitSlop={12}
+        >
+          {createInvoice.isPending || updateInvoice.isPending ? (
+            <ActivityIndicator size="small" color={theme.primary} />
+          ) : (
+            <Ionicons name="save-outline" size={24} color={theme.primary} />
+          )}
+        </HeaderButton>
+      )}
+
+      {!isNew && canEdit && (
+        <HeaderButton onPress={handleDeleteInvoice} hitSlop={12}>
+          {isDeleting ? (
+            <ActivityIndicator size="small" color={theme.destructive} />
+          ) : (
+            <Ionicons
+              name="trash-outline"
+              size={24}
+              color={theme.destructive}
+            />
+          )}
+        </HeaderButton>
+      )}
+    </View>
+  );
 
   return (
-    <KeyboardAvoidingView
+    <>
+      <CustomHeader
+        title={
+          isNew ? t('newInvoice') : `${t('invoice')} #${invoice.invoiceNumber}`
+        }
+        left={headerLeft}
+        right={headerRightButtons}
+      />
+      <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
@@ -1237,5 +1233,6 @@ export const InvoiceForm = ({ invoice }: InvoiceFormProps) => {
         isSubmitting={recordPayment.isPending}
       />
     </KeyboardAvoidingView>
+    </>
   );
 };
