@@ -7,42 +7,42 @@ import { useTranslation } from 'react-i18next';
 
 import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { InvoicesList } from '@/core/accounting/invoices';
-import { PremiumGuard } from '@/core/subscription';
-import { PremiumFeature } from '@ascencio/shared';
-import { TrialBanner } from '@/components/subscription/TrialBanner';
+// ⚠️ TEMPORARY: Commented out for testing
+// import { PremiumGuard } from '@/core/subscription';
+// import { PremiumFeature } from '@ascencio/shared';
+// import { TrialBanner } from '@/components/subscription/TrialBanner';
 
 export default function InvoicesIndexScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
   return (
-    <PremiumGuard feature={PremiumFeature.INVOICES}>
-      <View style={{ flex: 1 }}>
-        <CustomHeader
-          title={t('myInvoices')}
-          left={
-            <HeaderButton
-              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            >
-              <Ionicons name="menu" size={24} color={theme.foreground} />
-            </HeaderButton>
-          }
-          right={
-            <HeaderButton onPress={() => router.push('/(app)/invoices/create')}>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color={theme.primary}
-              />
-            </HeaderButton>
-          }
-        />
-        <TrialBanner
-          feature={PremiumFeature.INVOICES}
-          style={{ marginHorizontal: 16, marginTop: 8 }}
-        />
-        <InvoicesList />
-      </View>
-    </PremiumGuard>
+    <View style={{ flex: 1 }}>
+      <CustomHeader
+        title={t('myInvoices')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+        right={
+          <HeaderButton onPress={() => router.push('/(app)/invoices/create')}>
+            <Ionicons
+              name="add-circle-outline"
+              size={24}
+              color={theme.primary}
+            />
+          </HeaderButton>
+        }
+      />
+      {/* ⚠️ TEMPORARY: Commented out for testing */}
+      {/* <TrialBanner
+        feature={PremiumFeature.INVOICES}
+        style={{ marginHorizontal: 16, marginTop: 8 }}
+      /> */}
+      <InvoicesList />
+    </View>
   );
 }

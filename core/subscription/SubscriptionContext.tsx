@@ -39,6 +39,9 @@ interface SubscriptionContextType {
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
+// ⚠️ TEMPORARY: Set to true to bypass subscription checks for testing
+const BYPASS_SUBSCRIPTION_CHECKS = true;
+
 const STORAGE_KEYS = {
   TRIAL_START_DATE: '@trial_start_date',
   USAGE_LIMITS: '@usage_limits',
@@ -261,6 +264,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Check if user can access a feature
    */
   const checkCanAccessFeature = (feature: PremiumFeature): boolean => {
+    // ⚠️ TEMPORARY: Bypass for testing
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return true;
+    }
+
     // Premium subscribers have full access
     if (subscriptionStatus.isActive) {
       return true;
@@ -275,6 +283,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Check if user can create a new item for a feature
    */
   const checkCanCreateItem = (feature: PremiumFeature): boolean => {
+    // ⚠️ TEMPORARY: Bypass for testing
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return true;
+    }
+
     // Premium subscribers have unlimited access
     if (subscriptionStatus.isActive) {
       return true;
@@ -289,6 +302,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Get remaining items for a feature
    */
   const getRemainingItemsCount = (feature: PremiumFeature): number => {
+    // ⚠️ TEMPORARY: Bypass for testing
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return Infinity;
+    }
+
     // Premium subscribers have unlimited access
     if (subscriptionStatus.isActive) {
       return Infinity;

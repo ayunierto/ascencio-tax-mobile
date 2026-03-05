@@ -10,8 +10,9 @@ import { ReportCard } from '@/components/reports/ReportCard';
 import { ReportCardSkeletonList } from '@/components/reports/ReportCardSkeleton';
 import { useGenerateReport, useGetReports } from '@/core/reports';
 import { toast } from 'sonner-native';
-import { PremiumGuard } from '@/components/subscription/PremiumGuard';
-import { PremiumFeature } from '@ascencio/shared';
+// ⚠️ TEMPORARY: Commented out for testing
+// import { PremiumGuard } from '@/components/subscription/PremiumGuard';
+// import { PremiumFeature } from '@ascencio/shared';
 
 const ReportsScreen = () => {
   const navigation = useNavigation();
@@ -50,83 +51,82 @@ const ReportsScreen = () => {
   };
 
   return (
-    <PremiumGuard feature={PremiumFeature.REPORTS}>
-      <View style={{ flex: 1 }}>
-        <CustomHeader
-          title={t('reports')}
-          left={
-            <HeaderButton
-              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+    // ⚠️ TEMPORARY: Removed PremiumGuard wrapper for testing
+    <View style={{ flex: 1 }}>
+      <CustomHeader
+        title={t('reports')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+      />
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Date Range Picker */}
+        <View style={styles.pickerSection}>
+          <DateRangePicker
+            startISO={startDate}
+            endISO={endDate}
+            onChange={(s, e) => {
+              setStartDate(s);
+              setEndDate(e);
+            }}
+            onGenerate={(s, e) => handleGenerate(s, e)}
+          />
+        </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* History Section */}
+        <View style={styles.historySection}>
+          <View style={styles.historyHeader}>
+            <ThemedText style={styles.historyTitle}>
+              {t('recentReports')}
+            </ThemedText>
+            <TouchableOpacity
+              onPress={() => refetch()}
+              disabled={isRefetching}
             >
-              <Ionicons name="menu" size={24} color={theme.foreground} />
-            </HeaderButton>
-          }
-        />
-        <ScrollView
-          style={styles.container}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Date Range Picker */}
-          <View style={styles.pickerSection}>
-            <DateRangePicker
-              startISO={startDate}
-              endISO={endDate}
-              onChange={(s, e) => {
-                setStartDate(s);
-                setEndDate(e);
-              }}
-              onGenerate={(s, e) => handleGenerate(s, e)}
-            />
+              <Ionicons
+                name={isRefetching ? 'sync' : 'refresh'}
+                size={20}
+                color={theme.primary}
+              />
+            </TouchableOpacity>
           </View>
 
-          {/* Divider */}
-          <View style={styles.divider} />
-
-          {/* History Section */}
-          <View style={styles.historySection}>
-            <View style={styles.historyHeader}>
-              <ThemedText style={styles.historyTitle}>
-                {t('recentReports')}
-              </ThemedText>
-              <TouchableOpacity
-                onPress={() => refetch()}
-                disabled={isRefetching}
-              >
-                <Ionicons
-                  name={isRefetching ? 'sync' : 'refresh'}
-                  size={20}
-                  color={theme.primary}
-                />
-              </TouchableOpacity>
+          {isLoading && !isRefetching ? (
+            <ReportCardSkeletonList count={3} />
+          ) : reports && reports.length > 0 ? (
+            <View style={styles.reportsList}>
+              {reports.map((item) => (
+                <ReportCard key={item.id} report={item} />
+              ))}
             </View>
-
-            {isLoading && !isRefetching ? (
-              <ReportCardSkeletonList count={3} />
-            ) : reports && reports.length > 0 ? (
-              <View style={styles.reportsList}>
-                {reports.map((item) => (
-                  <ReportCard key={item.id} report={item} />
-                ))}
-              </View>
-            ) : (
-              <View style={styles.emptyContainer}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={48}
-                  color={theme.mutedForeground}
-                />
-                <ThemedText style={styles.emptyText}>
-                  {t('noReportsYet')}
-                </ThemedText>
-                <ThemedText style={styles.emptySubtext}>
-                  {t('generateFirstReport')}
-                </ThemedText>
-              </View>
-            )}
-          </View>
-        </ScrollView>
-      </View>
-    </PremiumGuard>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Ionicons
+                name="document-text-outline"
+                size={48}
+                color={theme.mutedForeground}
+              />
+              <ThemedText style={styles.emptyText}>
+                {t('noReportsYet')}
+              </ThemedText>
+              <ThemedText style={styles.emptySubtext}>
+                {t('generateFirstReport')}
+              </ThemedText>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

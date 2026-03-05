@@ -82,7 +82,8 @@ export default function ProfileIndexScreen() {
         </TouchableOpacity>
 
         {/* Account Section */}
-        <View style={styles.section}>
+        {/* ⚠️ TEMPORARY: Commented out for testing */}
+        {/* <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>{t('account')}</ThemedText>
           <Card>
             <CardContent style={styles.cardContent}>
@@ -93,7 +94,7 @@ export default function ProfileIndexScreen() {
               />
             </CardContent>
           </Card>
-        </View>
+        </View> */}
 
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>{t('legal')}</ThemedText>
