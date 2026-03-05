@@ -3,9 +3,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { useEffect } from 'react';
-import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
+// ⚠️ TEMPORARY: Commented out for testing
+// import { useEffect } from 'react';
+// import { Platform } from 'react-native';
+// import Purchases from 'react-native-purchases';
 
 import { CustomTheme } from '@/theme/CustomTheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,22 +31,24 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
+// ⚠️ TEMPORARY: Commented out for testing
 // TODO: Replace with your actual RevenueCat API keys from the dashboard
-const REVENUE_CAT_IOS_KEY = 'appl_YOUR_IOS_KEY_HERE';
-const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_ANDROID_KEY_HERE';
+// const REVENUE_CAT_IOS_KEY = 'appl_YOUR_IOS_KEY_HERE';
+// const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_ANDROID_KEY_HERE';
 
 export default function RootLayout() {
-  useEffect(() => {
-    // Initialize RevenueCat
-    if (Platform.OS === 'ios') {
-      Purchases.configure({ apiKey: REVENUE_CAT_IOS_KEY });
-    } else if (Platform.OS === 'android') {
-      Purchases.configure({ apiKey: REVENUE_CAT_ANDROID_KEY });
-    }
+  // ⚠️ TEMPORARY: Commented out for testing - RevenueCat initialization disabled
+  // useEffect(() => {
+  //   // Initialize RevenueCat
+  //   if (Platform.OS === 'ios') {
+  //     Purchases.configure({ apiKey: REVENUE_CAT_IOS_KEY });
+  //   } else if (Platform.OS === 'android') {
+  //     Purchases.configure({ apiKey: REVENUE_CAT_ANDROID_KEY });
+  //   }
 
-    // Optional: Set log level for debugging
-    // Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-  }, []);
+  //   // Optional: Set log level for debugging
+  //   // Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+  // }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
