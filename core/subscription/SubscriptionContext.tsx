@@ -3,8 +3,17 @@
  * Manages subscription state, trial period, and feature access using RevenueCat
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import Purchases, { CustomerInfo, PurchasesOfferings } from 'react-native-purchases';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
+import Purchases, {
+  CustomerInfo,
+  PurchasesOfferings,
+} from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   SubscriptionTier,
@@ -37,7 +46,9 @@ interface SubscriptionContextType {
   incrementUsage: (feature: PremiumFeature) => Promise<void>;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
+  undefined,
+);
 
 // ⚠️ TEMPORARY: Set to true to bypass subscription checks for testing
 const BYPASS_SUBSCRIPTION_CHECKS = true;
@@ -52,14 +63,15 @@ interface SubscriptionProviderProps {
 }
 
 export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
-  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus>({
-    tier: SubscriptionTier.FREE,
-    isActive: false,
-    isInTrial: false,
-    trialEndDate: null,
-    expirationDate: null,
-    willRenew: false,
-  });
+  const [subscriptionStatus, setSubscriptionStatus] =
+    useState<SubscriptionStatus>({
+      tier: SubscriptionTier.FREE,
+      isActive: false,
+      isInTrial: false,
+      trialEndDate: null,
+      expirationDate: null,
+      willRenew: false,
+    });
 
   const [usageLimits, setUsageLimits] = useState<UsageLimits>({
     companies: 0,
@@ -114,12 +126,17 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    */
   const checkTrialStatus = async () => {
     try {
-      const trialStartDateStr = await AsyncStorage.getItem(STORAGE_KEYS.TRIAL_START_DATE);
+      const trialStartDateStr = await AsyncStorage.getItem(
+        STORAGE_KEYS.TRIAL_START_DATE,
+      );
 
       if (!trialStartDateStr) {
         // First time user - start trial
         const now = new Date();
-        await AsyncStorage.setItem(STORAGE_KEYS.TRIAL_START_DATE, now.toISOString());
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.TRIAL_START_DATE,
+          now.toISOString(),
+        );
 
         const trialEndDate = calculateTrialEndDate(now);
         setSubscriptionStatus((prev: SubscriptionStatus) => ({
@@ -157,8 +174,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       const customerInfo: CustomerInfo = await Purchases.getCustomerInfo();
 
       // Check for active entitlements
-      const hasPremium = typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !== 'undefined';
-      const hasEnterprise = typeof customerInfo.entitlements.active[ENTITLEMENTS.ENTERPRISE] !== 'undefined';
+      const hasPremium =
+        typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !==
+        'undefined';
+      const hasEnterprise =
+        typeof customerInfo.entitlements.active[ENTITLEMENTS.ENTERPRISE] !==
+        'undefined';
 
       let tier: SubscriptionTier = SubscriptionTier.FREE;
       if (hasEnterprise) {
@@ -172,8 +193,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       // Get expiration date
       let expirationDate: Date | null = null;
       if (hasPremium) {
-        const premiumEntitlement = customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM];
-        expirationDate = premiumEntitlement.expirationDate ? new Date(premiumEntitlement.expirationDate) : null;
+        const premiumEntitlement =
+          customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM];
+        expirationDate = premiumEntitlement.expirationDate
+          ? new Date(premiumEntitlement.expirationDate)
+          : null;
       }
 
       setSubscriptionStatus((prev: SubscriptionStatus) => ({
@@ -202,7 +226,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
     try {
       const offerings = await Purchases.getOfferings();
-      if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
+      if (
+        offerings.current !== null &&
+        offerings.current.availablePackages.length !== 0
+      ) {
         setOfferings(offerings);
       }
     } catch (error) {
@@ -220,12 +247,16 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
 
     try {
-      const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
+      const { customerInfo } =
+        await Purchases.purchasePackage(packageToPurchase);
 
       // Refresh subscription status
       await refreshSubscription();
 
-      return typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !== 'undefined';
+      return (
+        typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !==
+        'undefined'
+      );
     } catch (error: any) {
       if (!error.userCancelled) {
         console.error('Error purchasing package:', error);
@@ -247,7 +278,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       const customerInfo = await Purchases.restorePurchases();
       await refreshSubscription();
 
-      return typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !== 'undefined';
+      return (
+        typeof customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM] !==
+        'undefined'
+      );
     } catch (error) {
       console.error('Error restoring purchases:', error);
       return false;
@@ -277,7 +311,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       }
 
       setUsageLimits(newUsage);
-      await AsyncStorage.setItem(STORAGE_KEYS.USAGE_LIMITS, JSON.stringify(newUsage));
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.USAGE_LIMITS,
+        JSON.stringify(newUsage),
+      );
     } catch (error) {
       console.error('Error incrementing usage:', error);
     }
@@ -298,7 +335,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
 
     // Check trial limits
-    const limits = isWithinTrialLimits(usageLimits, subscriptionStatus.isInTrial);
+    const limits = isWithinTrialLimits(
+      usageLimits,
+      subscriptionStatus.isInTrial,
+    );
     return limits[feature];
   };
 
@@ -317,7 +357,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
 
     // Check trial limits
-    const limits = isWithinTrialLimits(usageLimits, subscriptionStatus.isInTrial);
+    const limits = isWithinTrialLimits(
+      usageLimits,
+      subscriptionStatus.isInTrial,
+    );
     return limits[feature];
   };
 
@@ -352,7 +395,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
         break;
     }
 
-    const limits = isWithinTrialLimits(usageLimits, subscriptionStatus.isInTrial);
+    const limits = isWithinTrialLimits(
+      usageLimits,
+      subscriptionStatus.isInTrial,
+    );
     return limits[feature] ? Infinity : 0; // Simplified for now
   };
 
@@ -364,13 +410,19 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     canAccessFeature: checkCanAccessFeature,
     canCreateItem: checkCanCreateItem,
     getRemainingItems: getRemainingItemsCount,
-    refreshSubscription: async () => { await refreshSubscription(); },
+    refreshSubscription: async () => {
+      await refreshSubscription();
+    },
     purchasePackage,
     restorePurchases,
     incrementUsage,
   };
 
-  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
 }
 
 /**
@@ -379,7 +431,9 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 export function useSubscription() {
   const context = useContext(SubscriptionContext);
   if (context === undefined) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
+    throw new Error(
+      'useSubscription must be used within a SubscriptionProvider',
+    );
   }
   return context;
 }
