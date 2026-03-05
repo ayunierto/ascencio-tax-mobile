@@ -4,27 +4,59 @@
 
 ## ¿Qué fue desactivado?
 
-1. **Verificación de acceso a features premium** - Todos los usuarios tienen acceso ilimitado
-2. **PremiumGuard wrappers** - Removidos de Reports e Invoices
-3. **TrialBanner** - Oculto en todas las pantallas
-4. **Opción de suscripciones en Settings** - Comentada
+1. **Inicialización de RevenueCat SDK** - El SDK no se configura al iniciar la app
+2. **Verificación de acceso a features premium** - Todos los usuarios tienen acceso ilimitado
+3. **PremiumGuard wrappers** - Removidos de Reports e Invoices
+4. **TrialBanner** - Oculto en todas las pantallas
+5. **Opción de suscripciones en Settings** - Comentada
 
 ## ✅ Para reactivar el sistema completo:
 
-### Opción 1: Revertir el commit temporal
+### Opción 1: Revertir todos los commits temporales
 
 ```bash
-# Ver el commit temporal
-git log --oneline | grep "temp: desactivar sistema"
+# Ver los commits temporales
+git log --oneline | grep "temp:"
 
-# Revertir el commit (esto creará un nuevo commit que deshace los cambios)
-git revert 1a87e14
+# Revertir todos los commits (del más reciente al más antiguo)
+git revert ef198cd  # RevenueCat initialization
+git revert 1a87e14  # Subscription checks
 
-# O si prefieres hacer reset (⚠️ esto elimina el commit)
-git reset --hard HEAD~1
+# O si prefieres hacer reset (⚠️ esto elimina los commits)
+git reset --hard HEAD~2
 ```
 
 ### Opción 2: Cambios manuales
+
+#### 0. RevenueCat Initialization (NUEVO)
+**Archivo**: `app/_layout.tsx`
+
+```typescript
+// Descomentar imports:
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import Purchases from 'react-native-purchases';
+
+// Descomentar API keys:
+const REVENUE_CAT_IOS_KEY = 'appl_YOUR_IOS_KEY_HERE';
+const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_ANDROID_KEY_HERE';
+
+// Descomentar useEffect:
+export default function RootLayout() {
+  useEffect(() => {
+    // Initialize RevenueCat
+    if (Platform.OS === 'ios') {
+      Purchases.configure({ apiKey: REVENUE_CAT_IOS_KEY });
+    } else if (Platform.OS === 'android') {
+      Purchases.configure({ apiKey: REVENUE_CAT_ANDROID_KEY });
+    }
+
+    // Optional: Set log level for debugging
+    // Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+  }, []);
+  // ... resto del código
+}
+```
 
 #### 1. SubscriptionContext.tsx
 **Archivo**: `core/subscription/SubscriptionContext.tsx`
@@ -111,16 +143,17 @@ npm start
 
 ## 📝 Archivos modificados
 
-- ✅ `core/subscription/SubscriptionContext.tsx`
-- ✅ `app/(app)/reports/index.tsx`
-- ✅ `app/(app)/invoices/index.tsx`
-- ✅ `app/(app)/settings/index.tsx`
+- ✅ `app/_layout.tsx` (RevenueCat initialization)
+- ✅ `core/subscription/SubscriptionContext.tsx` (Bypass checks)
+- ✅ `app/(app)/reports/index.tsx` (PremiumGuard removed)
+- ✅ `app/(app)/invoices/index.tsx` (PremiumGuard & TrialBanner removed)
+- ✅ `app/(app)/settings/index.tsx` (Subscription option hidden)
 
 Todos los cambios están marcados con comentarios `⚠️ TEMPORARY` para fácil identificación.
 
 ## ⚙️ Configuración de RevenueCat
 
-Recuerda que también necesitas configurar las API keys en `app/_layout.tsx`:
+Recuerda que también necesitas configurar las API keys reales en `app/_layout.tsx`:
 
 ```typescript
 const REVENUE_CAT_IOS_KEY = 'appl_YOUR_REAL_IOS_KEY';
@@ -129,6 +162,9 @@ const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_REAL_ANDROID_KEY';
 
 ---
 
-**Fecha de desactivación**: 4 de marzo de 2026
-**Commit de desactivación**: `1a87e14`
-**Razón**: Testing de la app sin restricciones de suscripción
+**Fecha de desactivación**: 5 de marzo de 2026
+**Commits de desactivación**: 
+- `ef198cd` - RevenueCat initialization
+- `1a87e14` - Subscription checks
+
+**Razón**: Testing de la app sin restricciones de suscripción ni errores de RevenueCat
