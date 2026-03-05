@@ -10,7 +10,8 @@ import { useCheckAppVersion } from '@/core/hooks/useCheckAppVersion';
 
 export default function AppLayout() {
   const { user, authStatus } = useAuthStore();
-  const { checking: isCheckingAppVersion, updateRequired } = useCheckAppVersion();
+  const { checking: isCheckingAppVersion, updateRequired } =
+    useCheckAppVersion();
   const { t } = useTranslation();
 
   // Show loading while checking auth
