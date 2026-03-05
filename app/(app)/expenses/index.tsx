@@ -33,11 +33,7 @@ const ExpensesScreen = () => {
               />
             </HeaderButton>
             <HeaderButton onPress={() => router.push('/(app)/expenses/scan')}>
-              <Ionicons
-                name="camera-outline"
-                size={24}
-                color={theme.primary}
-              />
+              <Ionicons name="camera-outline" size={24} color={theme.primary} />
             </HeaderButton>
           </View>
         }

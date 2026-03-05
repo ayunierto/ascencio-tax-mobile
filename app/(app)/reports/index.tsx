@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -66,62 +66,65 @@ const ReportsScreen = () => {
           style={styles.container}
           showsVerticalScrollIndicator={false}
         >
-        {/* Date Range Picker */}
-        <View style={styles.pickerSection}>
-          <DateRangePicker
-            startISO={startDate}
-            endISO={endDate}
-            onChange={(s, e) => {
-              setStartDate(s);
-              setEndDate(e);
-            }}
-            onGenerate={(s, e) => handleGenerate(s, e)}
-          />
-        </View>
-
-        {/* Divider */}
-        <View style={styles.divider} />
-
-        {/* History Section */}
-        <View style={styles.historySection}>
-          <View style={styles.historyHeader}>
-            <ThemedText style={styles.historyTitle}>
-              {t('recentReports')}
-            </ThemedText>
-            <TouchableOpacity onPress={() => refetch()} disabled={isRefetching}>
-              <Ionicons
-                name={isRefetching ? 'sync' : 'refresh'}
-                size={20}
-                color={theme.primary}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {isLoading && !isRefetching ? (
-            <ReportCardSkeletonList count={3} />
-          ) : reports && reports.length > 0 ? (
-            <View style={styles.reportsList}>
-            {reports.map((item) => (
-              <ReportCard key={item.id} report={item} />
-            ))}
-          </View>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Ionicons
-              name="document-text-outline"
-              size={48}
-              color={theme.mutedForeground}
+          {/* Date Range Picker */}
+          <View style={styles.pickerSection}>
+            <DateRangePicker
+              startISO={startDate}
+              endISO={endDate}
+              onChange={(s, e) => {
+                setStartDate(s);
+                setEndDate(e);
+              }}
+              onGenerate={(s, e) => handleGenerate(s, e)}
             />
-            <ThemedText style={styles.emptyText}>
-              {t('noReportsYet')}
-            </ThemedText>
-            <ThemedText style={styles.emptySubtext}>
-              {t('generateFirstReport')}
-            </ThemedText>
           </View>
-        )}
-      </View>
-    </ScrollView>
+
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* History Section */}
+          <View style={styles.historySection}>
+            <View style={styles.historyHeader}>
+              <ThemedText style={styles.historyTitle}>
+                {t('recentReports')}
+              </ThemedText>
+              <TouchableOpacity
+                onPress={() => refetch()}
+                disabled={isRefetching}
+              >
+                <Ionicons
+                  name={isRefetching ? 'sync' : 'refresh'}
+                  size={20}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {isLoading && !isRefetching ? (
+              <ReportCardSkeletonList count={3} />
+            ) : reports && reports.length > 0 ? (
+              <View style={styles.reportsList}>
+                {reports.map((item) => (
+                  <ReportCard key={item.id} report={item} />
+                ))}
+              </View>
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Ionicons
+                  name="document-text-outline"
+                  size={48}
+                  color={theme.mutedForeground}
+                />
+                <ThemedText style={styles.emptyText}>
+                  {t('noReportsYet')}
+                </ThemedText>
+                <ThemedText style={styles.emptySubtext}>
+                  {t('generateFirstReport')}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+        </ScrollView>
       </View>
     </PremiumGuard>
   );

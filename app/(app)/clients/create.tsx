@@ -37,7 +37,11 @@ const CreateClientScreen = () => {
         left={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <HeaderButton onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color={theme.foreground} />
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={theme.foreground}
+              />
             </HeaderButton>
             <HeaderButton
               onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
