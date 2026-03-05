@@ -7,7 +7,8 @@ import { api } from '../api/api';
 const compareVersions = (v1: string, v2: string) => {
   const a = v1.split('.').map(Number);
   const b = v2.split('.').map(Number);
-  for (let i = 0; i < a.length; i++) {
+  const length = Math.max(a.length, b.length);
+  for (let i = 0; i < length; i++) {
     if ((b[i] || 0) > (a[i] || 0)) return -1;
     if ((b[i] || 0) < (a[i] || 0)) return 1;
   }
@@ -32,8 +33,13 @@ export function useCheckAppVersion() {
       const hasNewVersion =
         compareVersions(installed, data.latestVersion) === -1;
 
-      if (needsForceUpdate && data.forceUpdate) {
+      if (needsForceUpdate) {
         setUpdateRequired(true);
+
+        const storeUrl =
+          Platform.OS === 'ios'
+            ? 'https://apps.apple.com/app/idTU_APP_ID'
+            : 'https://play.google.com/store/apps/details?id=TU_APP_ID';
 
         Alert.alert(
           'Required Update',
@@ -41,13 +47,7 @@ export function useCheckAppVersion() {
           [
             {
               text: 'Update',
-              onPress: () => {
-                const storeUrl =
-                  Platform.OS === 'ios'
-                    ? 'https://apps.apple.com/app/idTU_APP_ID'
-                    : 'https://play.google.com/store/apps/details?id=TU_APP_ID';
-                Linking.openURL(storeUrl);
-              },
+              onPress: () => Linking.openURL(storeUrl),
             },
           ],
           { cancelable: false },
