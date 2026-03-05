@@ -1,57 +1,30 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import {
   Linking,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card/Card';
-import { theme } from '@/components/ui/theme';
+import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import ListItem from '@/core/settings/components/ListItem';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function ProfileIndexScreen() {
   const { logout, user } = useAuthStore();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { t } = useTranslation();
-
-  // Add an Add button to the parent drawer/header
-  useLayoutEffect(() => {
-    const parentNav = navigation.getParent ? navigation.getParent() : null;
-    const targetNav = parentNav ?? navigation;
-
-    const headerLeft = () => (
-      <TouchableOpacity
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        style={{ marginRight: 30 }}
-      >
-        <Ionicons name="menu" size={24} color={theme.foreground} />
-      </TouchableOpacity>
-    );
-
-    navigation.setOptions({
-      headerLeft,
-    });
-
-    return () => {
-      try {
-        targetNav.setOptions({ headerLeft: undefined });
-      } catch (e) {
-        // ignore
-      }
-    };
-  }, [navigation]);
 
   const handleLogout = async () => {
     await logout();
@@ -63,6 +36,16 @@ export default function ProfileIndexScreen() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+      <CustomHeader
+        title={t('settings')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

@@ -1,20 +1,20 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { theme } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { DateRangePicker } from '@/components/reports/DateRangePicker';
 import { ReportCard } from '@/components/reports/ReportCard';
 import { ReportCardSkeletonList } from '@/components/reports/ReportCardSkeleton';
 import { useGenerateReport, useGetReports } from '@/core/reports';
 import { toast } from 'sonner-native';
-import { Ionicons } from '@expo/vector-icons';
 import { PremiumGuard } from '@/components/subscription/PremiumGuard';
 import { PremiumFeature } from '@ascencio/shared';
 
 const ReportsScreen = () => {
-  const navigation: any = useNavigation();
+  const navigation = useNavigation();
   const { t } = useTranslation();
 
   const [startDate, setStartDate] = useState<string | null>(null);
@@ -49,23 +49,23 @@ const ReportsScreen = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: t('reports'),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-          style={{ marginRight: 30 }}
-        >
-          <Ionicons name="menu" size={24} color={theme.foreground} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, t]);
-
   return (
     <PremiumGuard feature={PremiumFeature.REPORTS}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={{ flex: 1 }}>
+        <CustomHeader
+          title={t('reports')}
+          left={
+            <HeaderButton
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            >
+              <Ionicons name="menu" size={24} color={theme.foreground} />
+            </HeaderButton>
+          }
+        />
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Date Range Picker */}
         <View style={styles.pickerSection}>
           <DateRangePicker
@@ -122,6 +122,7 @@ const ReportsScreen = () => {
         )}
       </View>
     </ScrollView>
+      </View>
     </PremiumGuard>
   );
 };

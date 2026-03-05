@@ -1,4 +1,3 @@
-import { theme } from '@/components/ui/theme';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -8,8 +7,7 @@ export default function ClientsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerTitleStyle: { color: theme.foreground },
+        headerShown: false, // Usar CustomHeader personalizado
       }}
     >
       <Stack.Screen name="index" options={{ title: t('myClients') }} />

@@ -1,52 +1,41 @@
-import React, { useLayoutEffect } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
-import { theme } from '@/components/ui/theme';
+import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { ClientsList } from '@/core/accounting/clients/components';
 
 const ClientsScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
-  // Add an Add button to the parent drawer/header
-  useLayoutEffect(() => {
-    const parentNav = navigation.getParent ? navigation.getParent() : null;
-    const targetNav = parentNav ?? navigation;
-
-    const headerLeft = () => (
-      <TouchableOpacity
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        style={{ marginRight: 30 }}
-      >
-        <Ionicons name="menu" size={24} color={theme.foreground} />
-      </TouchableOpacity>
-    );
-
-    const headerRight = () => (
-      <View style={{ flexDirection: 'row', gap: theme.gap + 10 }}>
-        <TouchableOpacity onPress={() => router.push('/(app)/clients/create')}>
-          <Ionicons name="add-circle-outline" size={24} color={theme.primary} />
-        </TouchableOpacity>
-      </View>
-    );
-
-    navigation.setOptions({
-      headerLeft,
-      headerRight,
-    });
-
-    return () => {
-      try {
-        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
-      } catch (e) {
-        // ignore
-      }
-    };
-  }, [navigation]);
-
-  return <ClientsList />;
+  return (
+    <View style={{ flex: 1 }}>
+      <CustomHeader
+        title={t('myClients')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+        right={
+          <HeaderButton onPress={() => router.push('/(app)/clients/create')}>
+            <Ionicons
+              name="add-circle-outline"
+              size={24}
+              color={theme.primary}
+            />
+          </HeaderButton>
+        }
+      />
+      <ClientsList />
+    </View>
+  );
 };
 
 export default ClientsScreen;

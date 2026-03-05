@@ -1,6 +1,6 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { FlatList, RefreshControl, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
 import { router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,43 +8,16 @@ import { useTranslation } from 'react-i18next';
 
 import { ServiceCard } from '@/components/home/ServiceCard';
 import { ServiceListSkeleton } from '@/components/home/ServiceCardSkeleton';
-import { theme } from '@/components/ui/theme';
+import { theme, CustomHeader, HeaderButton, Input } from '@/components/ui';
 import { EmptyContent } from '@/core/components';
 import { useServices } from '@/core/services/hooks/useServices';
 import { Service } from '@ascencio/shared/interfaces';
-import { Button, ButtonIcon, Input } from '@/components/ui';
+import { Button, ButtonIcon } from '@/components/ui';
 
 const ServicesScreen = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation();
-
-  // Add an Add button to the parent drawer/header
-  useLayoutEffect(() => {
-    const parentNav = navigation.getParent ? navigation.getParent() : null;
-    const targetNav = parentNav ?? navigation;
-
-    const headerLeft = () => (
-      <TouchableOpacity
-        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        style={{ marginRight: 30 }}
-      >
-        <Ionicons name="menu" size={24} color={theme.foreground} />
-      </TouchableOpacity>
-    );
-
-    navigation.setOptions({
-      headerLeft,
-    });
-
-    return () => {
-      try {
-        targetNav.setOptions({ headerRight: undefined, headerLeft: undefined });
-      } catch (e) {
-        // ignore
-      }
-    };
-  }, [navigation]);
 
   const {
     data: servicesResponse,
@@ -94,6 +67,16 @@ const ServicesScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <CustomHeader
+        title={t('services')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+      />
       <FlatList
         data={filteredServices}
         renderItem={({ item }) => (

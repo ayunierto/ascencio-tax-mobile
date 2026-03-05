@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import { theme } from '@/components/ui/theme';
 import { useTranslation } from 'react-i18next';
 
 export default function ProfileLayout() {
@@ -7,8 +6,7 @@ export default function ProfileLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerTintColor: theme.foreground,
+        headerShown: false, // Usar CustomHeader personalizado
       }}
     >
       <Stack.Screen

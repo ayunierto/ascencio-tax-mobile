@@ -3,11 +3,13 @@ import React from 'react';
 import { FlatList, RefreshControl, View, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { AppointmentCard } from '@/components/bookings/AppointmentCard';
 import { AppointmentListSkeleton } from '@/components/bookings/AppointmentCardSkeleton';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { theme } from '@/components/ui/theme';
+import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { ThemedText } from '@/components/themed-text';
 import { cancelAppointment } from '@/core/appointments/actions/cancel-appointment.action';
 import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
@@ -19,6 +21,7 @@ import { AxiosError } from 'axios';
 
 export default function AppointmentsIndexScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const queryClient = useQueryClient();
 
   const {
@@ -120,6 +123,16 @@ export default function AppointmentsIndexScreen() {
 
   return (
     <View style={styles.container}>
+      <CustomHeader
+        title={t('appointments')}
+        left={
+          <HeaderButton
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Ionicons name="menu" size={24} color={theme.foreground} />
+          </HeaderButton>
+        }
+      />
       <View style={styles.header}>
         <ThemedText style={styles.headerTitle}>
           {t('upcomingAppointments')}

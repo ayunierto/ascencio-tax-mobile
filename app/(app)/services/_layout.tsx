@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { theme } from '@/components/ui/theme';
 
 export default function ServicesLayout() {
   const { t } = useTranslation();
@@ -8,8 +7,7 @@ export default function ServicesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerTitleStyle: { color: theme.foreground },
+        headerShown: false, // Usar CustomHeader personalizado
       }}
     >
       <Stack.Screen

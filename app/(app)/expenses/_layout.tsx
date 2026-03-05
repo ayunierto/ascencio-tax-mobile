@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { theme } from '@/components/ui/theme';
 
 export default function ExpensesLayout() {
   const { t } = useTranslation();
@@ -8,20 +7,13 @@ export default function ExpensesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerTitleStyle: { color: theme.foreground },
+        headerShown: false, // Usar CustomHeader personalizado
       }}
     >
       <Stack.Screen name="index" options={{ title: t('myExpenses') }} />
       <Stack.Screen name="create" options={{ title: t('newExpense') }} />
       <Stack.Screen name="[id]" options={{ title: t('expenseDetails') }} />
-      <Stack.Screen
-        name="scan"
-        options={{
-          title: t('scanReceipt'),
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="scan" options={{ title: t('scanReceipt') }} />
     </Stack>
   );
 }
