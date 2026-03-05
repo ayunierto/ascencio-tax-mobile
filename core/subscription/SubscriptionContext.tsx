@@ -94,11 +94,14 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       // Check trial status
       await checkTrialStatus();
 
-      // Refresh subscription from RevenueCat
-      await refreshSubscription();
+      // ⚠️ TEMPORARY: Skip RevenueCat calls when bypass is enabled
+      if (!BYPASS_SUBSCRIPTION_CHECKS) {
+        // Refresh subscription from RevenueCat
+        await refreshSubscription();
 
-      // Load offerings
-      await loadOfferings();
+        // Load offerings
+        await loadOfferings();
+      }
     } catch (error) {
       console.error('Error initializing subscription:', error);
     } finally {
@@ -145,6 +148,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Refresh subscription status from RevenueCat
    */
   const refreshSubscription = useCallback(async () => {
+    // ⚠️ TEMPORARY: Skip when bypass is enabled
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return;
+    }
+
     try {
       const customerInfo: CustomerInfo = await Purchases.getCustomerInfo();
 
@@ -187,6 +195,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Load available subscription offerings
    */
   const loadOfferings = async () => {
+    // ⚠️ TEMPORARY: Skip when bypass is enabled
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return;
+    }
+
     try {
       const offerings = await Purchases.getOfferings();
       if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
@@ -201,6 +214,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Purchase a subscription package
    */
   const purchasePackage = async (packageToPurchase: any): Promise<boolean> => {
+    // ⚠️ TEMPORARY: Return success when bypass is enabled
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return true;
+    }
+
     try {
       const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
 
@@ -220,6 +238,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
    * Restore previous purchases
    */
   const restorePurchases = async (): Promise<boolean> => {
+    // ⚠️ TEMPORARY: Return success when bypass is enabled
+    if (BYPASS_SUBSCRIPTION_CHECKS) {
+      return true;
+    }
+
     try {
       const customerInfo = await Purchases.restorePurchases();
       await refreshSubscription();
