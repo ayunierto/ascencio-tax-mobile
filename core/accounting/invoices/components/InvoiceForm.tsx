@@ -230,7 +230,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
             console.error('[INVOICE FORM] Error issuing invoice:', error);
             console.error('[INVOICE FORM] Error response:', error.response);
             console.error('[INVOICE FORM] Error data:', error.response?.data);
-            
+
             const errorMessage =
               error.response?.data?.message ||
               error.message ||
@@ -257,7 +257,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
       console.error('[INVOICE FORM] Error recording payment:', error);
       console.error('[INVOICE FORM] Error response:', error.response);
       console.error('[INVOICE FORM] Error data:', error.response?.data);
-      
+
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
@@ -325,7 +325,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
 
   const onSubmit = async (values: any) => {
     console.log('[INVOICE FORM] Starting submit with values:', values);
-    
+
     // Validate line items
     const validLineItems = lineItems.filter(
       (item) => item.description.trim() !== '',
@@ -378,7 +378,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
           data: submitData,
         });
         console.log('[INVOICE FORM] Update successful:', result);
-        
+
         if (!isMounted.current) return;
         toast.success(t('invoiceUpdatedSuccessfully'));
         // Stay on the current invoice page after updating
@@ -387,7 +387,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
         console.log('[INVOICE FORM] Creating new invoice');
         const result = await createInvoice.mutateAsync(submitData);
         console.log('[INVOICE FORM] Create successful:', result);
-        
+
         if (!isMounted.current) return;
         toast.success(t('invoiceCreatedSuccessfully'));
         // Navigate to the created invoice page with its ID
@@ -401,9 +401,9 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
       console.error('[INVOICE FORM] Error submitting invoice:', error);
       console.error('[INVOICE FORM] Error response:', error.response);
       console.error('[INVOICE FORM] Error data:', error.response?.data);
-      
+
       if (!isMounted.current) return;
-      
+
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
