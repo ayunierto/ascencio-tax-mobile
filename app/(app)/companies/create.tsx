@@ -39,11 +39,7 @@ const CreateCompanyScreen = ({}) => {
         left={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <HeaderButton onPress={() => router.back()}>
-              <Ionicons
-                name="chevron-back"
-                size={24}
-                color="#ffffff"
-              />
+              <Ionicons name="chevron-back" size={24} color="#ffffff" />
             </HeaderButton>
             <HeaderButton
               onPress={() => navigation.dispatch(DrawerActions.openDrawer())}

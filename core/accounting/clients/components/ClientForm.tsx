@@ -15,7 +15,13 @@ import {
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Button, ButtonIcon, theme, CustomHeader, HeaderButton } from '@/components/ui';
+import {
+  Button,
+  ButtonIcon,
+  theme,
+  CustomHeader,
+  HeaderButton,
+} from '@/components/ui';
 import {
   createClientMutation,
   deleteClientMutation,
@@ -120,7 +126,9 @@ export const ClientForm = ({ client }: ClientFormProps) => {
               <DeleteConfirmationDialog onDelete={handleDeleteClient}>
                 <HeaderButton
                   onPress={() => {}}
-                  disabled={updateMutation.isPending || deleteMutation.isPending}
+                  disabled={
+                    updateMutation.isPending || deleteMutation.isPending
+                  }
                 >
                   <Ionicons
                     name="trash-outline"
@@ -133,175 +141,175 @@ export const ClientForm = ({ client }: ClientFormProps) => {
           </View>
         }
       />
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
-    >
-      <ScrollView
-        style={{ padding: 16, paddingTop: 8 }}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
       >
-        <View style={{ flex: 1, gap: 16 }}>
-          <Controller
-            control={control}
-            name="fullName"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                onChangeText={onChange}
-                value={value}
-                label={t('fullName')}
-                error={!!errors.fullName}
-                errorMessage={getErrorMessage(errors.fullName)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('email')}
-                onChangeText={onChange}
-                value={value}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={!!errors.email}
-                errorMessage={getErrorMessage(errors.email)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="phone"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('phone')}
-                onChangeText={onChange}
-                value={value}
-                keyboardType="phone-pad"
-                error={!!errors.phone}
-                errorMessage={getErrorMessage(errors.phone)}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="address"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('address')}
-                onChangeText={onChange}
-                value={value}
-                multiline
-                error={!!errors.address}
-                errorMessage={getErrorMessage(errors.address)}
-              />
-            )}
-          />
-
-          <View style={{ flexDirection: 'row', gap: 16 }}>
+        <ScrollView
+          style={{ padding: 16, paddingTop: 8 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ flex: 1, gap: 16 }}>
             <Controller
               control={control}
-              name="city"
+              name="fullName"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label={t('city')}
                   onChangeText={onChange}
                   value={value}
-                  error={!!errors.city}
-                  errorMessage={getErrorMessage(errors.city)}
-                  style={{ flex: 1 }}
+                  label={t('fullName')}
+                  error={!!errors.fullName}
+                  errorMessage={getErrorMessage(errors.fullName)}
                 />
               )}
             />
 
             <Controller
               control={control}
-              name="province"
+              name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label={t('province')}
+                  label={t('email')}
                   onChangeText={onChange}
                   value={value}
-                  error={!!errors.province}
-                  errorMessage={getErrorMessage(errors.province)}
-                  style={{ flex: 1 }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  error={!!errors.email}
+                  errorMessage={getErrorMessage(errors.email)}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('phone')}
+                  onChangeText={onChange}
+                  value={value}
+                  keyboardType="phone-pad"
+                  error={!!errors.phone}
+                  errorMessage={getErrorMessage(errors.phone)}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="address"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('address')}
+                  onChangeText={onChange}
+                  value={value}
+                  multiline
+                  error={!!errors.address}
+                  errorMessage={getErrorMessage(errors.address)}
+                />
+              )}
+            />
+
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <Controller
+                control={control}
+                name="city"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    label={t('city')}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.city}
+                    errorMessage={getErrorMessage(errors.city)}
+                    style={{ flex: 1 }}
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="province"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    label={t('province')}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.province}
+                    errorMessage={getErrorMessage(errors.province)}
+                    style={{ flex: 1 }}
+                  />
+                )}
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <Controller
+                control={control}
+                name="postalCode"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    label={t('postalCode')}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.postalCode}
+                    errorMessage={getErrorMessage(errors.postalCode)}
+                    style={{ flex: 1 }}
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="country"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    label={t('country')}
+                    onChangeText={onChange}
+                    value={value}
+                    error={!!errors.country}
+                    errorMessage={getErrorMessage(errors.country)}
+                    style={{ flex: 1 }}
+                  />
+                )}
+              />
+            </View>
+
+            {/* Campos opcionales para individuos */}
+            <Controller
+              control={control}
+              name="sin"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('sin')}
+                  onChangeText={onChange}
+                  value={value}
+                  helperText="XXX-XXX-XXX"
+                  error={!!errors.sin}
+                  errorMessage={getErrorMessage(errors.sin)}
+                />
+              )}
+            />
+
+            {/* Campo opcional para empresas */}
+            <Controller
+              control={control}
+              name="businessNumber"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={t('businessNumber')}
+                  onChangeText={onChange}
+                  value={value}
+                  helperText="123456789RC0001"
+                  error={!!errors.businessNumber}
+                  errorMessage={getErrorMessage(errors.businessNumber)}
                 />
               )}
             />
           </View>
-
-          <View style={{ flexDirection: 'row', gap: 16 }}>
-            <Controller
-              control={control}
-              name="postalCode"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  label={t('postalCode')}
-                  onChangeText={onChange}
-                  value={value}
-                  error={!!errors.postalCode}
-                  errorMessage={getErrorMessage(errors.postalCode)}
-                  style={{ flex: 1 }}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="country"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  label={t('country')}
-                  onChangeText={onChange}
-                  value={value}
-                  error={!!errors.country}
-                  errorMessage={getErrorMessage(errors.country)}
-                  style={{ flex: 1 }}
-                />
-              )}
-            />
-          </View>
-
-          {/* Campos opcionales para individuos */}
-          <Controller
-            control={control}
-            name="sin"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('sin')}
-                onChangeText={onChange}
-                value={value}
-                helperText="XXX-XXX-XXX"
-                error={!!errors.sin}
-                errorMessage={getErrorMessage(errors.sin)}
-              />
-            )}
-          />
-
-          {/* Campo opcional para empresas */}
-          <Controller
-            control={control}
-            name="businessNumber"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={t('businessNumber')}
-                onChangeText={onChange}
-                value={value}
-                helperText="123456789RC0001"
-                error={!!errors.businessNumber}
-                errorMessage={getErrorMessage(errors.businessNumber)}
-              />
-            )}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };

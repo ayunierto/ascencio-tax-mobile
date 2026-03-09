@@ -40,7 +40,7 @@ const ReportsScreen = () => {
       await generateMutation.mutateAsync({ startDate: s, endDate: e });
       console.log('[REPORTS] Report generated successfully');
       toast.success(t('reportGeneratedSuccessfully'));
-      
+
       // Forzar refetch explícito
       console.log('[REPORTS] Forcing refetch of reports list...');
       await refetch();
@@ -56,7 +56,12 @@ const ReportsScreen = () => {
   };
 
   console.log('[REPORTS] Current reports:', reports);
-  console.log('[REPORTS] Is loading:', isLoading, 'Is refetching:', isRefetching);
+  console.log(
+    '[REPORTS] Is loading:',
+    isLoading,
+    'Is refetching:',
+    isRefetching,
+  );
 
   return (
     // ⚠️ TEMPORARY: Removed PremiumGuard wrapper for testing
@@ -71,10 +76,7 @@ const ReportsScreen = () => {
           </HeaderButton>
         }
       />
-      <ScrollView
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Date Range Picker */}
         <View style={styles.pickerSection}>
           <DateRangePicker
@@ -97,10 +99,7 @@ const ReportsScreen = () => {
             <ThemedText style={styles.historyTitle}>
               {t('recentReports')}
             </ThemedText>
-            <TouchableOpacity
-              onPress={() => refetch()}
-              disabled={isRefetching}
-            >
+            <TouchableOpacity onPress={() => refetch()} disabled={isRefetching}>
               <Ionicons
                 name={isRefetching ? 'sync' : 'refresh'}
                 size={20}
