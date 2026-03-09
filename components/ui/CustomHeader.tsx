@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minWidth: 80,
     justifyContent: 'flex-start',
+    gap: 12,
   },
   centerSection: {
     flex: 1,
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minWidth: 80,
     justifyContent: 'flex-end',
-    gap: 8,
+    gap: 12,
   },
   title: {
     fontSize: 17,

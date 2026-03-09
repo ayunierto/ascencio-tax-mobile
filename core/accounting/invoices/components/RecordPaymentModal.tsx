@@ -185,7 +185,10 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               <Input
                 label={`${t('paymentAmount')} *`}
                 value={value?.toString() || ''}
-                onChangeText={onChange}
+                onChangeText={(text) => {
+                  const num = parseFloat(text);
+                  onChange(isNaN(num) ? 0 : num);
+                }}
                 keyboardType="decimal-pad"
                 placeholder={t('enterAmount')}
                 error={!!errors.amount || !!amountError}

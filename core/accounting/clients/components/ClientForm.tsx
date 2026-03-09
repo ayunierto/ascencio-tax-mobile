@@ -52,30 +52,37 @@ export const ClientForm = ({ client }: ClientFormProps) => {
   const deleteMutation = deleteClientMutation();
 
   const onSubmit = async (values: CreateClientRequest) => {
-    if (values.id !== 'new') {
-      await updateMutation.mutateAsync(values, {
-        onSuccess: () => {
-          toast.success(t('clientUpdatedSuccessfully'));
-          setTimeout(() => router.back(), 500);
-        },
-        onError: (error) => {
-          toast.error(
-            t(error.response?.data.message || 'unknownErrorOccurred'),
-          );
-        },
-      });
-      return;
-    }
+    console.log('[CLIENT FORM] onSubmit called with values:', values);
+    console.log('[CLIENT FORM] Client ID:', values.id);
+    console.log('[CLIENT FORM] Is update?', values.id !== 'new');
 
-    await createMutation.mutateAsync(values, {
-      onSuccess: () => {
-        toast.success(t('clientCreatedSuccessfully'));
+    try {
+      if (values.id !== 'new') {
+        console.log('[CLIENT FORM] Updating client...');
+        const result = await updateMutation.mutateAsync(values);
+        console.log('[CLIENT FORM] Update result:', result);
+        console.log('[CLIENT FORM] Showing success toast');
+        toast.success(t('clientUpdatedSuccessfully'));
+        console.log('[CLIENT FORM] Navigating back');
         setTimeout(() => router.back(), 500);
-      },
-      onError: (error) => {
-        toast.error(t(error.response?.data.message || 'unknownErrorOccurred'));
-      },
-    });
+      } else {
+        console.log('[CLIENT FORM] Creating client...');
+        const result = await createMutation.mutateAsync(values);
+        console.log('[CLIENT FORM] Create result:', result);
+        console.log('[CLIENT FORM] Showing success toast');
+        toast.success(t('clientCreatedSuccessfully'));
+        console.log('[CLIENT FORM] Navigating back');
+        setTimeout(() => router.back(), 500);
+      }
+    } catch (error: any) {
+      console.error('[CLIENT FORM] Error saving client:', error);
+      console.error('[CLIENT FORM] Error response:', error?.response?.data);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          t('unknownErrorOccurred'),
+      );
+    }
   };
 
   const handleDeleteClient = async () => {
@@ -100,6 +107,20 @@ export const ClientForm = ({ client }: ClientFormProps) => {
     }
   };
 
+  const handleSaveButton = () => {
+    console.log('[CLIENT FORM] Save button pressed');
+    handleSubmit(
+      (data) => {
+        console.log('[CLIENT FORM] Form validation passed, calling onSubmit');
+        onSubmit(data);
+      },
+      (errors) => {
+        console.error('[CLIENT FORM] Form validation failed:', errors);
+        toast.error(t('pleaseFixValidationErrors'));
+      },
+    )();
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <CustomHeader
@@ -110,9 +131,9 @@ export const ClientForm = ({ client }: ClientFormProps) => {
           </HeaderButton>
         }
         right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <HeaderButton
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSaveButton}
               disabled={
                 createMutation.isPending ||
                 updateMutation.isPending ||

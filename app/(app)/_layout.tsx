@@ -112,7 +112,7 @@ export default function AppLayout() {
       <Drawer.Screen
         name="appointments"
         options={{
-          headerShown: true,
+          headerShown: false,
           drawerLabel: t('myAppointments'),
           title: t('myAppointments'),
           drawerIcon: ({ color, size, focused }) => (

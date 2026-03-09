@@ -78,29 +78,65 @@ export default function AppointmentsIndexScreen() {
 
   if (isError) {
     return (
-      <EmptyContent
-        title="Error"
-        subtitle={
-          error.response?.data.message || error.message || 'An error occurred'
-        }
-        icon="alert-circle-outline"
-        action={
-          <Button onPress={refetch}>
-            <ButtonIcon name="refresh-outline" />
-            <ButtonText>{t('retry')}</ButtonText>
-          </Button>
-        }
-      />
+      <View style={styles.container}>
+        <CustomHeader
+          title={t('appointments')}
+          left={
+            <HeaderButton
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            >
+              <Ionicons name="menu" size={24} color="#ffffff" />
+            </HeaderButton>
+          }
+        />
+        <EmptyContent
+          title="Error"
+          subtitle={
+            error.response?.data.message || error.message || 'An error occurred'
+          }
+          icon="alert-circle-outline"
+          action={
+            <Button onPress={refetch}>
+              <ButtonIcon name="refresh-outline" />
+              <ButtonText>{t('retry')}</ButtonText>
+            </Button>
+          }
+        />
+      </View>
     );
   }
 
   if (isLoading) {
-    return <AppointmentListSkeleton />;
+    return (
+      <View style={styles.container}>
+        <CustomHeader
+          title={t('appointments')}
+          left={
+            <HeaderButton
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            >
+              <Ionicons name="menu" size={24} color="#ffffff" />
+            </HeaderButton>
+          }
+        />
+        <AppointmentListSkeleton />
+      </View>
+    );
   }
 
   if (!pendingAppointments || pendingAppointments.length === 0) {
     return (
       <View style={styles.emptyContainer}>
+        <CustomHeader
+          title={t('appointments')}
+          left={
+            <HeaderButton
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            >
+              <Ionicons name="menu" size={24} color="#ffffff" />
+            </HeaderButton>
+          }
+        />
         <EmptyContent
           title={t('noAppointments')}
           subtitle={t('noAppointmentsDescription')}
@@ -196,11 +232,11 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
+    backgroundColor: theme.background,
   },
   buttonContainer: {
     marginTop: 24,
+    paddingHorizontal: 16,
   },
   buttonSpacing: {
     marginBottom: 8,

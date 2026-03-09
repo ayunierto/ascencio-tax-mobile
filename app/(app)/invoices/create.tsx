@@ -36,15 +36,15 @@ export default function CreateInvoiceScreen() {
   };
 
   const headerLeft = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
       <HeaderButton onPress={() => router.back()}>
-        <Ionicons name="chevron-back" size={24} color="#ffffff" />
+        <Ionicons name="arrow-back" size={24} color="#ffffff" />
       </HeaderButton>
-      <HeaderButton
+      {/* <HeaderButton
         onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
       >
         <Ionicons name="menu" size={24} color="#ffffff" />
-      </HeaderButton>
+      </HeaderButton> */}
     </View>
   );
 

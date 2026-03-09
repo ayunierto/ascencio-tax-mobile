@@ -15,18 +15,14 @@ export default function ProfileLayout() {
           title: t('settings'),
         }}
       />
+
       <Stack.Screen
         name="account"
         options={{
           title: t('myAccount'),
         }}
       />
-      <Stack.Screen
-        name="subscriptions"
-        options={{
-          title: t('subscriptions'),
-        }}
-      />
+
       <Stack.Screen
         name="delete-account"
         options={{

@@ -193,6 +193,7 @@
   "phone": "Teléfono",
   "address": "Dirección",
   "unknownErrorOccurred": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
+  "pleaseFixValidationErrors": "Por favor, corrige los errores de validación.",
   "image": "Imagen",
   "areYouSure": "¿Estás absolutamente seguro?",
   "thisActionCannotBeUndone": "Esta acción no se puede deshacer.",

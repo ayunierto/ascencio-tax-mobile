@@ -24,7 +24,7 @@ const ExpensesScreen = () => {
           </HeaderButton>
         }
         right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <HeaderButton onPress={() => router.push('/(app)/expenses/create')}>
               <Ionicons
                 name="add-circle-outline"

@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { useCategories } from '@/core/accounting/categories/hooks/useCategories';
@@ -10,11 +8,10 @@ import ExpenseForm from '@/core/accounting/expenses/components/ExpenseForm/Expen
 import { useExpenseStore } from '@/core/accounting/expenses/store/useExpenseStore';
 import { EmptyContent } from '@/core/components';
 import Loader from '@/components/Loader';
-import { theme, CustomHeader, HeaderButton } from '@/components/ui';
+import { theme } from '@/components/ui';
 import { Expense } from '@ascencio/shared';
 
 export default function CreateExpenseScreen() {
-  const navigation: any = useNavigation();
   const { t } = useTranslation();
   const {
     imageUrl,
@@ -95,21 +92,6 @@ export default function CreateExpenseScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <CustomHeader
-        title={t('createExpense')}
-        left={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <HeaderButton onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color="#ffffff" />
-            </HeaderButton>
-            <HeaderButton
-              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            >
-              <Ionicons name="menu" size={24} color="#ffffff" />
-            </HeaderButton>
-          </View>
-        }
-      />
       <ExpenseForm expense={newExpense} categories={categories} />
     </View>
   );

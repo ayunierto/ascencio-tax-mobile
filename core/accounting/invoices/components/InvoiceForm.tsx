@@ -152,8 +152,6 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
 
   const watchedTaxRate = watch('taxRate') ?? 13;
 
-  console.log({ clientId: watch('billToClientId') });
-
   // Calculate totals
   const { subtotal, taxAmount, total } = useMemo(() => {
     const sub = lineItems.reduce((sum, item) => {
@@ -222,14 +220,23 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
       {
         text: t('issue'),
         onPress: async () => {
+          console.log('[INVOICE FORM] Issuing invoice:', invoice.id);
           try {
-            await issueInvoice.mutateAsync(invoice.id);
+            const result = await issueInvoice.mutateAsync(invoice.id);
+            console.log('[INVOICE FORM] Invoice issued successfully:', result);
             toast.success(t('invoiceIssued'));
             router.back();
           } catch (error: any) {
-            toast.error(
-              t(error.response?.data?.message || 'unknownErrorOccurred'),
-            );
+            console.error('[INVOICE FORM] Error issuing invoice:', error);
+            console.error('[INVOICE FORM] Error response:', error.response);
+            console.error('[INVOICE FORM] Error data:', error.response?.data);
+            
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              'unknownErrorOccurred';
+            console.error('[INVOICE FORM] Showing error toast:', errorMessage);
+            toast.error(t(errorMessage));
           }
         },
       },
@@ -237,15 +244,26 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
   };
 
   const handleRecordPayment = async (data: any) => {
+    console.log('[INVOICE FORM] Recording payment:', data);
     try {
-      await recordPayment.mutateAsync({
+      const result = await recordPayment.mutateAsync({
         invoiceId: invoice.id,
         data,
       });
+      console.log('[INVOICE FORM] Payment recorded successfully:', result);
       toast.success(t('paymentSuccess'));
       setIsPaymentModalVisible(false);
     } catch (error: any) {
-      toast.error(t(error.response?.data?.message || 'unknownErrorOccurred'));
+      console.error('[INVOICE FORM] Error recording payment:', error);
+      console.error('[INVOICE FORM] Error response:', error.response);
+      console.error('[INVOICE FORM] Error data:', error.response?.data);
+      
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        'unknownErrorOccurred';
+      console.error('[INVOICE FORM] Showing error toast:', errorMessage);
+      toast.error(t(errorMessage));
       // throw error; // Re-throw to prevent modal from closing on error
     }
   };
@@ -306,12 +324,14 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.warn('Submitting invoice with values:', values);
+    console.log('[INVOICE FORM] Starting submit with values:', values);
+    
     // Validate line items
     const validLineItems = lineItems.filter(
       (item) => item.description.trim() !== '',
     );
     if (validLineItems.length === 0) {
+      console.log('[INVOICE FORM] Validation failed: No valid line items');
       toast.error(t('atLeastOneLineItemRequired'));
       return;
     }
@@ -348,43 +368,49 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
       billToBusinessNumber: cleanValue(values.billToBusinessNumber),
     };
 
-    if (!isNew) {
-      await updateInvoice.mutateAsync(
-        { id: invoice.id, data: submitData },
-        {
-          onSuccess: () => {
-            if (!isMounted.current) return;
-            toast.success(t('invoiceUpdatedSuccessfully'));
-            // Stay on the current invoice page after updating
-            // No navigation needed, just refresh the data
-          },
-          onError: (error: any) => {
-            if (!isMounted.current) return;
-            toast.error(
-              t(error.response?.data.message || 'unknownErrorOccurred'),
-            );
-          },
-        },
-      );
-      return;
-    }
+    console.log('[INVOICE FORM] Submit data prepared:', submitData);
 
-    await createInvoice.mutateAsync(submitData, {
-      onSuccess: (data: any) => {
+    try {
+      if (!isNew) {
+        console.log('[INVOICE FORM] Updating invoice:', invoice.id);
+        const result = await updateInvoice.mutateAsync({
+          id: invoice.id,
+          data: submitData,
+        });
+        console.log('[INVOICE FORM] Update successful:', result);
+        
+        if (!isMounted.current) return;
+        toast.success(t('invoiceUpdatedSuccessfully'));
+        // Stay on the current invoice page after updating
+        // No navigation needed, just refresh the data
+      } else {
+        console.log('[INVOICE FORM] Creating new invoice');
+        const result = await createInvoice.mutateAsync(submitData);
+        console.log('[INVOICE FORM] Create successful:', result);
+        
         if (!isMounted.current) return;
         toast.success(t('invoiceCreatedSuccessfully'));
         // Navigate to the created invoice page with its ID
-        if (data && data.id) {
-          router.replace(`/(app)/invoices/${data.id}`);
+        if (result && result.id) {
+          router.replace(`/(app)/invoices/${result.id}`);
         } else {
           router.replace('/(app)/invoices');
         }
-      },
-      onError: (error: any) => {
-        if (!isMounted.current) return;
-        toast.error(t(error.response?.data.message || 'unknownErrorOccurred'));
-      },
-    });
+      }
+    } catch (error: any) {
+      console.error('[INVOICE FORM] Error submitting invoice:', error);
+      console.error('[INVOICE FORM] Error response:', error.response);
+      console.error('[INVOICE FORM] Error data:', error.response?.data);
+      
+      if (!isMounted.current) return;
+      
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        'unknownErrorOccurred';
+      console.error('[INVOICE FORM] Showing error toast:', errorMessage);
+      toast.error(t(errorMessage));
+    }
   };
 
   const handleDeleteInvoice = async () => {
@@ -1001,7 +1027,10 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
                 <Input
                   label={`${t('taxRate')} (%)`}
                   value={(value ?? 13).toString()}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const num = parseFloat(text);
+                    onChange(isNaN(num) ? 0 : num);
+                  }}
                   keyboardType="decimal-pad"
                   editable={canEdit}
                   error={!!errors.taxRate}
