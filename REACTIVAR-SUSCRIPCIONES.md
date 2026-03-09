@@ -29,6 +29,7 @@ git reset --hard HEAD~2
 ### Opción 2: Cambios manuales
 
 #### 0. RevenueCat Initialization (NUEVO)
+
 **Archivo**: `app/_layout.tsx`
 
 ```typescript
@@ -59,6 +60,7 @@ export default function RootLayout() {
 ```
 
 #### 1. SubscriptionContext.tsx
+
 **Archivo**: `core/subscription/SubscriptionContext.tsx`
 
 ```typescript
@@ -70,6 +72,7 @@ const BYPASS_SUBSCRIPTION_CHECKS = false;
 ```
 
 #### 2. Reports Screen
+
 **Archivo**: `app/(app)/reports/index.tsx`
 
 ```typescript
@@ -86,6 +89,7 @@ return (
 ```
 
 #### 3. Invoices Screen
+
 **Archivo**: `app/(app)/invoices/index.tsx`
 
 ```typescript
@@ -110,6 +114,7 @@ return (
 ```
 
 #### 4. Settings Screen
+
 **Archivo**: `app/(app)/settings/index.tsx`
 
 ```typescript
@@ -163,7 +168,8 @@ const REVENUE_CAT_ANDROID_KEY = 'goog_YOUR_REAL_ANDROID_KEY';
 ---
 
 **Fecha de desactivación**: 5 de marzo de 2026
-**Commits de desactivación**: 
+**Commits de desactivación**:
+
 - `ef198cd` - RevenueCat initialization
 - `1a87e14` - Subscription checks
 
