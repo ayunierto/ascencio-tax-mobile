@@ -28,10 +28,12 @@ export default function DashboardScreen() {
   const { data: upcomingAppointments, isLoading: loadingUpcoming } = useQuery({
     queryKey: ['appointments', 'pending'],
     queryFn: () => getUserAppointments('pending'),
+    staleTime: 0,
   });
   const { data: pastAppointments, isLoading: loadingPast } = useQuery({
     queryKey: ['appointments', 'past'],
     queryFn: () => getUserAppointments('past'),
+    staleTime: 0,
   });
   const {
     data: invoices,

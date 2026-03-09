@@ -24,13 +24,13 @@ export default function PastAppointmentsScreen() {
     refetch,
     isRefetching,
   } = useQuery<Appointment[], AxiosError<ServerException>>({
-    queryKey: ['PastAppts'],
+    queryKey: ['appointments', 'past'],
     queryFn: async () => {
       const data = await getUserAppointments('past');
       return data;
     },
     retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 min
+    staleTime: 0,
   });
 
   const handleBookNew = () => {

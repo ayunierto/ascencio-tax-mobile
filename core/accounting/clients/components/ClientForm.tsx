@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { router, useNavigation } from 'expo-router';
+import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toast } from 'sonner-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   Client,
@@ -14,7 +15,7 @@ import {
 } from '@ascencio/shared';
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/utils/getErrorMessage';
-import { Button, ButtonIcon, theme } from '@/components/ui';
+import { Button, ButtonIcon, theme, CustomHeader, HeaderButton } from '@/components/ui';
 import {
   createClientMutation,
   deleteClientMutation,
@@ -27,7 +28,6 @@ interface ClientFormProps {
 }
 
 export const ClientForm = ({ client }: ClientFormProps) => {
-  const navigation = useNavigation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -94,54 +94,45 @@ export const ClientForm = ({ client }: ClientFormProps) => {
     }
   };
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      title: client.id === 'new' ? t('newClient') : t('clientDetails'),
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          <Button
-            size="icon"
-            variant="ghost"
-            onPress={handleSubmit(onSubmit)}
-            isLoading={createMutation.isPending || updateMutation.isPending}
-            disabled={
-              createMutation.isPending ||
-              updateMutation.isPending ||
-              deleteMutation.isPending
-            }
-          >
-            <ButtonIcon name="save-outline" style={{ color: theme.primary }} />
-          </Button>
-
-          {client.id !== 'new' && (
-            <DeleteConfirmationDialog onDelete={handleDeleteClient}>
-              <Button
-                size="icon"
-                variant="ghost"
-                disabled={updateMutation.isPending || deleteMutation.isPending}
-                isLoading={deleteMutation.isPending}
-              >
-                <ButtonIcon
-                  name="trash-outline"
-                  style={{ color: theme.destructive }}
-                />
-              </Button>
-            </DeleteConfirmationDialog>
-          )}
-        </View>
-      ),
-    });
-  }, [
-    client.id,
-    t,
-    handleSubmit,
-    onSubmit,
-    handleDeleteClient,
-    createMutation.isPending,
-    isDeleting,
-  ]);
-
   return (
+    <View style={{ flex: 1 }}>
+      <CustomHeader
+        title={client.id === 'new' ? t('newClient') : t('clientDetails')}
+        left={
+          <HeaderButton onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          </HeaderButton>
+        }
+        right={
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <HeaderButton
+              onPress={handleSubmit(onSubmit)}
+              disabled={
+                createMutation.isPending ||
+                updateMutation.isPending ||
+                deleteMutation.isPending
+              }
+            >
+              <Ionicons name="save-outline" size={24} color={theme.primary} />
+            </HeaderButton>
+
+            {client.id !== 'new' && (
+              <DeleteConfirmationDialog onDelete={handleDeleteClient}>
+                <HeaderButton
+                  onPress={() => {}}
+                  disabled={updateMutation.isPending || deleteMutation.isPending}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={24}
+                    color={theme.destructive}
+                  />
+                </HeaderButton>
+              </DeleteConfirmationDialog>
+            )}
+          </View>
+        }
+      />
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -311,5 +302,6 @@ export const ClientForm = ({ client }: ClientFormProps) => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </View>
   );
 };

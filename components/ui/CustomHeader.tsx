@@ -48,12 +48,12 @@ export function CustomHeader({
       ]}
     >
       {/* Barra de estado */}
-      <StatusBar
+      {/* <StatusBar
         barStyle={
           theme.background === '#000000' ? 'light-content' : 'dark-content'
         }
         backgroundColor={theme.background}
-      />
+      /> */}
 
       {/* Contenido del header */}
       <View style={[styles.content, { height: HEADER_HEIGHT }]}>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
+    paddingHorizontal: 20,
   },
   leftSection: {
     flexDirection: 'row',

@@ -8,7 +8,6 @@ import Toast from 'react-native-toast-message';
 
 import Loader from '@/components/Loader';
 import { getExpenses } from '@/core/accounting/expenses/actions';
-import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
 import { EmptyContent } from '@/core/components';
 import { ServerException } from '@/core/interfaces/server-exception.response';
 import { getLogs } from '@/core/logs/actions';
@@ -16,6 +15,7 @@ import { Log } from '@/core/logs/interfaces';
 import { Metrics } from './Metrics';
 import { QuickActions } from './QuickActions/QuickActions';
 import { RecentActivity } from './RecentActivity';
+import { Expense, PaginatedResponse } from '@ascencio/shared';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -25,7 +25,7 @@ const ReceiptsDashboard = () => {
     isPending: isLoadingExpenses,
     isError: isErrorExpenses,
     error: errorExpenses,
-  } = useQuery<ExpenseResponse[], AxiosError<ServerException>>({
+  } = useQuery<PaginatedResponse<Expense>, AxiosError<ServerException>>({
     queryKey: ['totalExpenses'],
     queryFn: () => getExpenses(),
     staleTime: 1000 * 60 * 60, // 1 hour
@@ -51,9 +51,9 @@ const ReceiptsDashboard = () => {
   );
 
   useEffect(() => {
-    if (expenses && expenses.length >= 0) {
-      const total = expenses.reduce(
-        (acc: number, receipt: ExpenseResponse) => acc + +receipt.total,
+    if (expenses && expenses.data.length >= 0) {
+      const total = expenses.data.reduce(
+        (acc: number, receipt: Expense) => acc + +receipt.total,
         0,
       );
       setTotalExpenses(total);

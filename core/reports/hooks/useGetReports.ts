@@ -5,5 +5,6 @@ export const useGetReports = (params?: GetReportsParams) => {
   return useQuery({
     queryKey: ['reports', params],
     queryFn: () => getReports(params),
+    staleTime: 0,
   });
 };

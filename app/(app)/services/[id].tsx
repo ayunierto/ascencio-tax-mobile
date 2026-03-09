@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/themed-text';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui';
+import { Card, CardContent, CustomHeader, HeaderButton } from '@/components/ui';
 import { theme } from '@/components/ui/theme';
 import { useServices } from '@/core/services/hooks/useServices';
 import { EmptyContent } from '@/core/components';
@@ -58,6 +58,14 @@ export default function ServiceDetailScreen() {
 
   return (
     <>
+      <CustomHeader
+        title={service?.name || t('serviceDetails')}
+        left={
+          <HeaderButton onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          </HeaderButton>
+        }
+      />
       <ScrollView style={styles.container}>
         <View style={styles.content}>
           {/* Service Image */}

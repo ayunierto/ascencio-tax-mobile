@@ -32,21 +32,20 @@ export default function AppointmentsIndexScreen() {
     refetch,
     isRefetching,
   } = useQuery<Appointment[], AxiosError<ServerException>>({
-    queryKey: ['pendingAppts'],
+    queryKey: ['appointments', 'pending'],
     queryFn: async () => {
       const data = await getUserAppointments('pending');
       return data;
     },
     retry: 1,
-    staleTime: 1000 * 60, // 1 min
+    staleTime: 0,
   });
 
   const cancelMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
       cancelAppointment(id, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pendingAppts'] });
-      queryClient.invalidateQueries({ queryKey: ['PastAppts'] });
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
       Toast.show({
         type: 'success',
         text1: t('appointmentCancelled'),
@@ -129,7 +128,7 @@ export default function AppointmentsIndexScreen() {
           <HeaderButton
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           >
-            <Ionicons name="menu" size={24} color={theme.foreground} />
+            <Ionicons name="menu" size={24} color="#ffffff" />
           </HeaderButton>
         }
       />

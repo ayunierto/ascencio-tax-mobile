@@ -20,7 +20,7 @@ const CompaniesScreen = () => {
           <HeaderButton
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           >
-            <Ionicons name="menu" size={24} color={theme.foreground} />
+            <Ionicons name="menu" size={24} color="#ffffff" />
           </HeaderButton>
         }
         right={

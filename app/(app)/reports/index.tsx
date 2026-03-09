@@ -36,12 +36,17 @@ const ReportsScreen = () => {
     }
 
     try {
+      console.log('[REPORTS] Generating report...');
       await generateMutation.mutateAsync({ startDate: s, endDate: e });
-      console.log('Report generated successfully');
+      console.log('[REPORTS] Report generated successfully');
       toast.success(t('reportGeneratedSuccessfully'));
-      // Query will be automatically invalidated by useGenerateReport hook
+      
+      // Forzar refetch explícito
+      console.log('[REPORTS] Forcing refetch of reports list...');
+      await refetch();
+      console.log('[REPORTS] Refetch completed');
     } catch (err: any) {
-      console.error('Error generating report:', err);
+      console.error('[REPORTS] Error generating report:', err);
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
@@ -49,6 +54,9 @@ const ReportsScreen = () => {
       );
     }
   };
+
+  console.log('[REPORTS] Current reports:', reports);
+  console.log('[REPORTS] Is loading:', isLoading, 'Is refetching:', isRefetching);
 
   return (
     // ⚠️ TEMPORARY: Removed PremiumGuard wrapper for testing
@@ -59,7 +67,7 @@ const ReportsScreen = () => {
           <HeaderButton
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           >
-            <Ionicons name="menu" size={24} color={theme.foreground} />
+            <Ionicons name="menu" size={24} color="#ffffff" />
           </HeaderButton>
         }
       />

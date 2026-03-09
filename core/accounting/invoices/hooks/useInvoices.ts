@@ -30,6 +30,7 @@ export const useInvoices = (status?: string) => {
     queryKey: ['invoices', status],
     queryFn: () => getInvoicesAction(status),
     retry: 1,
+    staleTime: 0,
   });
 };
 

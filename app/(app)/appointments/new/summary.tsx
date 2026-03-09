@@ -34,7 +34,7 @@ export default function BookingSummaryScreen() {
   >({
     mutationFn: bookAppointment,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['pendingAppts'] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
     },
     onError: async () => {
       Toast.show({

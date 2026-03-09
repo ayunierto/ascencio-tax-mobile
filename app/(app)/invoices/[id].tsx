@@ -32,14 +32,14 @@ export default function InvoiceDetailScreen() {
             onPress={() => navigation.goBack()}
             style={{ marginLeft: 8, marginRight: 8 }}
           >
-            <Ionicons color={theme.foreground} size={24} name="chevron-back" />
+            <Ionicons color="#ffffff" size={24} name="chevron-back" />
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity
           onPress={openDrawer}
           style={{ marginLeft: 8, marginRight: 8 }}
         >
-          <Ionicons color={theme.foreground} size={24} name="menu" />
+          <Ionicons color="#ffffff" size={24} name="menu" />
         </TouchableOpacity>
       </View>
     );

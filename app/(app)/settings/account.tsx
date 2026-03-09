@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useState,
 } from 'react';
 import {
@@ -15,7 +14,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router, useNavigation } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -29,7 +28,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/Select';
-import { theme } from '@/components/ui/theme';
+import { theme, CustomHeader, HeaderButton } from '@/components/ui';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
@@ -48,7 +47,6 @@ export default function AccountScreen() {
   const [callingCode, setCallingCode] = useState<string | undefined>();
   const { t } = useTranslation();
   const { location } = useIPGeolocation();
-  const navigation = useNavigation();
 
   const {
     control,
@@ -92,21 +90,6 @@ export default function AccountScreen() {
     [updateProfile, t],
   );
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          <TouchableOpacity
-            onPress={handleSubmit(handleUpdateProfile)}
-            disabled={updateProfile.isPending}
-          >
-            <Ionicons name="save-outline" size={24} color={theme.primary} />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [handleSubmit, handleUpdateProfile, navigation, updateProfile]);
-
   if (!user) {
     router.replace('/');
     return null;
@@ -114,6 +97,22 @@ export default function AccountScreen() {
 
   return (
     <FormViewContainer>
+      <CustomHeader
+        title={t('myAccount')}
+        left={
+          <HeaderButton onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          </HeaderButton>
+        }
+        right={
+          <HeaderButton
+            onPress={handleSubmit(handleUpdateProfile)}
+            disabled={updateProfile.isPending}
+          >
+            <Ionicons name="save-outline" size={24} color={theme.primary} />
+          </HeaderButton>
+        }
+      />
       {/* Personal Information Section */}
       <Card>
         <CardContent>
