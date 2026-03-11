@@ -155,7 +155,7 @@ export default function AppLayout() {
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="subscription"
         options={{
           headerShown: true,
@@ -169,7 +169,7 @@ export default function AppLayout() {
             />
           ),
         }}
-      />
+      /> */}
 
       <Drawer.Screen
         name="settings"

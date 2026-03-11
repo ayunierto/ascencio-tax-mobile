@@ -500,13 +500,13 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
+        // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 80}
       >
         <ScrollView
           style={{ padding: 10, flex: 1 }}
           contentContainerStyle={{
             flexGrow: 1,
-            paddingBottom: insets.bottom + 40,
+            // paddingBottom: insets.bottom + 40,
           }}
           keyboardShouldPersistTaps="handled"
         >
@@ -682,6 +682,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
                         editable={canEdit}
                         error={!!errors.billToFullName}
                         errorMessage={getErrorMessage(errors.billToFullName)}
+                        autoCapitalize="words"
                       />
                     )}
                   />
@@ -696,6 +697,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
                         onChangeText={onChange}
                         placeholder={t('enterEmail')}
                         keyboardType="email-address"
+                        autoCapitalize="none"
                         editable={canEdit}
                         error={!!errors.billToEmail}
                         errorMessage={getErrorMessage(errors.billToEmail)}
@@ -713,6 +715,7 @@ export const InvoiceForm = ({ invoice, headerLeft }: InvoiceFormProps) => {
                         onChangeText={onChange}
                         placeholder={t('enterPhone')}
                         keyboardType="phone-pad"
+                        autoCapitalize="none"
                         editable={canEdit}
                         error={!!errors.billToPhone}
                         errorMessage={getErrorMessage(errors.billToPhone)}
