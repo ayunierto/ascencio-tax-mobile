@@ -22,11 +22,6 @@
       "env": {
         "NODE_ENV": "production"
       }
-    },
-    "simulator": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "platforms": ["ios"]
     }
   },
   "submit": {
