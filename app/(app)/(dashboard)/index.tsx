@@ -102,7 +102,7 @@ export default function DashboardScreen() {
             {user.firstName ? `, ${user.firstName}!` : '!'}
           </ThemedText>
           <ThemedText style={{ fontSize: 14, color: theme.mutedForeground }}>
-            {DateTime.now().toFormat('dd LLLL, yyyy', {
+            {DateTime.now().toFormat('DDDD', {
               locale: user.locale,
             })}
           </ThemedText>
